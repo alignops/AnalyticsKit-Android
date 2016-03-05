@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AnalyticsKit-Android:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/AnalyticsKit_Android_jar</output-path>
+    <root id="archive" name="AnalyticsKit-Android.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

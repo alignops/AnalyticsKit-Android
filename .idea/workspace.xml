@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RunManager" selected="JUnit.AnalyticsKit Unit Tests">
+    <configuration default="false" name="AnalyticKit-Android [clean]" type="GradleRunConfiguration" factoryName="Gradle">
+        <ExternalSystemSettings>
+          <option name="executionName" />
+          <option name="externalProjectPath" value="$PROJECT_DIR$" />
+          <option name="externalSystemIdString" value="GRADLE" />
+          <option name="scriptParameters" value="" />
+          <option name="taskDescriptions">
+            <list />
+          </option>
+          <option name="taskNames">
+            <list>
+              <option value="clean" />
+            </list>
+          </option>
+          <option name="vmOptions" value="" />
+        </ExternalSystemSettings>
+        <method />
+      </configuration>
+      <configuration default="false" name="AnalyticKit-Android [jar]" type="GradleRunConfiguration" factoryName="Gradle">
+        <ExternalSystemSettings>
+          <option name="executionName" />
+          <option name="externalProjectPath" value="$PROJECT_DIR$" />
+          <option name="externalSystemIdString" value="GRADLE" />
+          <option name="scriptParameters" value="" />
+          <option name="taskDescriptions">
+            <list />
+          </option>
+          <option name="taskNames">
+            <list>
+              <option value="jar" />
+            </list>
+          </option>
+          <option name="vmOptions" value="" />
+        </ExternalSystemSettings>
+        <method />
+      </configuration>
+      <configuration default="false" name="AnalyticsKit Unit Tests" type="JUnit" factoryName="JUnit">
+        <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+        <module name="AnalyticsKit-Android" />
+        <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+        <option name="ALTERNATIVE_JRE_PATH" />
+        <option name="PACKAGE_NAME" />
+        <option name="MAIN_CLASS_NAME" value="" />
+        <option name="METHOD_NAME" value="" />
+        <option name="TEST_OBJECT" value="directory" />
+        <option name="VM_PARAMETERS" value="-ea" />
+        <option name="PARAMETERS" value="" />
+        <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+        <option name="ENV_VARIABLES" />
+        <option name="PASS_PARENT_ENVS" value="true" />
+        <option name="TEST_SEARCH_SCOPE">
+          <value defaultName="singleModule" />
+        </option>
+        <envs />
+        <dir value="$PROJECT_DIR$/src/test/java" />
+        <patterns />
+        <method />
+      </configuration>
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="Gradle.AnalyticKit-Android [clean]" />
+        <item index="1" class="java.lang.String" itemvalue="Gradle.AnalyticKit-Android [jar]" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.AnalyticsKit Unit Tests" />
+      </list>
+  </component>
+</project>

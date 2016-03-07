@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AnalyticsKit-Android.iml" filepath="$PROJECT_DIR$/AnalyticsKit-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/analyticskit/analyticskit.iml" filepath="$PROJECT_DIR$/analyticskit/analyticskit.iml" />
     </modules>
   </component>
 </project>

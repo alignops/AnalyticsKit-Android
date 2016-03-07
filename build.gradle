@@ -1,14 +1,36 @@
-group 'com.busybusy.library'
-version '0.1'
-
-apply plugin: 'java'
-
-sourceCompatibility = 1.7
-
-repositories {
-    mavenCentral()
+buildscript {
+	repositories {
+	}
+	dependencies {
+		classpath 'com.android.tools.build:gradle:2.0.0-beta6'
+	}
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+allprojects {
+	repositories {
+		maven { url 'http://repo1.maven.org/maven2' }
+	}
+}
+
+ext {
+	/** Android Library/Application Config values **/
+	compileSdkVersion = 23
+	minSdkVersion = 16
+	targetSdkVersion = 23
+	buildToolsVersion = "23.0.1"
+	versionCode = 1
+	versionName = "0.1"
+
+	/** Unit Testing Dependency Versions **/
+	assertj_android_version = "1.0.0"
+	junit_version = "4.12"
+}
+
+task clean(type: Delete) {
+	delete rootProject.buildDir
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.11'
+	distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }

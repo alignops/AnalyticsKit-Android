@@ -43,6 +43,8 @@ public class AnalyticsEventTest
 		assertEquals(attributes.get("the answer"), 42);
 		assertEquals(attributes.get("animal text"), animalText);
 		assertNull(attributes.get("nonexistent key"));
+
+		assertEquals(event.getAttribute("the answer"), 42);
 	}
 
 	@Test
@@ -53,6 +55,7 @@ public class AnalyticsEventTest
 
 		assertEquals(event.name(), name);
 		assertNull(event.getAttributes());
+		assertNull(event.getAttribute("the answer"));
 	}
 
 	@Test

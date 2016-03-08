@@ -116,6 +116,18 @@ public class AnalyticsEvent
 	}
 
 	/**
+	 * Access a single attribute of this event
+	 * @param name the name the of the attribute to retrieve
+	 * @return the value associated with the given attribute name.
+	 * Returns {@code null} if the attribute has not been set.
+	 */
+	@Nullable
+	public Object getAttribute(@NonNull String name)
+	{
+		return this.attributes == null ? null : this.attributes.get(name);
+	}
+
+	/**
 	 * Sends the event out to the registered/specified providers.
 	 */
 	@NonNull

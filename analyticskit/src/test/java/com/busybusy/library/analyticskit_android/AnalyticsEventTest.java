@@ -18,23 +18,87 @@ package com.busybusy.library.analyticskit_android;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.*;
 
 /**
- * Tests the AnalyticsEvent class
+ * Tests the {@link AnalyticsEvent} class
  * @author John Hunt on 3/5/16.
  */
 public class AnalyticsEventTest
 {
+	@Test
+	public void testBuilder_withAttributes()
+	{
+		String name = "Yeah, this should work";
+		String animalText = "The quick brown fox jumps over the lazy dog";
+		AnalyticsEvent event = new AnalyticsEvent(name)
+				.putAttribute("the answer", 42)
+				.putAttribute("animal text", animalText);
+
+		assertEquals(event.name(), name);
+		HashMap attributes = event.getAttributes();
+		assertNotNull(attributes);
+		assertEquals(attributes.get("the answer"), 42);
+		assertEquals(attributes.get("animal text"), animalText);
+		assertNull(attributes.get("nonexistent key"));
+	}
 
 	@Test
-	public void testBuilder()
+	public void testBuilder_noAttributes()
 	{
-		String eventName = "Yeah, this should work";
-		AnalyticsEvent.Builder builder = new AnalyticsEvent.Builder();
-		builder.name(eventName);
-		AnalyticsEvent event = builder.build();
+		String name = "Yeah, this should work";
+		AnalyticsEvent event = new AnalyticsEvent(name);
 
-		assertEquals(event.name(), eventName);
+		assertEquals(event.name(), name);
+		assertNull(event.getAttributes());
+	}
+
+	@Test
+	public void testBuilder_specifyProviders()
+	{
+		String name = "Answers only event";
+		AnalyticsEvent event = new AnalyticsEvent(name)
+				.specifyProviders(Providers.ANSWERS);
+
+		assertEquals(event.name(), name);
+		assertNull(event.getAttributes());
+		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
+		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
+
+		name = "Answers and Mixpanel only event";
+		event = new AnalyticsEvent(name)
+				.specifyProviders(Providers.ANSWERS | Providers.MIXPANEL);
+
+		assertEquals(event.name(), name);
+		assertNull(event.getAttributes());
+		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
+		assertTrue((event.providersMask & Providers.MIXPANEL) != 0);
+		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
+	}
+
+	@Test
+	public void testBuilder_addProviders()
+	{
+		String name = "Answers only event";
+		AnalyticsEvent event = new AnalyticsEvent(name)
+				.addProvider(Providers.ANSWERS);
+
+		assertEquals(event.name(), name);
+		assertNull(event.getAttributes());
+		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
+		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
+
+		name = "Answers and Mixpanel only event";
+		event = new AnalyticsEvent(name)
+				.addProvider(Providers.ANSWERS)
+				.addProvider(Providers.MIXPANEL);
+
+		assertEquals(event.name(), name);
+		assertNull(event.getAttributes());
+		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
+		assertTrue((event.providersMask & Providers.MIXPANEL) != 0);
+		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
 	}
 }

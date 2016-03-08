@@ -16,32 +16,83 @@
 
 package com.busybusy.library.analyticskit_android;
 
+import android.support.annotation.NonNull;
+
+import java.util.HashSet;
+
 /**
- * Created by john on 3/4/16.
+ * Presents an interface for logging Analytics events across multiple analytics providers.
+ *
+ * @author John Hunt on 3/4/16.
  */
 public class AnalyticsKit
 {
-    private AnalyticsKit singletonInstance = null;
+	private static AnalyticsKit singletonInstance = null;
+	HashSet<AnalyticsKitProvider> providers;
 
-    private AnalyticsKit()
-    {
-    }
+	private AnalyticsKit()
+	{
+		providers = new HashSet<>();
+	}
 
-    public AnalyticsKit getInstance()
-    {
-        if (singletonInstance == null)
-        {
-            // Uses double-checked locking to increase performance.
-            // We only need to synchronize for the first few threads who might attempt to create separate instances.
-            synchronized (AnalyticsKit.class)
-            {
-                if (singletonInstance == null)
-                {
-                    singletonInstance = new AnalyticsKit();
-                }
-            }
-        }
+	/**
+	 * Returns the AnalyticsKit singleton
+	 * @return the singleton instance
+	 */
+	public static AnalyticsKit getInstance()
+	{
+		if (singletonInstance == null)
+		{
+			// Uses double-checked locking to increase performance.
+			// We only need to synchronize for the first few threads who might attempt to create separate instances.
+			synchronized (AnalyticsKit.class)
+			{
+				if (singletonInstance == null)
+				{
+					singletonInstance = new AnalyticsKit();
+				}
+			}
+		}
 
-        return singletonInstance;
-    }
+		return singletonInstance;
+	}
+
+	/**
+	 * Registers an {@code AnalyticsKitProvider} instance to receive future events
+	 * @param provider the {@code AnalyticsKitProvider} to notify on future calls to {@link AnalyticsKit#logEvent(AnalyticsEvent)}.
+	 * @return the {@code AnalyticsKit} instance so multiple calls to {@code registerProvider(AnalyticsKitProvider)} can be chained.
+	 */
+	public AnalyticsKit registerProvider(@NonNull AnalyticsKitProvider provider)
+	{
+		providers.add(provider);
+		return getInstance();
+	}
+
+	/**
+	 * Sends the given event to all registered analytics providers (OR just to select providers if the event has been set to restrict the providers).
+	 * @param event the event to capture with analytics tools
+	 */
+	public void logEvent(AnalyticsEvent event)
+	{
+		if (providers.size() > 0)
+		{
+			for (AnalyticsKitProvider provider : providers)
+			{
+				if (event.providersMask != 0)
+				{
+					// the user has chosen to restrict the providers to which this event is sent
+					if ((provider.getType() & event.providersMask) != 0)
+					{
+						provider.sendEvent(event);
+					}
+					// No else needed: the current provider has not been chosen - better luck next time
+				}
+				else
+				{
+					// no restrictions - send the event to all registered providers
+					provider.sendEvent(event);
+				}
+			}
+		}
+	}
 }

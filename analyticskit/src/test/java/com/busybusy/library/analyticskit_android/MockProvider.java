@@ -18,25 +18,32 @@ package com.busybusy.library.analyticskit_android;
 
 import android.support.annotation.NonNull;
 
+import java.util.HashMap;
+
 /**
- * Defines the interface for provider plugins to be used with AnalyticsKit-Android
- * @author John Hunt on 3/5/16.
+ * Created by john on 3/8/16.
  */
-public interface AnalyticsKitProvider
+public class MockProvider implements AnalyticsKitProvider
 {
+	final int type;
+	HashMap<String, AnalyticsEvent> sentEvents;
 
-	/**
-	 * Returns the type of the provider. This value should be a power of two between 2^0 and 2^30.
-	 * Please use values in the range [2^0 , 2^7] for your own custom provider implementations.
-	 * Some popular providers have already been defined as constants in {@link Providers}.
-	 * @return the specified type mask of the analytics provider.
-	 * @see Providers
-	 */
-	int getType();
 
-	/**
-	 * Sends the event using provider-specific code
-	 * @param event an instantiated event
-	 */
-	void sendEvent(@NonNull AnalyticsEvent event);
+	public MockProvider(int type)
+	{
+		this.type = type;
+		this.sentEvents = new HashMap<>();
+	}
+
+	@Override
+	public int getType()
+	{
+		return this.type;
+	}
+
+	@Override
+	public void sendEvent(@NonNull AnalyticsEvent event)
+	{
+		sentEvents.put(event.name(), event);
+	}
 }

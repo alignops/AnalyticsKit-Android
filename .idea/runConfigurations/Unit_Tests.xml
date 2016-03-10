@@ -4,7 +4,7 @@
     <module name="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PACKAGE_NAME" value="" />
+    <option name="PACKAGE_NAME" value="com.busybusy.library.analyticskit_android" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />
@@ -17,7 +17,7 @@
       <value defaultName="wholeProject" />
     </option>
     <envs />
-    <dir value="$PROJECT_DIR$/analyticskit/src/test/java" />
+    <dir value="$MODULE_DIR$" />
     <patterns />
     <method />
   </configuration>

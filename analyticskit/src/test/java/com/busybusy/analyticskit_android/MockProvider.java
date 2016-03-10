@@ -14,25 +14,30 @@
  *  limitations under the License.
  */
 
-package com.busybusy.library.analyticskit_android;
+package com.busybusy.analyticskit_android;
 
 import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 
 /**
- * Created by john on 3/8/16.
+ * Provides an implementation of the {@link AnalyticsKitProvider} interface that facilitates testing.
+ * @author John Hunt on 3/8/16.
  */
 public class MockProvider implements AnalyticsKitProvider
 {
 	final int type;
 	HashMap<String, AnalyticsEvent> sentEvents;
+	HashMap<String, Long> eventTimes;
+
+	public static final String EVENT_DURATION = "event_duration";
 
 
 	public MockProvider(int type)
 	{
 		this.type = type;
 		this.sentEvents = new HashMap<>();
+		this.eventTimes = new HashMap<>();
 	}
 
 	@Override
@@ -45,5 +50,23 @@ public class MockProvider implements AnalyticsKitProvider
 	public void sendEvent(@NonNull AnalyticsEvent event)
 	{
 		sentEvents.put(event.name(), event);
+
+		if (event.isTimed())
+		{
+			long startTime = System.currentTimeMillis();
+			this.eventTimes.put(event.name(), startTime);
+		}
+	}
+
+	@Override
+	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent)
+	{
+		long endTime = System.currentTimeMillis();
+		Long startTime = this.eventTimes.remove(timedEvent.name());
+
+		if (startTime != null)
+		{
+			timedEvent.putAttribute(EVENT_DURATION, endTime - startTime);
+		}
 	}
 }

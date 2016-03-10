@@ -14,17 +14,20 @@
  *  limitations under the License.
  */
 
-package com.busybusy.library.analyticskit_android;
+package com.busybusy.analyticskit_android;
 
 import android.support.annotation.NonNull;
 
 /**
- * Defines the interface for provider plugins to be used with AnalyticsKit-Android
+ * Defines the interface for provider plugins to be used with AnalyticsKit-Android.
+ *
+ * Note: in your provider implementation, make sure the underlying provider SDK calls are
+ * executed asynchronously. Otherwise, you will have network operations running on the main thread.
+ *
  * @author John Hunt on 3/5/16.
  */
 public interface AnalyticsKitProvider
 {
-
 	/**
 	 * Returns the type of the provider. This value should be a power of two between 2^0 and 2^30.
 	 * Please use values in the range [2^0 , 2^7] for your own custom provider implementations.
@@ -39,4 +42,10 @@ public interface AnalyticsKitProvider
 	 * @param event an instantiated event
 	 */
 	void sendEvent(@NonNull AnalyticsEvent event);
+
+	/**
+	 * End the timed event
+	 * @param timedEvent the event which has finished
+	 */
+	void endTimedEvent(@NonNull AnalyticsEvent timedEvent);
 }

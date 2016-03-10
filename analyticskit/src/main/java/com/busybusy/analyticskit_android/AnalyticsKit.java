@@ -14,10 +14,11 @@
  *  limitations under the License.
  */
 
-package com.busybusy.library.analyticskit_android;
+package com.busybusy.analyticskit_android;
 
 import android.support.annotation.NonNull;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -29,6 +30,7 @@ public class AnalyticsKit
 {
 	private static AnalyticsKit singletonInstance = null;
 	HashSet<AnalyticsKitProvider> providers;
+	HashMap<String, AnalyticsEvent> timedEvents;
 
 	private AnalyticsKit()
 	{
@@ -74,6 +76,17 @@ public class AnalyticsKit
 	 */
 	public void logEvent(AnalyticsEvent event)
 	{
+		if (event.isTimed())
+		{
+			if (this.timedEvents == null)
+			{
+				timedEvents = new HashMap<>();
+			}
+
+			timedEvents.put(event.name(), event);
+		}
+		// No else needed: no need to worry about hanging on to this event
+
 		if (providers.size() > 0)
 		{
 			for (AnalyticsKitProvider provider : providers)
@@ -94,5 +107,58 @@ public class AnalyticsKit
 				}
 			}
 		}
+	}
+
+	/**
+	 * Marks the end of a timed event
+	 * @param eventName the unique name of the event that has finished
+	 */
+	public void endTimedEvent(@NonNull String eventName)
+	{
+		if (this.timedEvents != null)
+		{
+			AnalyticsEvent timedEvent = this.timedEvents.remove(eventName);
+
+			if (timedEvent != null)
+			{
+				if (providers.size() > 0)
+				{
+					for (AnalyticsKitProvider provider : providers)
+					{
+						if (timedEvent.providersMask != 0)
+						{
+							// the user has chosen to restrict the providers to which this event is sent
+							if ((provider.getType() & timedEvent.providersMask) != 0)
+							{
+								provider.endTimedEvent(timedEvent);
+							}
+							// No else needed: the current provider has not been chosen - better luck next time
+						}
+						else
+						{
+							// no restrictions - send the event to all registered providers
+							provider.endTimedEvent(timedEvent);
+						}
+					}
+				}
+			}
+			else
+			{
+				throw new IllegalStateException("Attempted ending an event that was never started (or was previously ended): " + eventName);
+			}
+		}
+		else // no timed events have been started
+		{
+			throw new IllegalStateException("Attempted ending an event that was never started (or was previously ended): " + eventName);
+		}
+	}
+
+	/**
+	 * Marks the end of a timed event
+	 * @param event the event that has finished
+	 */
+	public void endTimedEvent(@NonNull AnalyticsEvent event)
+	{
+		endTimedEvent(event.name());
 	}
 }

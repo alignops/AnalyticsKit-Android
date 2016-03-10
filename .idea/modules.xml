@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AnalyticsKit-Android.iml" filepath="$PROJECT_DIR$/AnalyticsKit-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/analyticskit/analyticskit.iml" filepath="$PROJECT_DIR$/analyticskit/analyticskit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/answers-provider/answers-provider.iml" filepath="$PROJECT_DIR$/answers-provider/answers-provider.iml" />
     </modules>
   </component>
 </project>

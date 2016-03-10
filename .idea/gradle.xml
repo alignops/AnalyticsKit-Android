@@ -9,12 +9,14 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/analyticskit" />
+            <option value="$PROJECT_DIR$/answers-provider" />
           </set>
         </option>
         <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/analyticskit" />
+            <option value="$PROJECT_DIR$/answers-provider" />
           </set>
         </option>
       </GradleProjectSettings>

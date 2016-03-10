@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.busybusy.library.analyticskit_android;
+package com.busybusy.analyticskit_android;
 
 /**
  * Defines the bit mask values used to identify analytics providers.
@@ -30,7 +30,8 @@ public interface Providers
 	int APSALAR          = 0x04000000; // 2^26
 	int FLURRY           = 0x02000000; // 2^25
 	int LOCALYTICS       = 0x01000000; // 2^24
-	int PARSE            = 0x00800000; // 2^23
-	int TEST_FLIGHT      = 0x00400000; // 2^22
-	int NEW_RELIC        = 0x00200000; // 2^21
+	int NEW_RELIC        = 0x00800000; // 2^23
+	int APMETRIX         = 0x00400000; // 2^22
+	int UPSIGHT          = 0x00200000; // 2^21
+	int KISSMETRICS      = 0x00100000; // 2^20
 }

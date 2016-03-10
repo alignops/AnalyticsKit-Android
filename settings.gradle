@@ -1,1 +1,1 @@
-include ':analyticskit'
+include ':analyticskit', ':answers-provider'

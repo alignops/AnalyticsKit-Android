@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.busybusy.library.analyticskit_android;
+package com.busybusy.analyticskit_android;
 
 import android.support.annotation.NonNull;
 
@@ -60,6 +60,12 @@ public class AnalyticsKitTest
 			{
 				// do nothing
 			}
+
+			@Override
+			public void endTimedEvent(@NonNull AnalyticsEvent timedEvent)
+			{
+				// do nothing
+			}
 		};
 
 		AnalyticsKit.getInstance().registerProvider(provider);
@@ -94,5 +100,39 @@ public class AnalyticsKitTest
 		assertFalse(customProviderTwo.sentEvents.containsKey(eventName1));
 		assertFalse(customProviderTwo.sentEvents.containsValue(flurryAndCustom1));
 		assertEquals(0, customProviderTwo.sentEvents.size());
+	}
+
+	@Test
+	public void testTimedEvent()
+	{
+		MockProvider flurryProvider = new MockProvider(Providers.FLURRY);
+		AnalyticsKit.getInstance().registerProvider(flurryProvider);
+
+		String eventName1 = "Flurry only event";
+		AnalyticsEvent flurryEvent = new AnalyticsEvent(eventName1)
+				.putAttribute("hello", "world")
+				.addProvider(Providers.FLURRY)
+				.setTimed(true)
+				.send();
+
+		assertTrue(flurryProvider.sentEvents.containsKey(eventName1));
+		assertTrue(flurryProvider.sentEvents.containsValue(flurryEvent));
+		assertEquals(1, flurryProvider.sentEvents.size());
+
+		try
+		{
+			Thread.sleep(350, 0);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+
+		AnalyticsKit.getInstance().endTimedEvent(flurryEvent);
+
+		assertNotNull(flurryEvent.getAttribute(MockProvider.EVENT_DURATION));
+		Long duration = (Long) flurryEvent.getAttribute(MockProvider.EVENT_DURATION);
+		assertNotNull(duration);
+		assertTrue(duration >= 350);
 	}
 }

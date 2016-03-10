@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.busybusy.library.analyticskit_android;
+package com.busybusy.analyticskit_android;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,19 +23,24 @@ import java.util.HashMap;
 
 /**
  * Defines information that is needed to distribute the event to the registered analytics providers.
- * Created by john on 3/5/16.
+ * @author John Hunt on 3/5/16.
  */
 public class AnalyticsEvent
 {
 	final String name;
 	HashMap<String, Object> attributes;
+	boolean timed;
 	int providersMask = 0;
 
-
+	/**
+	 * Instantiates a new {@code AnalyticsEvent} object
+	 * @param name the name of the event
+	 */
 	public AnalyticsEvent(@NonNull String name)
 	{
 		this.name = name;
 		this.attributes = null;
+		this.timed = false;
 	}
 
 	/**
@@ -128,7 +133,28 @@ public class AnalyticsEvent
 	}
 
 	/**
+	 * Indicates if this event is a timed event
+	 * @return {@code true} if the event has been set to be a timed event. Returns {@code false} otherwise.
+	 */
+	public boolean isTimed()
+	{
+		return this.timed;
+	}
+
+	/**
+	 * Sets whether this event should capture timing
+	 * @param timed {@code true} to set the event to track the time
+	 * @return the {@link AnalyticsEvent} instance
+	 */
+	public AnalyticsEvent setTimed(boolean timed)
+	{
+		this.timed = timed;
+		return this;
+	}
+
+	/**
 	 * Sends the event out to the registered/specified providers.
+	 * This is a convenience method that wraps {@link AnalyticsKit#logEvent(AnalyticsEvent)}
 	 */
 	@NonNull
 	public AnalyticsEvent send()

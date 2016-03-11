@@ -41,6 +41,8 @@ import java.util.Map;
 
 
 /**
+ * Implements Answers as a provider to use with {@link com.busybusy.analyticskit_android.AnalyticsKit}
+ *
  * @author John Hunt on 3/10/16.
  */
 public class AnswersProvider implements AnalyticsKitProvider
@@ -48,7 +50,10 @@ public class AnswersProvider implements AnalyticsKitProvider
 	private HashMap<String, AnalyticsEvent> timedEvents;
 	private HashMap<String, Long> eventTimes;
 	Map<String, LogHandler> loggersMap = new HashMap<>();
-	
+
+	/**
+	 * Initializes a new {@code AnswersProvider} object
+	 */
 	public AnswersProvider()
 	{
 		initializeLoggersMap();

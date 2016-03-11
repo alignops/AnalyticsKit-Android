@@ -2,10 +2,12 @@ buildscript {
 	repositories {
 		jcenter()
 		maven { url "https://jitpack.io" }
+		maven { url 'https://maven.fabric.io/public' }
 	}
 	dependencies {
 		classpath 'com.android.tools.build:gradle:2.0.0-beta6'
 		classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
+		classpath 'io.fabric.tools:gradle:1.+' // The Fabric Gradle plugin uses an open ended version to react quickly to Android tooling updates
 	}
 }
 
@@ -13,6 +15,7 @@ allprojects {
 	repositories {
 		jcenter()
 		maven { url "https://jitpack.io" }
+		maven { url 'https://maven.fabric.io/public' }
 	}
 }
 

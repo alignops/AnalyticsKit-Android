@@ -33,20 +33,19 @@ import java.util.HashMap;
  */
 public class LevelStartLogger implements LogHandler
 {
+	private Answers answers;
+
+	public LevelStartLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		LevelStartEvent LevelStartEvent = buildAnswersLevelStartEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			LevelStartEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logLevelStart(LevelStartEvent);
+		answers.logLevelStart(LevelStartEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class LevelStartLogger implements LogHandler
 	 * @return the instantiated {@code LevelStartEvent} object
 	 */
 	@NonNull
-	private LevelStartEvent buildAnswersLevelStartEvent(@NonNull AnalyticsEvent event)
+	LevelStartEvent buildAnswersLevelStartEvent(@NonNull AnalyticsEvent event)
 	{
 		LevelStartEvent LevelStartEvent = new LevelStartEvent();
 

@@ -34,6 +34,7 @@ import com.busybusy.answers_provider.loggers.SearchLogger;
 import com.busybusy.answers_provider.loggers.ShareLogger;
 import com.busybusy.answers_provider.loggers.SignUpLogger;
 import com.busybusy.answers_provider.loggers.StartCheckoutLogger;
+import com.crashlytics.android.answers.Answers;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -47,32 +48,36 @@ import java.util.Map;
  */
 public class AnswersProvider implements AnalyticsKitProvider
 {
+	private Answers                         answers;
 	private HashMap<String, AnalyticsEvent> timedEvents;
-	private HashMap<String, Long> eventTimes;
+	private HashMap<String, Long>           eventTimes;
+
 	Map<String, LogHandler> loggersMap = new HashMap<>();
 
 	/**
 	 * Initializes a new {@code AnswersProvider} object
 	 */
-	public AnswersProvider()
+	public AnswersProvider(@NonNull Answers answers)
 	{
+		this.answers = answers;
 		initializeLoggersMap();
 	}
 
 	private void initializeLoggersMap()
 	{
-		loggersMap.put(PredefinedEvents.PURCHASE, new PurchaseLogger());
-		loggersMap.put(PredefinedEvents.ADD_TO_CART, new AddToCartLogger());
-		loggersMap.put(PredefinedEvents.START_CHECKOUT, new StartCheckoutLogger());
-		loggersMap.put(PredefinedEvents.CONTENT_VIEW, new ContentViewLogger());
-		loggersMap.put(PredefinedEvents.SEARCH, new SearchLogger());
-		loggersMap.put(PredefinedEvents.SHARE, new ShareLogger());
-		loggersMap.put(PredefinedEvents.RATED_CONTENT, new RatedContentLogger());
-		loggersMap.put(PredefinedEvents.SIGN_UP, new SignUpLogger());
-		loggersMap.put(PredefinedEvents.LOG_IN, new LoginLogger());
-		loggersMap.put(PredefinedEvents.INVITE, new InviteLogger());
-		loggersMap.put(PredefinedEvents.LEVEL_START, new LevelStartLogger());
-		loggersMap.put(PredefinedEvents.LEVEL_END, new LevelEndLogger());
+		loggersMap.put(PredefinedEvents.PURCHASE, new PurchaseLogger(answers));
+		loggersMap.put(PredefinedEvents.ADD_TO_CART, new AddToCartLogger(answers));
+		loggersMap.put(PredefinedEvents.START_CHECKOUT, new StartCheckoutLogger(answers));
+		loggersMap.put(PredefinedEvents.CONTENT_VIEW, new ContentViewLogger(answers));
+		loggersMap.put(PredefinedEvents.SEARCH, new SearchLogger(answers));
+		loggersMap.put(PredefinedEvents.SHARE, new ShareLogger(answers));
+		loggersMap.put(PredefinedEvents.RATED_CONTENT, new RatedContentLogger(answers));
+		loggersMap.put(PredefinedEvents.SIGN_UP, new SignUpLogger(answers));
+		loggersMap.put(PredefinedEvents.LOG_IN, new LoginLogger(answers));
+		loggersMap.put(PredefinedEvents.INVITE, new InviteLogger(answers));
+		loggersMap.put(PredefinedEvents.LEVEL_START, new LevelStartLogger(answers));
+		loggersMap.put(PredefinedEvents.LEVEL_END, new LevelEndLogger(answers));
+		loggersMap.put(PredefinedEvents.CUSTOM, new CustomEventLogger(answers));
 	}
 
 	/**
@@ -93,14 +98,7 @@ public class AnswersProvider implements AnalyticsKitProvider
 	{
 		if (event.isTimed()) // Hang onto it until it is done
 		{
-			if (this.eventTimes == null)
-			{
-				eventTimes = new HashMap<>(); // lazy initialization
-			}
-			if (this.timedEvents == null)
-			{
-				timedEvents = new HashMap<>(); // lazy initialization
-			}
+			ensureTimeTrackingMaps();
 
 			this.eventTimes.put(event.name(), System.currentTimeMillis());
 			timedEvents.put(event.name(), event);
@@ -111,20 +109,34 @@ public class AnswersProvider implements AnalyticsKitProvider
 		}
 	}
 
+	private void ensureTimeTrackingMaps()
+	{
+		if (this.eventTimes == null)
+		{
+			eventTimes = new HashMap<>(); // lazy initialization
+		}
+		if (this.timedEvents == null)
+		{
+			timedEvents = new HashMap<>(); // lazy initialization
+		}
+	}
+
 	/**
 	 * @see AnalyticsKitProvider
 	 */
 	@Override
 	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent)
 	{
-		long endTime = System.currentTimeMillis();
-		Long startTime = this.eventTimes.remove(timedEvent.name());
+		ensureTimeTrackingMaps();
+
+		long           endTime       = System.currentTimeMillis();
+		Long           startTime     = this.eventTimes.remove(timedEvent.name());
 		AnalyticsEvent finishedEvent = this.timedEvents.remove(timedEvent.name());
 
 		if (startTime != null && finishedEvent != null)
 		{
-			double durationSeconds = (endTime - startTime) / 1000;
-			DecimalFormat df = new DecimalFormat("#.###");
+			double        durationSeconds = (endTime - startTime) / 1000;
+			DecimalFormat df              = new DecimalFormat("#.###");
 			finishedEvent.putAttribute(Attributes.EVENT_DURATION, df.format(durationSeconds));
 
 			logAnswersEvent(finishedEvent);
@@ -138,16 +150,14 @@ public class AnswersProvider implements AnalyticsKitProvider
 	private void logAnswersEvent(AnalyticsEvent event)
 	{
 		// determine if this is a predefined event or a custom event
-		final LogHandler logHandler = this.loggersMap.get(event.name());
-		if (logHandler != null)
-		{
-			// send event to the predefined event handler
-			logHandler.logSpecificEvent(event);
-		}
-		else
+		LogHandler logHandler = this.loggersMap.get(event.name());
+		if (logHandler == null)
 		{
 			// the event is not one of the pre-defined events - use the custom event handler
-			new CustomEventLogger().logSpecificEvent(event);
+			logHandler = this.loggersMap.get(PredefinedEvents.CUSTOM);
 		}
+
+		// send event to the predefined event handler
+		logHandler.logSpecificEvent(event);
 	}
 }

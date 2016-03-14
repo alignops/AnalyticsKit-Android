@@ -20,7 +20,7 @@ package com.busybusy.analyticskit_android;
  * Defines the bit mask values used to identify analytics providers.
  * @author John Hunt on 3/7/16.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public interface Providers
 {
 	int ANSWERS          = 0x40000000; // 2^30

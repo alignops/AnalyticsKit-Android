@@ -33,20 +33,19 @@ import java.util.HashMap;
  */
 public class InviteLogger implements LogHandler
 {
+	private Answers answers;
+
+	public InviteLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		InviteEvent InviteEvent = buildAnswersInviteEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			InviteEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logInvite(InviteEvent);
+		answers.logInvite(InviteEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class InviteLogger implements LogHandler
 	 * @return the instantiated {@code InviteEvent} object
 	 */
 	@NonNull
-	private InviteEvent buildAnswersInviteEvent(@NonNull AnalyticsEvent event)
+	InviteEvent buildAnswersInviteEvent(@NonNull AnalyticsEvent event)
 	{
 		InviteEvent InviteEvent = new InviteEvent();
 

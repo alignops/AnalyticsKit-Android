@@ -45,12 +45,14 @@ android {
 dependencies {
 	compile fileTree(dir: 'libs', include: ['*.jar'])
 	compile 'com.github.busybusy:AnalyticsKit-Android:0.2.0'
-	testCompile 'junit:junit:4.12'
-	compile 'com.android.support:appcompat-v7:23.2.0'
-
+	compile 'com.android.support:appcompat-v7:23.2.1'
 	compile('com.crashlytics.sdk.android:answers:1.3.6@aar') { // The actual Answers SDK
 		transitive = true;
 	}
+
+	testCompile 'junit:junit:4.12'
+	testCompile 'org.assertj:assertj-core:1.7.1'
+	testCompile "org.robolectric:robolectric:3.0"
 }
 
 task sourcesJar(type: Jar) {

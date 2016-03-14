@@ -36,4 +36,5 @@ public interface PredefinedEvents
 	String INVITE         = "Invite";
 	String LEVEL_START    = "Level Start";
 	String LEVEL_END      = "Level End";
+	String CUSTOM         = "Custom";
 }

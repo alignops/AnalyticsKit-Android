@@ -34,20 +34,19 @@ import java.util.HashMap;
  */
 public class StartCheckoutLogger implements LogHandler
 {
+	private Answers answers;
+
+	public StartCheckoutLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		StartCheckoutEvent StartCheckoutEvent = buildAnswersStartCheckoutEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			StartCheckoutEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logStartCheckout(StartCheckoutEvent);
+		answers.logStartCheckout(StartCheckoutEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class StartCheckoutLogger implements LogHandler
 	 * @return the instantiated {@code StartCheckoutEvent} object
 	 */
 	@NonNull
-	private StartCheckoutEvent buildAnswersStartCheckoutEvent(@NonNull AnalyticsEvent event)
+	StartCheckoutEvent buildAnswersStartCheckoutEvent(@NonNull AnalyticsEvent event)
 	{
 		StartCheckoutEvent StartCheckoutEvent = new StartCheckoutEvent();
 

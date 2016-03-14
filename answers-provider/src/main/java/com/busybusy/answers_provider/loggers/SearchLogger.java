@@ -33,20 +33,19 @@ import java.util.HashMap;
  */
 public class SearchLogger implements LogHandler
 {
+	private Answers answers;
+
+	public SearchLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		SearchEvent SearchEvent = buildAnswersSearchEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			SearchEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logSearch(SearchEvent);
+		answers.logSearch(SearchEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class SearchLogger implements LogHandler
 	 * @return the instantiated {@code SearchEvent} object
 	 */
 	@NonNull
-	private SearchEvent buildAnswersSearchEvent(@NonNull AnalyticsEvent event)
+	SearchEvent buildAnswersSearchEvent(@NonNull AnalyticsEvent event)
 	{
 		SearchEvent SearchEvent = new SearchEvent();
 

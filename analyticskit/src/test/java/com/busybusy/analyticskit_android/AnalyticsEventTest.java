@@ -63,6 +63,25 @@ public class AnalyticsEventTest
 	}
 
 	@Test
+	public void testBuilder_noName_willThrow()
+	{
+		AnalyticsEvent event = new AnalyticsEvent(null);
+
+		boolean didThrow = false;
+
+		try
+		{
+			event.send();
+		}
+		catch (IllegalStateException e)
+		{
+			didThrow = true;
+		}
+
+		assertTrue(didThrow);
+	}
+
+	@Test
 	public void testBuilder_specifyProviders()
 	{
 		String name = "Answers only event";

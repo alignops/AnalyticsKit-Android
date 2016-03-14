@@ -24,7 +24,7 @@ ext {
 	compileSdkVersion = 23
 	minSdkVersion = 16
 	targetSdkVersion = 23
-	buildToolsVersion = "23.0.1"
+	buildToolsVersion = "23.0.2"
 	versionCode = 5
 	versionName = "0.2.2"
 

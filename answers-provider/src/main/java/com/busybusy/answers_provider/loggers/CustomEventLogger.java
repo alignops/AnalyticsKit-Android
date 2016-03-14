@@ -31,6 +31,13 @@ import java.util.HashMap;
  */
 public class CustomEventLogger implements LogHandler
 {
+	private Answers answers;
+
+	public CustomEventLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	/**
 	 * @see LogHandler
 	 */
@@ -38,7 +45,7 @@ public class CustomEventLogger implements LogHandler
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		CustomEvent customEvent = buildCustomAnswersEvent(event);
-		Answers.getInstance().logCustom(customEvent);
+		answers.logCustom(customEvent);
 	}
 
 	/**
@@ -46,7 +53,7 @@ public class CustomEventLogger implements LogHandler
 	 * @param event the custom event containing data to submit to the Answers framework
 	 * @return the instantiated {@code CustomEvent} object
 	 */
-	private CustomEvent buildCustomAnswersEvent(@NonNull AnalyticsEvent event)
+	CustomEvent buildCustomAnswersEvent(@NonNull AnalyticsEvent event)
 	{
 		CustomEvent customEvent = new CustomEvent(event.name());
 		HashMap<String, Object> attributeMap = event.getAttributes();

@@ -34,20 +34,19 @@ import java.util.HashMap;
  */
 public class AddToCartLogger implements LogHandler
 {
+	private Answers answers;
+
+	public AddToCartLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		AddToCartEvent addToCartEvent = buildAnswersAddToCartEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			addToCartEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logAddToCart(addToCartEvent);
+		answers.logAddToCart(addToCartEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class AddToCartLogger implements LogHandler
 	 * @return the instantiated {@code AddToCartEvent} object
 	 */
 	@NonNull
-	private AddToCartEvent buildAnswersAddToCartEvent(@NonNull AnalyticsEvent event)
+	AddToCartEvent buildAnswersAddToCartEvent(@NonNull AnalyticsEvent event)
 	{
 		AddToCartEvent AddToCartEvent = new AddToCartEvent();
 

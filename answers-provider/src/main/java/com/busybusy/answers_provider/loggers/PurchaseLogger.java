@@ -34,20 +34,19 @@ import java.util.HashMap;
  */
 public class PurchaseLogger implements LogHandler
 {
+	private Answers answers;
+
+	public PurchaseLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		PurchaseEvent purchaseEvent = buildAnswersPurchaseEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			purchaseEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logPurchase(purchaseEvent);
+		answers.logPurchase(purchaseEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class PurchaseLogger implements LogHandler
 	 * @return the instantiated {@code PurchaseEvent} object
 	 */
 	@NonNull
-	private PurchaseEvent buildAnswersPurchaseEvent(@NonNull AnalyticsEvent event)
+	PurchaseEvent buildAnswersPurchaseEvent(@NonNull AnalyticsEvent event)
 	{
 		PurchaseEvent purchaseEvent = new PurchaseEvent();
 

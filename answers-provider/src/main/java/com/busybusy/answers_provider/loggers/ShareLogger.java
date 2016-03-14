@@ -33,20 +33,19 @@ import java.util.HashMap;
  */
 public class ShareLogger implements LogHandler
 {
+	private Answers answers;
+
+	public ShareLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		ShareEvent ShareEvent = buildAnswersShareEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			ShareEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logShare(ShareEvent);
+		answers.logShare(ShareEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class ShareLogger implements LogHandler
 	 * @return the instantiated {@code ShareEvent} object
 	 */
 	@NonNull
-	private ShareEvent buildAnswersShareEvent(@NonNull AnalyticsEvent event)
+	ShareEvent buildAnswersShareEvent(@NonNull AnalyticsEvent event)
 	{
 		ShareEvent ShareEvent = new ShareEvent();
 
@@ -68,7 +67,7 @@ public class ShareLogger implements LogHandler
 				//noinspection IfCanBeSwitch (switch on String doesn't play nice on older devices)
 				if (key.equals(Attributes.Share.METHOD))
 				{
-					ShareEvent.putContentName(String.valueOf(attributeMap.get(key)));
+					ShareEvent.putMethod(String.valueOf(attributeMap.get(key)));
 				}
 				else if (key.equals(Attributes.Share.CONTENT_NAME))
 				{

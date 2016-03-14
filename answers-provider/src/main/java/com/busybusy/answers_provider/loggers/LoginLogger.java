@@ -32,20 +32,19 @@ import java.util.HashMap;
  */
 public class LoginLogger implements LogHandler
 {
+	private Answers answers;
+
+	public LoginLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		LoginEvent loginEvent = buildAnswersLoginEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			loginEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logLogin(loginEvent);
+		answers.logLogin(loginEvent);
 	}
 
 	/**
@@ -54,7 +53,7 @@ public class LoginLogger implements LogHandler
 	 * @return the instantiated {@code LoginEvent} object
 	 */
 	@NonNull
-	private LoginEvent buildAnswersLoginEvent(@NonNull AnalyticsEvent event)
+	LoginEvent buildAnswersLoginEvent(@NonNull AnalyticsEvent event)
 	{
 		LoginEvent loginEvent = new LoginEvent();
 

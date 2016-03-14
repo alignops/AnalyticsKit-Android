@@ -33,20 +33,19 @@ import java.util.HashMap;
  */
 public class ContentViewLogger implements LogHandler
 {
+	private Answers answers;
+
+	public ContentViewLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		ContentViewEvent contentViewEvent = buildAnswersContentViewEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			contentViewEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logContentView(contentViewEvent);
+		answers.logContentView(contentViewEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class ContentViewLogger implements LogHandler
 	 * @return the instantiated {@code ContentViewEvent} object
 	 */
 	@NonNull
-	private ContentViewEvent buildAnswersContentViewEvent(@NonNull AnalyticsEvent event)
+	ContentViewEvent buildAnswersContentViewEvent(@NonNull AnalyticsEvent event)
 	{
 		ContentViewEvent ContentViewEvent = new ContentViewEvent();
 

@@ -33,20 +33,19 @@ import java.util.HashMap;
  */
 public class LevelEndLogger implements LogHandler
 {
+	private Answers answers;
+
+	public LevelEndLogger(Answers answers)
+	{
+		this.answers = answers;
+	}
+
 	@Override
 	public void logSpecificEvent(@NonNull AnalyticsEvent event)
 	{
 		LevelEndEvent LevelEndEvent = buildAnswersLevelEndEvent(event);
 
-		// Add the time if this was a timed event
-		Object durationObject = event.getAttribute(Attributes.EVENT_DURATION);
-		if (event.isTimed() && durationObject != null)
-		{
-			String duration = (String) durationObject;
-			LevelEndEvent.putCustomAttribute(Attributes.EVENT_DURATION, duration);
-		}
-
-		Answers.getInstance().logLevelEnd(LevelEndEvent);
+		answers.logLevelEnd(LevelEndEvent);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class LevelEndLogger implements LogHandler
 	 * @return the instantiated {@code LevelEndEvent} object
 	 */
 	@NonNull
-	private LevelEndEvent buildAnswersLevelEndEvent(@NonNull AnalyticsEvent event)
+	LevelEndEvent buildAnswersLevelEndEvent(@NonNull AnalyticsEvent event)
 	{
 		LevelEndEvent LevelEndEvent = new LevelEndEvent();
 

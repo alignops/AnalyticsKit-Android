@@ -56,6 +56,7 @@ public class AnswersProvider implements AnalyticsKitProvider
 
 	/**
 	 * Initializes a new {@code AnswersProvider} object
+	 * @param answers just send {@code Answers.getInstance()}
 	 */
 	public AnswersProvider(@NonNull Answers answers)
 	{

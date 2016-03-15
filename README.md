@@ -15,7 +15,7 @@ allprojects {
 In your module's build.gradle file, add the dependency:
 ```groovy
 dependencies {
-		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.2.3'
+		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.3.0'
         ...
 	}
 ```
@@ -24,7 +24,7 @@ You can include the implemented providers you want by adding them to the same de
 ```groovy
 dependencies {
 		...
-        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.2.3'
+        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.3.0'
 	}
 ```
 
@@ -34,7 +34,7 @@ Then initialize AnalyticsKit-Android to work with those providers.
 
 ```java
 AnalyticsKit.getInstance()
-    .registerProvider(new AnswersProvider());
+    .registerProvider(new AnswersProvider(Answers.getInstance()));
 ```
 
 Send events where appropriate in your application code.

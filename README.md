@@ -15,7 +15,7 @@ allprojects {
 In your module's build.gradle file, add the dependency:
 ```groovy
 dependencies {
-		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.3.0'
+		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.4.0'
         ...
 	}
 ```
@@ -24,7 +24,7 @@ You can include the implemented providers you want by adding them to the same de
 ```groovy
 dependencies {
 		...
-        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.3.0'
+        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.4.0'
 	}
 ```
 
@@ -45,7 +45,7 @@ new AnalyticsEvent("Your Event Name")
     .send();
 ```
 
-The framework provides a ```java ContentViewEvent``` to facilitate capturing content views:
+The framework provides a ```ContentViewEvent``` to facilitate capturing content views:
 ```java
 new ContentViewEvent()
     .putAttribute("screen_name", "Dashboard")

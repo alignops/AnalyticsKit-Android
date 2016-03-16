@@ -45,6 +45,14 @@ new AnalyticsEvent("Your Event Name")
     .send();
 ```
 
+The framework provides a ```java ContentViewEvent``` to facilitate capturing content views:
+```java
+new ContentViewEvent()
+    .putAttribute("screen_name", "Dashboard")
+    .putAttribute("category", "navigation")
+    .send();
+```
+
 You can restrict events only to certain providers:
 ```java
 new AnalyticsEvent(PredefinedEvents.ADD_TO_CART)

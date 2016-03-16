@@ -16,6 +16,8 @@
 
 package com.busybusy.answers_provider;
 
+import com.busybusy.analyticskit_android.CommonEvents;
+
 /**
  * Defines constants used to match {@link com.busybusy.analyticskit_android.AnalyticsEvent} objects up
  * with the appropriate Answers event objects.
@@ -27,7 +29,7 @@ public interface PredefinedEvents
 	String PURCHASE       = "Purchase";
 	String ADD_TO_CART    = "Add to Cart";
 	String START_CHECKOUT = "Start Checkout";
-	String CONTENT_VIEW   = "Content View";
+	String CONTENT_VIEW   = CommonEvents.CONTENT_VIEW;
 	String SEARCH         = "Search";
 	String SHARE          = "Share";
 	String RATED_CONTENT  = "Rated Content";

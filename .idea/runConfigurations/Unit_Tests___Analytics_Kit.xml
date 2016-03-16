@@ -1,6 +1,19 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Unit Tests - Analytics Kit" type="JUnit" factoryName="JUnit" singleton="true">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+      <pattern>
+        <option name="PATTERN" value="com.busybusy.analyticskit_android.AnalyticsEvent" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="com.busybusy.analyticskit_android.AnalyticsKit" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="com.busybusy.analyticskit_android.ContentViewEvent" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
     <module name="analyticskit" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />

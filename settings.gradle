@@ -1,1 +1,1 @@
-include ':analyticskit', ':answers-provider'
+include ':analyticskit', ':answers-provider', ':mixpanel-provider'

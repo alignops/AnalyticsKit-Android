@@ -113,7 +113,7 @@ public class AnalyticsKit
 	 * Marks the end of a timed event
 	 * @param eventName the unique name of the event that has finished
 	 */
-	public void endTimedEvent(@NonNull String eventName)
+	public void endTimedEvent(@NonNull String eventName) throws IllegalStateException
 	{
 		if (this.timedEvents != null)
 		{

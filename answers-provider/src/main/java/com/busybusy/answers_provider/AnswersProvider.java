@@ -126,7 +126,7 @@ public class AnswersProvider implements AnalyticsKitProvider
 	 * @see AnalyticsKitProvider
 	 */
 	@Override
-	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent)
+	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent) throws IllegalStateException
 	{
 		ensureTimeTrackingMaps();
 

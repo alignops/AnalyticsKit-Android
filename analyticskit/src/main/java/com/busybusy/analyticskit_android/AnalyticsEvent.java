@@ -30,7 +30,7 @@ public class AnalyticsEvent
 	final String name;
 	HashMap<String, Object> attributes;
 	boolean timed;
-	int providersMask = 0;
+	int priorityLevel = 0;
 
 	/**
 	 * Instantiates a new {@code AnalyticsEvent} object
@@ -75,36 +75,24 @@ public class AnalyticsEvent
 	}
 
 	/**
-	 * Restricts this event from being sent to all registered analytics providers.
-	 * <p/>
-	 * For example, if you have five registered providers, but only want to send this event to Google Analytics, call
-	 *                      {@code specifyProviders(Providers.GOOGLE_ANALYTICS)}. To send this event to only Google Analytics and Answers,
-	 *                      call {@code specifyProviders(Providers.GOOGLE_ANALYTICS | Providers.ANSWERS)}.
-	 *
-	 * @param providersMask an int value that contains the bitwise OR of the provider(s) to which you DO wish to send the event.
-	 *
-	 * @return the {@link AnalyticsEvent} instance
+	 * Gets the priority of this event.
+	 * @return the priority of the event. Returns {@code 0} when {@link #setPriority(int)} has not been called.
 	 */
-	@NonNull
-	public AnalyticsEvent specifyProviders(int providersMask)
+	public int getPriority()
 	{
-		this.providersMask = providersMask;
-
-		return this;
+		return priorityLevel;
 	}
 
 	/**
-	 * Specifies a certain provider to which this event will be sent (restricts this event from being sent to all registered analytics providers).
+	 * Sets the priority of the event. The event defaults to {@code 0} when this method is not called.
 	 * <p/>
-	 * For example, if you have five registered providers, but only want to send this event to Google Analytics, call
-	 *                      {@code event.addProvider(Providers.GOOGLE_ANALYTICS)}. To send this event to only Google Analytics and Answers,
-	 *                      call {@code event.addProvider(Providers.GOOGLE_ANALYTICS).addProvider(Providers.ANSWERS)}.
-	 * @param providerMask an int value that contains the type of provider to which you DO wish to send the event.
-	 * @return the {@link AnalyticsEvent} instance
+	 * <b>Note:</b> It is up to the developer to define what priority scheme to use (if any).
+	 * @param priorityLevel the priority the event should use
+	 * @return the {@link AnalyticsEvent} instance (for builder-style convenience)
 	 */
-	public AnalyticsEvent addProvider(int providerMask)
+	public AnalyticsEvent setPriority(int priorityLevel)
 	{
-		this.providersMask |= providerMask;
+		this.priorityLevel = priorityLevel;
 		return this;
 	}
 

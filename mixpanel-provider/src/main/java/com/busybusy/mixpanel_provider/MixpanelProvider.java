@@ -20,7 +20,6 @@ import android.support.annotation.NonNull;
 
 import com.busybusy.analyticskit_android.AnalyticsEvent;
 import com.busybusy.analyticskit_android.AnalyticsKitProvider;
-import com.busybusy.analyticskit_android.Providers;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 /**
@@ -31,6 +30,7 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 public class MixpanelProvider implements AnalyticsKitProvider
 {
 	protected MixpanelAPI mixpanelApi;
+	protected PriorityFilter priorityFilter;
 
 	/**
 	 * Initializes a new {@code MixpanelProvider} object
@@ -38,13 +38,43 @@ public class MixpanelProvider implements AnalyticsKitProvider
 	 */
 	public MixpanelProvider(@NonNull MixpanelAPI mixpanelApiInstance)
 	{
-		this.mixpanelApi = mixpanelApiInstance;
+		this(mixpanelApiInstance, new PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return true; // Log all events, regardless of priority
+			}
+		});
 	}
 
-	@Override
-	public int getType()
+	/**
+	 * Initializes a new {@code MixpanelProvider} object
+	 * @param mixpanelApiInstance just send {@code MixpanelAPI.getInstance(context, MIXPANEL_TOKEN)}
+	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
+	 */
+	public MixpanelProvider(@NonNull MixpanelAPI mixpanelApiInstance, @NonNull PriorityFilter priorityFilter)
 	{
-		return Providers.MIXPANEL;
+		this.mixpanelApi = mixpanelApiInstance;
+		this.priorityFilter = priorityFilter;
+	}
+
+	/**
+	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities
+	 * @param priorityFilter the filter to use
+	 * @return the {@code MixpanelProvider} instance (for builder-style convenience)
+	 */
+	public MixpanelProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
+	{
+		this.priorityFilter = priorityFilter;
+		return this;
+	}
+
+	@NonNull
+	@Override
+	public PriorityFilter getPriorityFilter()
+	{
+		return this.priorityFilter;
 	}
 
 	@Override

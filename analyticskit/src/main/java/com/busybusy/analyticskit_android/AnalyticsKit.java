@@ -74,7 +74,7 @@ public class AnalyticsKit
 	 * Sends the given event to all registered analytics providers (OR just to select providers if the event has been set to restrict the providers).
 	 * @param event the event to capture with analytics tools
 	 */
-	public void logEvent(AnalyticsEvent event)
+	public void logEvent(AnalyticsEvent event) throws IllegalStateException
 	{
 		if (event.isTimed())
 		{
@@ -91,20 +91,18 @@ public class AnalyticsKit
 		{
 			for (AnalyticsKitProvider provider : providers)
 			{
-				if (event.providersMask != 0)
+				// guard clause
+				//noinspection ConstantConditions
+				if (provider.getPriorityFilter() == null)
 				{
-					// the user has chosen to restrict the providers to which this event is sent
-					if ((provider.getType() & event.providersMask) != 0)
-					{
-						provider.sendEvent(event);
-					}
-					// No else needed: the current provider has not been chosen - better luck next time
+					throw new IllegalStateException("Your provider doesn't have a valid PriorityFilter set. Please update your provider implementation.");
 				}
-				else
+
+				if (provider.getPriorityFilter().shouldLog(event.getPriority()))
 				{
-					// no restrictions - send the event to all registered providers
 					provider.sendEvent(event);
 				}
+				// No else needed: the provider doesn't care about logging events of the specified priority
 			}
 		}
 	}
@@ -125,20 +123,18 @@ public class AnalyticsKit
 				{
 					for (AnalyticsKitProvider provider : providers)
 					{
-						if (timedEvent.providersMask != 0)
+						// guard clause
+						//noinspection ConstantConditions
+						if (provider.getPriorityFilter() == null)
 						{
-							// the user has chosen to restrict the providers to which this event is sent
-							if ((provider.getType() & timedEvent.providersMask) != 0)
-							{
-								provider.endTimedEvent(timedEvent);
-							}
-							// No else needed: the current provider has not been chosen - better luck next time
+							throw new IllegalStateException("Your provider doesn't have a valid PriorityFilter set. Please update your provider implementation.");
 						}
-						else
+
+						if (provider.getPriorityFilter().shouldLog(timedEvent.getPriority()))
 						{
-							// no restrictions - send the event to all registered providers
 							provider.endTimedEvent(timedEvent);
 						}
+						// No else needed: the provider doesn't care about logging events of the specified priority
 					}
 				}
 			}

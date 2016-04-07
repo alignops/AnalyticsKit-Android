@@ -32,10 +32,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class AnalyticsKitTest
 {
-
-	public static final int CUSTOM_PROVIDER_1 = 0x1;
-	public static final int CUSTOM_PROVIDER_2 = 0x2;
-
 	@Test
 	public void testGetInstance()
 	{
@@ -49,10 +45,18 @@ public class AnalyticsKitTest
 	{
 		AnalyticsKitProvider provider = new AnalyticsKitProvider()
 		{
+			@NonNull
 			@Override
-			public int getType()
+			public PriorityFilter getPriorityFilter()
 			{
-				return Providers.ANSWERS;
+				return new PriorityFilter()
+				{
+					@Override
+					public boolean shouldLog(int priorityLevel)
+					{
+						return true;
+					}
+				};
 			}
 
 			@Override
@@ -74,54 +78,26 @@ public class AnalyticsKitTest
 	}
 
 	@Test
-	public void testProviderFiltering_multiple()
+	public void testPriorityFiltering_multiple()
 	{
-		MockProvider flurryProvider = new MockProvider(Providers.FLURRY);
-		MockProvider customProviderOne = new MockProvider(CUSTOM_PROVIDER_1);
-		MockProvider customProviderTwo = new MockProvider(CUSTOM_PROVIDER_2);
+		MockProvider flurryProvider = new MockProvider().setPriorityUpperBound(0);
+		MockProvider customProviderOne = new MockProvider().setPriorityUpperBound(3);
+		MockProvider customProviderTwo = new MockProvider().setPriorityUpperBound(5);
 
 		AnalyticsKit.getInstance()
 		            .registerProvider(flurryProvider)
 		            .registerProvider(customProviderOne)
 		            .registerProvider(customProviderTwo);
 
-		String eventName1 = "Flurry and Custom 1 only";
+		String eventName1 = "Custom Providers only";
 		AnalyticsEvent flurryAndCustom1 = new AnalyticsEvent(eventName1)
 				.putAttribute("hello", "world")
-				.specifyProviders(Providers.FLURRY | CUSTOM_PROVIDER_1)
+				.setPriority(2)
 				.send();
 
-		assertTrue(flurryProvider.sentEvents.containsKey(eventName1));
-		assertTrue(flurryProvider.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(1, flurryProvider.sentEvents.size());
-		assertTrue(customProviderOne.sentEvents.containsKey(eventName1));
-		assertTrue(customProviderOne.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(1, customProviderOne.sentEvents.size());
-		assertFalse(customProviderTwo.sentEvents.containsKey(eventName1));
-		assertFalse(customProviderTwo.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(0, customProviderTwo.sentEvents.size());
-	}
-
-	@Test
-	public void testProviderFiltering_none()
-	{
-		MockProvider flurryProvider    = new MockProvider(Providers.FLURRY);
-		MockProvider customProviderOne = new MockProvider(CUSTOM_PROVIDER_1);
-		MockProvider customProviderTwo = new MockProvider(CUSTOM_PROVIDER_2);
-
-		AnalyticsKit.getInstance()
-		            .registerProvider(flurryProvider)
-		            .registerProvider(customProviderOne)
-		            .registerProvider(customProviderTwo);
-
-		String eventName1 = "Flurry and Custom 1 only";
-		AnalyticsEvent flurryAndCustom1 = new AnalyticsEvent(eventName1)
-				.putAttribute("hello", "world")
-				.send();
-
-		assertTrue(flurryProvider.sentEvents.containsKey(eventName1));
-		assertTrue(flurryProvider.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(1, flurryProvider.sentEvents.size());
+		assertFalse(flurryProvider.sentEvents.containsKey(eventName1));
+		assertFalse(flurryProvider.sentEvents.containsValue(flurryAndCustom1));
+		assertEquals(0, flurryProvider.sentEvents.size());
 		assertTrue(customProviderOne.sentEvents.containsKey(eventName1));
 		assertTrue(customProviderOne.sentEvents.containsValue(flurryAndCustom1));
 		assertEquals(1, customProviderOne.sentEvents.size());
@@ -131,15 +107,43 @@ public class AnalyticsKitTest
 	}
 
 	@Test
+	public void testPriorityFiltering_none()
+	{
+		MockProvider flurryProvider    = new MockProvider();
+		MockProvider customProviderOne = new MockProvider();
+		MockProvider customProviderTwo = new MockProvider();
+
+		AnalyticsKit.getInstance()
+		            .registerProvider(flurryProvider)
+		            .registerProvider(customProviderOne)
+		            .registerProvider(customProviderTwo);
+
+		String eventName1 = "Flurry and Custom 1 only";
+		AnalyticsEvent flurryAndCustom1 = new AnalyticsEvent(eventName1)
+				.putAttribute("hello", "world")
+				.setPriority(1)
+				.send();
+
+		assertFalse(flurryProvider.sentEvents.containsKey(eventName1));
+		assertFalse(flurryProvider.sentEvents.containsValue(flurryAndCustom1));
+		assertEquals(0, flurryProvider.sentEvents.size());
+		assertFalse(customProviderOne.sentEvents.containsKey(eventName1));
+		assertFalse(customProviderOne.sentEvents.containsValue(flurryAndCustom1));
+		assertEquals(0, customProviderOne.sentEvents.size());
+		assertFalse(customProviderTwo.sentEvents.containsKey(eventName1));
+		assertFalse(customProviderTwo.sentEvents.containsValue(flurryAndCustom1));
+		assertEquals(0, customProviderTwo.sentEvents.size());
+	}
+
+	@Test
 	public void testTimedEvent()
 	{
-		MockProvider flurryProvider = new MockProvider(Providers.FLURRY);
+		MockProvider flurryProvider = new MockProvider();
 		AnalyticsKit.getInstance().registerProvider(flurryProvider);
 
-		String eventName1 = "Flurry only event";
+		String eventName1 = "Hello event";
 		AnalyticsEvent flurryEvent = new AnalyticsEvent(eventName1)
 				.putAttribute("hello", "world")
-				.addProvider(Providers.FLURRY)
 				.setTimed(true)
 				.send();
 
@@ -149,7 +153,7 @@ public class AnalyticsKitTest
 
 		try
 		{
-			Thread.sleep(350, 0);
+			Thread.sleep(150, 0);
 		}
 		catch (InterruptedException e)
 		{
@@ -161,15 +165,15 @@ public class AnalyticsKitTest
 		assertNotNull(flurryEvent.getAttribute(MockProvider.EVENT_DURATION));
 		Long duration = (Long) flurryEvent.getAttribute(MockProvider.EVENT_DURATION);
 		assertNotNull(duration);
-		assertTrue(duration >= 350);
+		assertTrue(duration >= 150);
 	}
 
 	@Test
 	public void testTimedEvent_manyProviders()
 	{
-		MockProvider flurryProvider    = new MockProvider(Providers.FLURRY);
-		MockProvider customProviderOne = new MockProvider(CUSTOM_PROVIDER_1);
-		MockProvider customProviderTwo = new MockProvider(CUSTOM_PROVIDER_2);
+		MockProvider flurryProvider    = new MockProvider();
+		MockProvider customProviderOne = new MockProvider();
+		MockProvider customProviderTwo = new MockProvider();
 
 		AnalyticsKit.getInstance()
 		            .registerProvider(flurryProvider)
@@ -194,7 +198,7 @@ public class AnalyticsKitTest
 
 		try
 		{
-			Thread.sleep(350, 0);
+			Thread.sleep(150, 0);
 		}
 		catch (InterruptedException e)
 		{
@@ -206,13 +210,13 @@ public class AnalyticsKitTest
 		assertNotNull(flurryEvent.getAttribute(MockProvider.EVENT_DURATION));
 		Long duration = (Long) flurryEvent.getAttribute(MockProvider.EVENT_DURATION);
 		assertNotNull(duration);
-		assertTrue(duration >= 350);
+		assertTrue(duration >= 150);
 	}
 
 	@Test
 	public void test_endTimeEvent_willThrow() throws Exception
 	{
-		MockProvider flurryProvider = new MockProvider(Providers.FLURRY);
+		MockProvider flurryProvider = new MockProvider();
 
 		AnalyticsKit.getInstance()
 		            .registerProvider(flurryProvider);
@@ -238,12 +242,13 @@ public class AnalyticsKitTest
 	@Test
 	public void test_endTimeEvent_willThrow_innerCase() throws Exception
 	{
-		MockProvider flurryProvider = new MockProvider(Providers.FLURRY);
+		MockProvider flurryProvider = new MockProvider();
 
 		AnalyticsKit.getInstance()
 		            .registerProvider(flurryProvider);
 
 		String eventName1 = "normalEvent";
+		//noinspection unused
 		AnalyticsEvent normalEvent = new AnalyticsEvent(eventName1)
 				.putAttribute("hello", "world")
 				.setTimed(true)

@@ -26,24 +26,45 @@ import java.util.HashMap;
  */
 public class MockProvider implements AnalyticsKitProvider
 {
-	final int type;
 	HashMap<String, AnalyticsEvent> sentEvents;
 	HashMap<String, Long> eventTimes;
+	int priorityLevel = 0;
+	PriorityFilter priorityFilter;
 
 	public static final String EVENT_DURATION = "event_duration";
 
 
-	public MockProvider(int type)
+	public MockProvider()
 	{
-		this.type = type;
 		this.sentEvents = new HashMap<>();
 		this.eventTimes = new HashMap<>();
+		this.priorityFilter = new PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return priorityLevel <= MockProvider.this.priorityLevel;
+			}
+		};
 	}
 
-	@Override
-	public int getType()
+	public MockProvider setPriorityUpperBound(int priorityLevel)
 	{
-		return this.type;
+		this.priorityLevel = priorityLevel;
+		return this;
+	}
+
+	public MockProvider setPriorityFilter(PriorityFilter priorityFilter)
+	{
+		this.priorityFilter = priorityFilter;
+		return this;
+	}
+
+	@NonNull
+	@Override
+	public PriorityFilter getPriorityFilter()
+	{
+		return this.priorityFilter;
 	}
 
 	@Override

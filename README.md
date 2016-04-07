@@ -15,7 +15,7 @@ allprojects {
 In your module's build.gradle file, add the dependency:
 ```groovy
 dependencies {
-		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.4.0'
+		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.5.0'
         ...
 	}
 ```
@@ -24,7 +24,7 @@ You can include the implemented providers you want by adding them to the same de
 ```groovy
 dependencies {
 		...
-        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.4.0'
+        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.5.0'
 	}
 ```
 
@@ -53,22 +53,31 @@ new ContentViewEvent()
     .send();
 ```
 
-You can restrict events only to certain providers:
+### Event Priorities
+By default, AnalyticsEvent objects have priority 0. However, you can
+set any integer priority on your events. It is up to you to decide on your priority scheme 
+and provider filtering.
 ```java
-new AnalyticsEvent(PredefinedEvents.ADD_TO_CART)
-    .addProvider(Providers.ANSWERS)
-    .putAttribute(Attributes.AddToCart.ITEM_PRICE, BigDecimal.valueOf(17.99))
-    .putAttribute(Attributes.AddToCart.CURRENCY, Currency.getInstance("USD"))
-    .putAttribute(Attributes.AddToCart.ITEM_NAME, "Android T-shirt")
-    .putAttribute(Attributes.AddToCart.ITEM_TYPE, "Clothing")
-    .putAttribute(Attributes.AddToCart.ITEM_ID, "sku-01443")
+new AnalyticsEvent("Readme Read Event")
+    .putAttribute("read", true)
+    .setPriority(7)
     .send();
-    
-new AnalyticsEvent("Google and Mixpanel only Event")
-    .addProvider(Providers.GOOGLE_ANALYTICS)
-    .addProvider(Providers.MIXPANEL)
-    .putAttribute("key", "value")
-    .send();
+```
+
+By default, providers will log all events regardless of priority. If desired, you can 
+configure providers with a ```PriorityFilter``` so that only events that pass the 
+```PriorityFilter```'s shouldLog() filter method will be logged by that provider. 
+In the following example, only AnalyticsEvent objects with priority less than 10 will be 
+logged by the Answers provider:
+```java
+answersProvider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
+{
+    @Override
+    public boolean shouldLog(int priorityLevel)
+    {
+        return priorityLevel < 10;
+    }
+});
 ```
 
 ## License

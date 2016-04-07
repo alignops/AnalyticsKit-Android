@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 
 import com.busybusy.analyticskit_android.AnalyticsEvent;
 import com.busybusy.analyticskit_android.AnalyticsKitProvider;
-import com.busybusy.analyticskit_android.Providers;
 import com.flurry.android.FlurryAgent;
 
 import java.util.HashMap;
@@ -43,14 +42,48 @@ import java.util.Map;
 public class FlurryProvider implements AnalyticsKitProvider
 {
 	final int ATTRIBUTE_LIMIT = 10;
+	protected PriorityFilter priorityFilter;
 
 	/**
-	 * @see AnalyticsKitProvider
+	 * Initializes a new {@code FlurryProvider} object
 	 */
-	@Override
-	public int getType()
+	public FlurryProvider()
 	{
-		return Providers.FLURRY;
+		this(new PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return true; // Log all events, regardless of priority
+			}
+		});
+	}
+
+	/**
+	 * Initializes a new {@code FlurryProvider} object
+	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
+	 */
+	public FlurryProvider(PriorityFilter priorityFilter)
+	{
+		this.priorityFilter = priorityFilter;
+	}
+
+	/**
+	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities
+	 * @param priorityFilter the filter to use
+	 * @return the {@code FlurryProvider} instance (for builder-style convenience)
+	 */
+	public FlurryProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
+	{
+		this.priorityFilter = priorityFilter;
+		return this;
+	}
+
+	@NonNull
+	@Override
+	public PriorityFilter getPriorityFilter()
+	{
+		return this.priorityFilter;
 	}
 
 	/**

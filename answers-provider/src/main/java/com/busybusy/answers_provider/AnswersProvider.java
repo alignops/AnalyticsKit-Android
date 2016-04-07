@@ -20,7 +20,6 @@ import android.support.annotation.NonNull;
 
 import com.busybusy.analyticskit_android.AnalyticsEvent;
 import com.busybusy.analyticskit_android.AnalyticsKitProvider;
-import com.busybusy.analyticskit_android.Providers;
 import com.busybusy.answers_provider.loggers.AddToCartLogger;
 import com.busybusy.answers_provider.loggers.ContentViewLogger;
 import com.busybusy.answers_provider.loggers.CustomEventLogger;
@@ -48,9 +47,10 @@ import java.util.Map;
  */
 public class AnswersProvider implements AnalyticsKitProvider
 {
-	private Answers                         answers;
-	private HashMap<String, AnalyticsEvent> timedEvents;
-	private HashMap<String, Long>           eventTimes;
+	protected Answers                         answers;
+	protected HashMap<String, AnalyticsEvent> timedEvents;
+	protected HashMap<String, Long>           eventTimes;
+	protected PriorityFilter                  priorityFilter;
 
 	Map<String, LogHandler> loggersMap = new HashMap<>();
 
@@ -60,7 +60,25 @@ public class AnswersProvider implements AnalyticsKitProvider
 	 */
 	public AnswersProvider(@NonNull Answers answers)
 	{
+		this(answers, new PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return true; // Log all events, regardless of priority
+			}
+		});
+	}
+
+	/**
+	 * Initializes a new {@code AnswersProvider} object
+	 * @param answers just send {@code Answers.getInstance()}
+	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
+	 */
+	public AnswersProvider(@NonNull Answers answers, @NonNull PriorityFilter priorityFilter)
+	{
 		this.answers = answers;
+		this.priorityFilter = priorityFilter;
 		initializeLoggersMap();
 	}
 
@@ -82,13 +100,24 @@ public class AnswersProvider implements AnalyticsKitProvider
 	}
 
 	/**
+	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities
+	 * @param priorityFilter the filter to use
+	 * @return the {@code AnswersProvider} instance (for builder-style convenience)
+	 */
+	public AnswersProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
+	{
+		this.priorityFilter = priorityFilter;
+		return this;
+	}
+
+	/**
 	 * @see AnalyticsKitProvider
 	 */
+	@NonNull
 	@Override
-
-	public int getType()
+	public PriorityFilter getPriorityFilter()
 	{
-		return Providers.ANSWERS;
+		return priorityFilter;
 	}
 
 	/**

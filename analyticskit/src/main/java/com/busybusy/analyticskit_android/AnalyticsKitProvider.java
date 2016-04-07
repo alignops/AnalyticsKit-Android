@@ -29,13 +29,11 @@ import android.support.annotation.NonNull;
 public interface AnalyticsKitProvider
 {
 	/**
-	 * Returns the type of the provider. This value should be a power of two between 2^0 and 2^30.
-	 * Please use values in the range [2^0 , 2^7] for your own custom provider implementations.
-	 * Some popular providers have already been defined as constants in {@link Providers}.
-	 * @return the specified type mask of the analytics provider.
-	 * @see Providers
+	 * Returns the filter used to restrict events by priority
+	 * @return the {@link PriorityFilter} instance the provider is using to determine if an event of a given priority should be logged
 	 */
-	int getType();
+	@NonNull
+	PriorityFilter getPriorityFilter();
 
 	/**
 	 * Sends the event using provider-specific code
@@ -48,4 +46,20 @@ public interface AnalyticsKitProvider
 	 * @param timedEvent the event which has finished
 	 */
 	void endTimedEvent(@NonNull AnalyticsEvent timedEvent);
+
+	/**
+	 * Defines the 'callback' interface providers will use to determine
+	 * how to handle events of various priorities.
+	 */
+	interface PriorityFilter
+	{
+		/**
+		 * Determines if a provider should log an event with a given priority
+		 * @param priorityLevel the priority value from an {@link AnalyticsEvent} object
+		 *                       (Generally {@link AnalyticsEvent#getPriority()})
+		 * @return {@code true} if the event should be logged by the provider.
+		 * Returns {@code false} otherwise.
+		 */
+		boolean shouldLog(int priorityLevel);
+	}
 }

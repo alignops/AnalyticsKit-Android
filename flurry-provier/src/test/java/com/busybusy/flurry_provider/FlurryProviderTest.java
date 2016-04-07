@@ -17,7 +17,7 @@
 package com.busybusy.flurry_provider;
 
 import com.busybusy.analyticskit_android.AnalyticsEvent;
-import com.busybusy.analyticskit_android.Providers;
+import com.busybusy.analyticskit_android.AnalyticsKitProvider;
 import com.flurry.android.FlurryAgent;
 
 import org.junit.Before;
@@ -74,9 +74,57 @@ public class FlurryProviderTest
 	}
 
 	@Test
-	public void testGetType()
+	public void testSetAndGetPriorityFilter()
 	{
-		assertEquals(Providers.FLURRY, provider.getType());
+		AnalyticsKitProvider.PriorityFilter filter = new AnalyticsKitProvider.PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return false;
+			}
+		};
+
+		provider.setPriorityFilter(filter);
+
+		assertThat(provider.getPriorityFilter()).isEqualTo(filter);
+	}
+
+	@Test
+	public void test_priorityFiltering_default()
+	{
+		AnalyticsEvent event = new AnalyticsEvent("Forecast: Event Flurries")
+				.setPriority(10)
+				.send();
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+
+		event.setPriority(-9)
+		     .send();
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+	}
+
+	@Test
+	public void test_priorityFiltering_custom()
+	{
+		provider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return priorityLevel < 10;
+			}
+		});
+
+		AnalyticsEvent event = new AnalyticsEvent("Forecast: Event Flurries")
+				.setPriority(10)
+				.send();
+
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isFalse();
+
+		event.setPriority(9)
+		     .send();
+
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
 	}
 
 	@Test

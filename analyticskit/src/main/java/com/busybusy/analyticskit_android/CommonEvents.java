@@ -24,5 +24,6 @@ package com.busybusy.analyticskit_android;
  */
 public interface CommonEvents
 {
-	String CONTENT_VIEW   = "Content View";
+	String CONTENT_VIEW = "Content View";
+	String ERROR        = "Error";
 }

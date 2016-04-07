@@ -17,7 +17,7 @@
 package com.busybusy.answers_provider;
 
 import com.busybusy.analyticskit_android.AnalyticsEvent;
-import com.busybusy.analyticskit_android.Providers;
+import com.busybusy.analyticskit_android.AnalyticsKitProvider;
 import com.crashlytics.android.answers.MockAnswers;
 import com.crashlytics.android.answers.PackageScopeWrappedCalls;
 
@@ -34,6 +34,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests the {@link AnswersProvider} class
  * @author Trevor
  */
 @RunWith(RobolectricGradleTestRunner.class)
@@ -64,9 +65,65 @@ public class AnswersProviderTest
 	}
 
 	@Test
-	public void test_getType()
+	public void test_setPriorityFilter()
 	{
-		assertThat(provider.getType()).isEqualTo(Providers.ANSWERS);
+		AnalyticsKitProvider.PriorityFilter filter = new AnalyticsKitProvider.PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return false;
+			}
+		};
+		provider.setPriorityFilter(filter);
+
+		assertThat(provider.getPriorityFilter()).isEqualTo(filter);
+	}
+
+	@Test
+	public void test_priorityFiltering_default()
+	{
+		AnalyticsEvent event = new AnalyticsEvent(PredefinedEvents.LEVEL_END)
+				.setPriority(10)
+				.send();
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+
+		event.setPriority(-9)
+		     .send();
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+	}
+
+	@Test
+	public void test_priorityFiltering_custom()
+	{
+		provider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
+		{
+			@Override
+			public boolean shouldLog(int priorityLevel)
+			{
+				return priorityLevel < 10;
+			}
+		});
+
+		AnalyticsEvent event = new AnalyticsEvent(PredefinedEvents.LEVEL_END)
+				.setPriority(10)
+				.send();
+
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isFalse();
+
+		assertThat(answers.logLevelEndCalled).isFalse();
+		assertThat(answers.addToCartEvent).isNull();
+
+		event.setPriority(9)
+				.send();
+
+		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+	}
+
+	@Test
+	public void test_getPriorityFilter()
+	{
+		assertThat(provider.getPriorityFilter()).isNotNull();
 	}
 
 	@Test

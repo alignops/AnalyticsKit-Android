@@ -82,49 +82,14 @@ public class AnalyticsEventTest
 	}
 
 	@Test
-	public void testBuilder_specifyProviders()
+	public void testBuilder_specifyPriority()
 	{
-		String name = "Answers only event";
+		String name = "Priority 7 event";
 		AnalyticsEvent event = new AnalyticsEvent(name)
-				.specifyProviders(Providers.ANSWERS);
+				.setPriority(7);
 
 		assertEquals(event.name(), name);
 		assertNull(event.getAttributes());
-		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
-		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
-
-		name = "Answers and Mixpanel only event";
-		event = new AnalyticsEvent(name)
-				.specifyProviders(Providers.ANSWERS | Providers.MIXPANEL);
-
-		assertEquals(event.name(), name);
-		assertNull(event.getAttributes());
-		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
-		assertTrue((event.providersMask & Providers.MIXPANEL) != 0);
-		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
-	}
-
-	@Test
-	public void testBuilder_addProviders()
-	{
-		String name = "Answers only event";
-		AnalyticsEvent event = new AnalyticsEvent(name)
-				.addProvider(Providers.ANSWERS);
-
-		assertEquals(event.name(), name);
-		assertNull(event.getAttributes());
-		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
-		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
-
-		name = "Answers and Mixpanel only event";
-		event = new AnalyticsEvent(name)
-				.addProvider(Providers.ANSWERS)
-				.addProvider(Providers.MIXPANEL);
-
-		assertEquals(event.name(), name);
-		assertNull(event.getAttributes());
-		assertTrue((event.providersMask & Providers.ANSWERS) != 0);
-		assertTrue((event.providersMask & Providers.MIXPANEL) != 0);
-		assertFalse((event.providersMask & Providers.GOOGLE_ANALYTICS) != 0);
+		assertEquals(event.getPriority(), 7);
 	}
 }

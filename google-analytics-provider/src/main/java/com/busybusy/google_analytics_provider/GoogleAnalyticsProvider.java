@@ -26,7 +26,6 @@ import com.busybusy.analyticskit_android.ErrorEvent;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
 
 /**
@@ -38,7 +37,7 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 	protected HashMap<String, AnalyticsEvent> timedEvents;
 	protected HashMap<String, Long>           eventTimes;
 	protected PriorityFilter                  priorityFilter;
-	protected Tracker                         tracker;
+	protected final Tracker                   tracker;
 	
 	/**
 	 * Initializes a new {@code GoogleAnalyticsProvider} object
@@ -65,6 +64,17 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 	{
 		this.tracker = tracker;
 		this.priorityFilter = priorityFilter;
+	}
+
+	/**
+	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities
+	 * @param priorityFilter the filter to use
+	 * @return the {@code GoogleAnalyticsProvider} instance (for builder-style convenience)
+	 */
+	public GoogleAnalyticsProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
+	{
+		this.priorityFilter = priorityFilter;
+		return this;
 	}
 
 	/**
@@ -110,11 +120,13 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 
 		if (startTime != null && finishedEvent != null)
 		{
-			double        durationSeconds = (endTime - startTime) / 1000;
-			DecimalFormat df              = new DecimalFormat("#.###");
-			finishedEvent.putAttribute("event_duration", df.format(durationSeconds));
-
-			logGoogleAnalyticsEvent(finishedEvent);
+			HitBuilders.TimingBuilder timingBuilder = new HitBuilders.TimingBuilder();
+			timingBuilder.setCategory("Timed Events")
+			             .setValue(endTime - startTime)
+			             .setLabel(finishedEvent.name());
+			// add any custom attributes already set on the event
+			timingBuilder.setAll(stringifyAttributesMap(finishedEvent.getAttributes()));
+			this.tracker.send(timingBuilder.build());
 		}
 		else
 		{
@@ -138,46 +150,27 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 	{
 		if (event instanceof ContentViewEvent)
 		{
-			// Set the screen name.
-			this.tracker.setScreenName(String.valueOf(event.getAttribute(ContentViewEvent.CONTENT_NAME)));
-
 			HitBuilders.ScreenViewBuilder screenViewBuilder = new HitBuilders.ScreenViewBuilder();
+			// add any custom attributes already set on the event
+			screenViewBuilder.setAll(stringifyAttributesMap(event.getAttributes()));
 
-			// Add any custom attributes that are attached to the event
-			HashMap<String, String> parameterMap = stringifyParameters(event.getAttributes());
-			if (parameterMap != null && parameterMap.size() > 0)
+			synchronized (this.tracker)
 			{
-				for (String key : parameterMap.keySet())
-				{
-					screenViewBuilder.set(key, parameterMap.get(key));
-				}
+				// Set the screen name and send a screen view.
+				this.tracker.setScreenName(String.valueOf(event.getAttribute(ContentViewEvent.CONTENT_NAME)));
+				this.tracker.send(screenViewBuilder.build());
 			}
-
-			// Send a screen view.
-			this.tracker.send(screenViewBuilder.build());
 		}
 		else if (event instanceof ErrorEvent)
 		{
 			ErrorEvent errorEvent = (ErrorEvent) event;
 			// Build and send exception.
-			this.tracker.send(new HitBuilders.ExceptionBuilder()
-					       .setDescription(errorEvent.message())
-					       .setFatal(false)
-					       .build());
-
 			HitBuilders.ExceptionBuilder exceptionBuilder = new HitBuilders.ExceptionBuilder()
 					.setDescription(errorEvent.message())
 					.setFatal(false);
 
 			// Add any custom attributes that are attached to the event
-			HashMap<String, String> parameterMap = stringifyParameters(event.getAttributes());
-			if (parameterMap != null && parameterMap.size() > 0)
-			{
-				for (String key : parameterMap.keySet())
-				{
-					exceptionBuilder.set(key, parameterMap.get(key));
-				}
-			}
+			exceptionBuilder.setAll(stringifyAttributesMap(errorEvent.getAttributes()));
 
 			this.tracker.send(exceptionBuilder.build());
 		}
@@ -189,14 +182,7 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 					.setAction(event.name());
 
 			// Add any custom attributes that are attached to the event
-			HashMap<String, String> parameterMap = stringifyParameters(event.getAttributes());
-			if (parameterMap != null && parameterMap.size() > 0)
-			{
-				for (String key : parameterMap.keySet())
-				{
-					eventBuilder.set(key, parameterMap.get(key));
-				}
-			}
+			eventBuilder.setAll(stringifyAttributesMap(event.getAttributes()));
 
 			this.tracker.send(eventBuilder.build());
 		}
@@ -208,7 +194,7 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 	 * @return the String map of parameters. Returns {@code null} if no parameters are attached to the event.
 	 */
 	@Nullable
-	HashMap<String, String> stringifyParameters(HashMap<String, Object> attributeMap)
+	HashMap<String, String> stringifyAttributesMap(HashMap<String, Object> attributeMap)
 	{
 		HashMap<String, String> googleAnalyticsMap = null;
 

@@ -16,6 +16,8 @@
 
 package com.busybusy.answers_provider;
 
+import com.busybusy.analyticskit_android.ContentViewEvent;
+
 /**
  * Defines predefined attribute names used by Answers.
  * This interface is 'scoped' to facilitate readability and ease of use.
@@ -26,7 +28,7 @@ public interface Attributes
 {
 	String EVENT_DURATION = "event_duration";
 
-	String CONTENT_NAME = "contentName";
+	String CONTENT_NAME = ContentViewEvent.CONTENT_NAME;
 	String CONTENT_TYPE = "contentType";
 	String CONTENT_ID   = "contentId";
 

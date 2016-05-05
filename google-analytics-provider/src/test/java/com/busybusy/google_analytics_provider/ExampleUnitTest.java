@@ -14,25 +14,20 @@
  *  limitations under the License.
  */
 
-package com.busybusy.analyticskit_android;
+package com.busybusy.google_analytics_provider;
 
-import android.support.annotation.NonNull;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
- * Defines information that is needed to distribute a "Content View" event to the registered analytics providers.
- * @author John Hunt on 3/16/16.
+ * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
-public class ContentViewEvent extends AnalyticsEvent
+public class ExampleUnitTest
 {
-	public final static String CONTENT_NAME = "contentName";
-
-	/**
-	 * Instantiates a new {@code ContentViewEvent} object.
-	 * @param contentName The name/title of the content that is viewed
-	 */
-	public ContentViewEvent(@NonNull String contentName)
+	@Test
+	public void addition_isCorrect() throws Exception
 	{
-		super(CommonEvents.CONTENT_VIEW);
-		this.putAttribute(CONTENT_NAME, contentName);
+		assertEquals(4, 2 + 2);
 	}
 }

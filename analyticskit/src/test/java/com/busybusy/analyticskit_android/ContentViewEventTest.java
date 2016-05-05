@@ -29,8 +29,9 @@ public class ContentViewEventTest
 	@Test
 	public void testConstructor()
 	{
-		AnalyticsEvent event = new ContentViewEvent();
+		AnalyticsEvent event = new ContentViewEvent("JUnit Test");
 
 		assertEquals(CommonEvents.CONTENT_VIEW, event.name());
+		assertEquals("JUnit Test", event.getAttribute(ContentViewEvent.CONTENT_NAME));
 	}
 }

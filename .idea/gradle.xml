@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/analyticskit" />
             <option value="$PROJECT_DIR$/answers-provider" />
             <option value="$PROJECT_DIR$/flurry-provier" />
+            <option value="$PROJECT_DIR$/google-analytics-provider" />
             <option value="$PROJECT_DIR$/mixpanel-provider" />
           </set>
         </option>
@@ -20,6 +21,7 @@
             <option value="$PROJECT_DIR$/analyticskit" />
             <option value="$PROJECT_DIR$/answers-provider" />
             <option value="$PROJECT_DIR$/flurry-provier" />
+            <option value="$PROJECT_DIR$/google-analytics-provider" />
             <option value="$PROJECT_DIR$/mixpanel-provider" />
           </set>
         </option>

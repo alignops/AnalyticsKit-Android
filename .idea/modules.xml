@@ -5,7 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/AnalyticsKit-Android.iml" filepath="$PROJECT_DIR$/AnalyticsKit-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/analyticskit/analyticskit.iml" filepath="$PROJECT_DIR$/analyticskit/analyticskit.iml" />
       <module fileurl="file://$PROJECT_DIR$/answers-provider/answers-provider.iml" filepath="$PROJECT_DIR$/answers-provider/answers-provider.iml" />
-      <module fileurl="file://$PROJECT_DIR$/flurry-provier/flurry-provier.iml" filepath="$PROJECT_DIR$/flurry-provier/flurry-provier.iml" />
+      <module fileurl="file://$PROJECT_DIR$/flurry-provider/flurry-provider.iml" filepath="$PROJECT_DIR$/flurry-provider/flurry-provider.iml" />
       <module fileurl="file://$PROJECT_DIR$/google-analytics-provider/google-analytics-provider.iml" filepath="$PROJECT_DIR$/google-analytics-provider/google-analytics-provider.iml" />
       <module fileurl="file://$PROJECT_DIR$/mixpanel-provider/mixpanel-provider.iml" filepath="$PROJECT_DIR$/mixpanel-provider/mixpanel-provider.iml" />
     </modules>

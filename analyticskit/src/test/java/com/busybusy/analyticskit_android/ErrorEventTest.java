@@ -18,7 +18,7 @@ package com.busybusy.analyticskit_android;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests the {@link ErrorEvent} class
@@ -30,10 +30,10 @@ public class ErrorEventTest
 	public void testConstructor()
 	{
 		AnalyticsEvent event = new ErrorEvent();
-		assertEquals(CommonEvents.ERROR, event.name());
+		assertThat(event.name()).isEqualTo(CommonEvents.ERROR);
 
 		event = new ErrorEvent("Custom Error Name");
-		assertEquals(event.name(), "Custom Error Name");
+		assertThat(event.name()).isEqualTo("Custom Error Name");
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class ErrorEventTest
 		ErrorEvent event = new ErrorEvent()
 				.setMessage(message);
 
-		assertEquals(message, event.message());
+		assertThat(event.message()).isEqualTo(message);
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class ErrorEventTest
 		ErrorEvent event = new ErrorEvent()
 				.setException(exception);
 
-		assertEquals(exception, event.exception());
+		assertThat(event.exception()).isEqualTo(exception);
 	}
 
 	@Test
@@ -65,6 +65,6 @@ public class ErrorEventTest
 		ErrorEvent event = new ErrorEvent()
 				.setError(error);
 
-		assertEquals(error, event.error());
+		assertThat(event.error()).isEqualTo(error);
 	}
 }

@@ -18,16 +18,11 @@ package com.busybusy.analyticskit_android;
 
 import org.junit.Test;
 
-import java.util.HashMap;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests the {@link AnalyticsEvent} class
+ *
  * @author John Hunt on 3/5/16.
  */
 public class AnalyticsEventTest
@@ -35,31 +30,26 @@ public class AnalyticsEventTest
 	@Test
 	public void testBuilder_withAttributes()
 	{
-		String name = "Yeah, this should work";
+		String name       = "Yeah, this should work";
 		String animalText = "The quick brown fox jumps over the lazy dog";
 		AnalyticsEvent event = new AnalyticsEvent(name)
 				.putAttribute("the answer", 42)
 				.putAttribute("animal text", animalText);
 
-		assertEquals(event.name(), name);
-		HashMap attributes = event.getAttributes();
-		assertNotNull(attributes);
-		assertEquals(attributes.get("the answer"), 42);
-		assertEquals(attributes.get("animal text"), animalText);
-		assertNull(attributes.get("nonexistent key"));
-
-		assertEquals(event.getAttribute("the answer"), 42);
+		assertThat(event.name()).isEqualTo(name);
+		assertThat(event.getAttributes()).isNotNull();
+		assertThat(event.getAttributes().keySet()).containsOnly("the answer", "animal text");
+		assertThat(event.getAttributes().values()).containsOnly(42, animalText);
 	}
 
 	@Test
 	public void testBuilder_noAttributes()
 	{
-		String name = "Yeah, this should work";
+		String         name  = "Yeah, this should work";
 		AnalyticsEvent event = new AnalyticsEvent(name);
 
-		assertEquals(event.name(), name);
-		assertNull(event.getAttributes());
-		assertNull(event.getAttribute("the answer"));
+		assertThat(event.name()).isEqualTo(name);
+		assertThat(event.getAttributes()).isNull();
 	}
 
 	@Test
@@ -78,7 +68,7 @@ public class AnalyticsEventTest
 			didThrow = true;
 		}
 
-		assertTrue(didThrow);
+		assertThat(didThrow).isTrue();
 	}
 
 	@Test
@@ -88,8 +78,8 @@ public class AnalyticsEventTest
 		AnalyticsEvent event = new AnalyticsEvent(name)
 				.setPriority(7);
 
-		assertEquals(event.name(), name);
-		assertNull(event.getAttributes());
-		assertEquals(event.getPriority(), 7);
+		assertThat(event.name()).isEqualTo(name);
+		assertThat(event.getAttributes()).isNull();
+		assertThat(event.getPriority()).isEqualTo(7);
 	}
 }

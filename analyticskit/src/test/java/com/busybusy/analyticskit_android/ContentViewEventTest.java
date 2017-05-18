@@ -18,7 +18,7 @@ package com.busybusy.analyticskit_android;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests the {@link ContentViewEvent} class
@@ -31,7 +31,7 @@ public class ContentViewEventTest
 	{
 		AnalyticsEvent event = new ContentViewEvent("JUnit Test");
 
-		assertEquals(CommonEvents.CONTENT_VIEW, event.name());
-		assertEquals("JUnit Test", event.getAttribute(ContentViewEvent.CONTENT_NAME));
+		assertThat(event.name()).isEqualTo(CommonEvents.CONTENT_VIEW);
+		assertThat(event.getAttribute(ContentViewEvent.CONTENT_NAME)).isEqualTo("JUnit Test");
 	}
 }

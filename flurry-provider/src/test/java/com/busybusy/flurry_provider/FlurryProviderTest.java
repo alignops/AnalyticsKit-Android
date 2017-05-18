@@ -33,12 +33,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anyString;
@@ -131,7 +126,7 @@ public class FlurryProviderTest
 	public void testStringifyParameters_noParams()
 	{
 		HashMap<String, String> flurryParams = provider.stringifyParameters(null);
-		assertNull(flurryParams);
+		assertThat(flurryParams).isNull();
 	}
 
 	@Test
@@ -141,11 +136,9 @@ public class FlurryProviderTest
 		eventParams.put("favorite_color", "Blue");
 		eventParams.put("favorite_number", 42);
 		HashMap<String, String> flurryParams = provider.stringifyParameters(eventParams);
-		assertNotNull(flurryParams);
-		assertThat(flurryParams.containsKey("favorite_color"));
-		assertThat(flurryParams.get("favorite_color")).isEqualTo("Blue");
-		assertThat(flurryParams.containsKey("favorite_number"));
-		assertThat(flurryParams.get("favorite_number")).isEqualTo("42");
+		assertThat(flurryParams).isNotNull();
+		assertThat(flurryParams.keySet()).contains("favorite_color", "favorite_number");
+		assertThat(flurryParams.values()).contains("Blue", "42");
 	}
 
 	@Test
@@ -167,7 +160,7 @@ public class FlurryProviderTest
 			exceptionMessage = e.getMessage();
 		}
 
-		assertEquals(exceptionMessage, "Flurry events are limited to " + provider.ATTRIBUTE_LIMIT + " attributes");
+		assertThat(exceptionMessage).isEqualTo("Flurry events are limited to " + provider.ATTRIBUTE_LIMIT + " attributes");
 	}
 
 	@PrepareForTest({FlurryAgent.class})
@@ -193,14 +186,13 @@ public class FlurryProviderTest
 
 		provider.sendEvent(event);
 
-		assertNotNull(testEventName);
-		assertEquals("Flurry Test Run", testEventName);
-		assertNull(testEventPropertiesMap);
-		assertTrue(logEventNameOnlyCalled);
+		assertThat(testEventName).isEqualTo("Flurry Test Run");
+		assertThat(testEventPropertiesMap).isNull();
+		assertThat(logEventNameOnlyCalled).isTrue();
 
-		assertFalse(logEventNameAndParamsCalled);
-		assertFalse(logTimedEventNameOnlyCalled);
-		assertFalse(logTimedEventNameAndParamsCalled);
+		assertThat(logEventNameAndParamsCalled).isFalse();
+		assertThat(logTimedEventNameOnlyCalled).isFalse();
+		assertThat(logTimedEventNameAndParamsCalled).isFalse();
 	}
 
 	@PrepareForTest({FlurryAgent.class})
@@ -230,19 +222,15 @@ public class FlurryProviderTest
 
 		provider.sendEvent(event);
 
-		assertNotNull(testEventName);
-		assertEquals("Flurry Event With Params Run", testEventName);
-		assertNotNull(testEventPropertiesMap);
-		assertTrue(testEventPropertiesMap.containsKey("some_param"));
-		assertEquals("yes", testEventPropertiesMap.get("some_param"));
-		assertTrue(testEventPropertiesMap.containsKey("another_param"));
-		assertEquals("yes again", testEventPropertiesMap.get("another_param"));
+		assertThat(testEventName).isEqualTo("Flurry Event With Params Run");
+		assertThat(testEventPropertiesMap.keySet()).containsExactlyInAnyOrder("some_param", "another_param");
+		assertThat(testEventPropertiesMap.values()).containsExactlyInAnyOrder("yes", "yes again");
 
-		assertTrue(logEventNameAndParamsCalled);
+		assertThat(logEventNameAndParamsCalled).isTrue();
 
-		assertFalse(logEventNameOnlyCalled);
-		assertFalse(logTimedEventNameOnlyCalled);
-		assertFalse(logTimedEventNameAndParamsCalled);
+		assertThat(logEventNameOnlyCalled).isFalse();
+		assertThat(logTimedEventNameOnlyCalled).isFalse();
+		assertThat(logTimedEventNameAndParamsCalled).isFalse();
 	}
 
 	@PrepareForTest({FlurryAgent.class})
@@ -268,14 +256,13 @@ public class FlurryProviderTest
 
 		provider.sendEvent(event);
 
-		assertNotNull(testEventName);
-		assertEquals("Flurry Timed Event", testEventName);
-		assertNull(testEventPropertiesMap);
-		assertTrue(logTimedEventNameOnlyCalled);
+		assertThat(testEventName).isEqualTo("Flurry Timed Event");
+		assertThat(testEventPropertiesMap).isNull();
+		assertThat(logTimedEventNameOnlyCalled).isTrue();
 
-		assertFalse(logEventNameOnlyCalled);
-		assertFalse(logEventNameAndParamsCalled);
-		assertFalse(logTimedEventNameAndParamsCalled);
+		assertThat(logEventNameOnlyCalled).isFalse();
+		assertThat(logEventNameAndParamsCalled).isFalse();
+		assertThat(logTimedEventNameAndParamsCalled).isFalse();
 	}
 
 	@PrepareForTest({FlurryAgent.class})
@@ -307,19 +294,15 @@ public class FlurryProviderTest
 
 		provider.sendEvent(event);
 
-		assertNotNull(testEventName);
-		assertEquals("Flurry Timed Event With Parameters", testEventName);
-		assertNotNull(testEventPropertiesMap);
-		assertTrue(testEventPropertiesMap.containsKey("some_param"));
-		assertEquals("yes", testEventPropertiesMap.get("some_param"));
-		assertTrue(testEventPropertiesMap.containsKey("another_param"));
-		assertEquals("yes again", testEventPropertiesMap.get("another_param"));
+		assertThat(testEventName).isEqualTo("Flurry Timed Event With Parameters");
+		assertThat(testEventPropertiesMap.keySet()).containsExactlyInAnyOrder("some_param", "another_param");
+		assertThat(testEventPropertiesMap.values()).containsExactlyInAnyOrder("yes", "yes again");
 
-		assertTrue(logTimedEventNameAndParamsCalled);
+		assertThat(logTimedEventNameAndParamsCalled).isTrue();
 
-		assertFalse(logTimedEventNameOnlyCalled);
-		assertFalse(logEventNameOnlyCalled);
-		assertFalse(logEventNameAndParamsCalled);
+		assertThat(logTimedEventNameOnlyCalled).isFalse();
+		assertThat(logEventNameOnlyCalled).isFalse();
+		assertThat(logEventNameAndParamsCalled).isFalse();
 	}
 
 	@PrepareForTest({FlurryAgent.class})

@@ -58,7 +58,7 @@ public class GoogleAnalyticsProviderTest
 	@Before
 	public void setup()
 	{
-		// Mock behavior for when MixpanelAPI.trackMap(String, Map<String, Object>) is called
+		// Mock behavior for when Tracker.send(Map<String, String>) is called
 		tracker = mock(Tracker.class);
 		doAnswer(new Answer<Void>()
 		{

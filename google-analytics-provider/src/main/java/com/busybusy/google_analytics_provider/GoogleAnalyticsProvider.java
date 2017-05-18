@@ -30,17 +30,19 @@ import java.util.HashMap;
 
 /**
  * Implements Google Analytics as a provider to use with {@link com.busybusy.analyticskit_android.AnalyticsKit}
+ *
  * @author John Hunt on 5/4/16.
  */
 public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 {
-	protected HashMap<String, AnalyticsEvent> timedEvents;
-	protected HashMap<String, Long>           eventTimes;
-	protected PriorityFilter                  priorityFilter;
-	protected final Tracker                   tracker;
-	
+	protected       HashMap<String, AnalyticsEvent> timedEvents;
+	protected       HashMap<String, Long>           eventTimes;
+	protected       PriorityFilter                  priorityFilter;
+	protected final Tracker                         tracker;
+
 	/**
 	 * Initializes a new {@code GoogleAnalyticsProvider} object
+	 *
 	 * @param tracker the initialized {@code Tracker} instance associated with the application
 	 */
 	public GoogleAnalyticsProvider(@NonNull Tracker tracker)
@@ -57,7 +59,8 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 
 	/**
 	 * Initializes a new {@code GoogleAnalyticsProvider} object
-	 * @param tracker the initialized {@code Tracker} instance associated with the application
+	 *
+	 * @param tracker        the initialized {@code Tracker} instance associated with the application
 	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
 	 */
 	public GoogleAnalyticsProvider(@NonNull Tracker tracker, @NonNull PriorityFilter priorityFilter)
@@ -68,6 +71,7 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 
 	/**
 	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities
+	 *
 	 * @param priorityFilter the filter to use
 	 * @return the {@code GoogleAnalyticsProvider} instance (for builder-style convenience)
 	 */
@@ -121,9 +125,9 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 		if (startTime != null && finishedEvent != null)
 		{
 			HitBuilders.TimingBuilder timingBuilder = new HitBuilders.TimingBuilder();
-			timingBuilder.setCategory("Timed Events")
-			             .setValue(endTime - startTime)
-			             .setLabel(finishedEvent.name());
+			timingBuilder.setLabel(finishedEvent.name())
+			             .setCategory("Timed Events")
+			             .setValue(endTime - startTime);
 			// add any custom attributes already set on the event
 			timingBuilder.setAll(stringifyAttributesMap(finishedEvent.getAttributes()));
 			this.tracker.send(timingBuilder.build());
@@ -190,6 +194,7 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 
 	/**
 	 * Converts a {@code HashMap<String, Object>} to {@code HashMap<String, String>}
+	 *
 	 * @param attributeMap the map of attributes attached to the event
 	 * @return the String map of parameters. Returns {@code null} if no parameters are attached to the event.
 	 */

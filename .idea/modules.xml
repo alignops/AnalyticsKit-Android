@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/answers-provider/answers-provider.iml" filepath="$PROJECT_DIR$/answers-provider/answers-provider.iml" />
       <module fileurl="file://$PROJECT_DIR$/flurry-provider/flurry-provider.iml" filepath="$PROJECT_DIR$/flurry-provider/flurry-provider.iml" />
       <module fileurl="file://$PROJECT_DIR$/google-analytics-provider/google-analytics-provider.iml" filepath="$PROJECT_DIR$/google-analytics-provider/google-analytics-provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/intercom-provider/intercom-provider.iml" filepath="$PROJECT_DIR$/intercom-provider/intercom-provider.iml" />
       <module fileurl="file://$PROJECT_DIR$/mixpanel-provider/mixpanel-provider.iml" filepath="$PROJECT_DIR$/mixpanel-provider/mixpanel-provider.iml" />
     </modules>
   </component>

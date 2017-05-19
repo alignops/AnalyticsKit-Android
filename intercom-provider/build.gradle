@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Busy, LLC
+ * Copyright 2017 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ dependencies {
 	compile fileTree(dir: 'libs', include: ['*.jar'])
 	provided project(':analyticskit')
 	compile 'com.android.support:support-annotations:25.3.1'
-	compile 'com.flurry.android:analytics:7.0.1@aar'
+	provided 'io.intercom.android:intercom-sdk:3.2.2'
 
 	testCompile 'junit:junit:4.12'
 	testCompile 'org.assertj:assertj-core:3.7.0'

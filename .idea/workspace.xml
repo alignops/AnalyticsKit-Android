@@ -31,6 +31,7 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/AnalyticsKit-Android.iml" afterPath="" />
@@ -40,16 +41,6 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/google-analytics-provider/google-analytics-provider.iml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/intercom-provider/intercom-provider.iml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/mixpanel-provider/mixpanel-provider.iml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/BusyApache20.xml" afterPath="$PROJECT_DIR$/.idea/copyright/BusyApache20.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analyticskit/.gitignore" afterPath="$PROJECT_DIR$/analyticskit/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/answers-provider/.gitignore" afterPath="$PROJECT_DIR$/answers-provider/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/flurry-provider/.gitignore" afterPath="$PROJECT_DIR$/flurry-provider/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/google-analytics-provider/.gitignore" afterPath="$PROJECT_DIR$/google-analytics-provider/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/intercom-provider/.gitignore" afterPath="$PROJECT_DIR$/intercom-provider/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mixpanel-provider/.gitignore" afterPath="$PROJECT_DIR$/mixpanel-provider/.gitignore" />
     </list>
     <list id="73fafb75-7dc1-4fef-a8f3-c25a8983dcdb" name="Rejected commit: Default" comment="Added support for timed events, changed package name" />
     <ignored path="AnalyticsKit-Android.iws" />
@@ -6272,8 +6263,9 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -6334,13 +6326,26 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="answers-provider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AnalyticsKit-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AnalyticsKit-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value=".idea" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -6355,7 +6360,7 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
     <property name="android.sdk.path" value="/android_sdk_mac_x86" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="android.project.structure.last.selected" value="answers-provider" />
     <property name="android.project.structure.proportion" value="0.15" />
@@ -6797,7 +6802,14 @@
       <option name="project" value="LOCAL" />
       <updated>1495225157043</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Stop tracking Android Studio iml files">
+      <created>1495229611604</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1495229611604</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -6914,7 +6926,8 @@
     <MESSAGE value="Add provider for Intercom" />
     <MESSAGE value="Update Mixpanel provider to SDK 5.0.2, &#10;use more modern assertions in the Mixpanel unit tests" />
     <MESSAGE value="Add provider for Intercom&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add provider for Intercom&#10;" />
+    <MESSAGE value="Stop tracking Android Studio iml files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Stop tracking Android Studio iml files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

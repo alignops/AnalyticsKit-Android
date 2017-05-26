@@ -27,12 +27,7 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.anyMapOf;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -45,15 +40,15 @@ import static org.mockito.Mockito.mock;
  */
 public class MixpanelProviderTest
 {
-	MixpanelAPI  mockMixpanelAPI;
+	MixpanelAPI      mockMixpanelAPI;
 	MixpanelProvider provider;
 	AnalyticsEvent   timedEvent;
 	AnalyticsEvent   untimedEvent;
 
-	String testEventName;
+	String              testEventName;
 	Map<String, Object> testEventPropertiesMap;
-	boolean trackMapCalled;
-	boolean timeEventCalled;
+	boolean             trackMapCalled;
+	boolean             timeEventCalled;
 
 	@Before
 	public void setup()
@@ -65,8 +60,10 @@ public class MixpanelProviderTest
 
 		// Mock behavior for when MixpanelAPI.trackMap(String, Map<String, Object>) is called
 		mockMixpanelAPI = mock(MixpanelAPI.class);
-		doAnswer(new Answer<Void>() {
-			public Void answer(InvocationOnMock invocation) {
+		doAnswer(new Answer<Void>()
+		{
+			public Void answer(InvocationOnMock invocation)
+			{
 				Object[] args = invocation.getArguments();
 				testEventName = (String) args[0];
 				//noinspection unchecked
@@ -77,8 +74,10 @@ public class MixpanelProviderTest
 		}).when(mockMixpanelAPI).trackMap(anyString(), anyMapOf(String.class, Object.class));
 
 		// Mock behavior for when MixpanelAPI.timeEvent(String) is called
-		doAnswer(new Answer<Void>() {
-			public Void answer(InvocationOnMock invocation) {
+		doAnswer(new Answer<Void>()
+		{
+			public Void answer(InvocationOnMock invocation)
+			{
 				Object[] args = invocation.getArguments();
 				testEventName = (String) args[0];
 				timeEventCalled = true;
@@ -154,18 +153,14 @@ public class MixpanelProviderTest
 	{
 		provider.sendEvent(untimedEvent);
 
-		assertTrue(trackMapCalled);
-		assertFalse(timeEventCalled);
+		assertThat(trackMapCalled).isTrue();
+		assertThat(timeEventCalled).isFalse();
 
-		assertNotNull(testEventName);
-		assertEquals("Untimed Event", testEventName);
+		assertThat(testEventName).isNotNull();
+		assertThat(testEventName).isEqualTo("Untimed Event");
 
-		assertNotNull(testEventPropertiesMap);
-		assertThat(testEventPropertiesMap.size()).isEqualTo(2);
-		assertThat(testEventPropertiesMap.containsKey("attribute1"));
-		assertThat(testEventPropertiesMap.containsValue("test1"));
-		assertThat(testEventPropertiesMap.containsKey("attribute2"));
-		assertThat(testEventPropertiesMap.containsValue("test2"));
+		assertThat(testEventPropertiesMap.keySet()).containsOnly("attribute1", "attribute2");
+		assertThat(testEventPropertiesMap.values()).containsOnly("test1", "test2");
 	}
 
 	@Test
@@ -173,13 +168,12 @@ public class MixpanelProviderTest
 	{
 		provider.sendEvent(timedEvent);
 
-		assertTrue(timeEventCalled);
-		assertFalse(trackMapCalled);
+		assertThat(timeEventCalled).isTrue();
+		assertThat(trackMapCalled).isFalse();
 
-		assertNotNull(testEventName);
-		assertEquals("Timed Event", testEventName);
+		assertThat(testEventName).isEqualTo("Timed Event");
 
-		assertNull(testEventPropertiesMap);
+		assertThat(testEventPropertiesMap).isNull();
 	}
 
 	@Test
@@ -187,15 +181,11 @@ public class MixpanelProviderTest
 	{
 		provider.endTimedEvent(timedEvent);
 
-		assertFalse(timeEventCalled);
-		assertTrue(trackMapCalled);
+		assertThat(timeEventCalled).isFalse();
+		assertThat(trackMapCalled).isTrue();
 
-		assertNotNull(testEventName);
-		assertEquals("Timed Event", testEventName);
-
-		assertNotNull(testEventPropertiesMap);
-		assertThat(testEventPropertiesMap.size()).isEqualTo(1);
-		assertThat(testEventPropertiesMap.containsKey("timed_attribute1"));
-		assertThat(testEventPropertiesMap.containsValue("timed_test1"));
+		assertThat(testEventName).isEqualTo("Timed Event");
+		assertThat(testEventPropertiesMap.keySet()).containsExactly("timed_attribute1");
+		assertThat(testEventPropertiesMap.values()).containsExactly("timed_test1");
 	}
 }

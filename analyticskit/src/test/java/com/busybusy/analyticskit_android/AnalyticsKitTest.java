@@ -20,14 +20,11 @@ import android.support.annotation.NonNull;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests the {@link AnalyticsKit} class
+ *
  * @author John Hunt on 3/7/16.
  */
 public class AnalyticsKitTest
@@ -36,8 +33,8 @@ public class AnalyticsKitTest
 	public void testGetInstance()
 	{
 		AnalyticsKit analyticsKit = AnalyticsKit.getInstance();
-		assertNotNull(analyticsKit);
-		assertEquals(analyticsKit, AnalyticsKit.getInstance());
+		assertThat(analyticsKit).isNotNull();
+		assertThat(analyticsKit).isEqualTo(AnalyticsKit.getInstance());
 	}
 
 	@Test
@@ -74,13 +71,13 @@ public class AnalyticsKitTest
 
 		AnalyticsKit.getInstance().registerProvider(provider);
 
-		assertTrue(AnalyticsKit.getInstance().providers.contains(provider));
+		assertThat(AnalyticsKit.getInstance().providers).contains(provider);
 	}
 
 	@Test
 	public void testPriorityFiltering_multiple()
 	{
-		MockProvider flurryProvider = new MockProvider().setPriorityUpperBound(0);
+		MockProvider flurryProvider    = new MockProvider().setPriorityUpperBound(0);
 		MockProvider customProviderOne = new MockProvider().setPriorityUpperBound(3);
 		MockProvider customProviderTwo = new MockProvider().setPriorityUpperBound(5);
 
@@ -95,15 +92,11 @@ public class AnalyticsKitTest
 				.setPriority(2)
 				.send();
 
-		assertFalse(flurryProvider.sentEvents.containsKey(eventName1));
-		assertFalse(flurryProvider.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(0, flurryProvider.sentEvents.size());
-		assertTrue(customProviderOne.sentEvents.containsKey(eventName1));
-		assertTrue(customProviderOne.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(1, customProviderOne.sentEvents.size());
-		assertTrue(customProviderTwo.sentEvents.containsKey(eventName1));
-		assertTrue(customProviderTwo.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(1, customProviderTwo.sentEvents.size());
+		assertThat(flurryProvider.sentEvents).isEmpty();
+		assertThat(customProviderOne.sentEvents.keySet()).containsExactly(eventName1);
+		assertThat(customProviderOne.sentEvents.values()).containsExactly(flurryAndCustom1);
+		assertThat(customProviderTwo.sentEvents.keySet()).containsExactly(eventName1);
+		assertThat(customProviderTwo.sentEvents.values()).containsExactly(flurryAndCustom1);
 	}
 
 	@Test
@@ -119,20 +112,14 @@ public class AnalyticsKitTest
 		            .registerProvider(customProviderTwo);
 
 		String eventName1 = "Flurry and Custom 1 only";
-		AnalyticsEvent flurryAndCustom1 = new AnalyticsEvent(eventName1)
+		new AnalyticsEvent(eventName1)
 				.putAttribute("hello", "world")
 				.setPriority(1)
 				.send();
 
-		assertFalse(flurryProvider.sentEvents.containsKey(eventName1));
-		assertFalse(flurryProvider.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(0, flurryProvider.sentEvents.size());
-		assertFalse(customProviderOne.sentEvents.containsKey(eventName1));
-		assertFalse(customProviderOne.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(0, customProviderOne.sentEvents.size());
-		assertFalse(customProviderTwo.sentEvents.containsKey(eventName1));
-		assertFalse(customProviderTwo.sentEvents.containsValue(flurryAndCustom1));
-		assertEquals(0, customProviderTwo.sentEvents.size());
+		assertThat(flurryProvider.sentEvents).isEmpty();
+		assertThat(customProviderOne.sentEvents).isEmpty();
+		assertThat(customProviderTwo.sentEvents).isEmpty();
 	}
 
 	@Test
@@ -147,9 +134,8 @@ public class AnalyticsKitTest
 				.setTimed(true)
 				.send();
 
-		assertTrue(flurryProvider.sentEvents.containsKey(eventName1));
-		assertTrue(flurryProvider.sentEvents.containsValue(flurryEvent));
-		assertEquals(1, flurryProvider.sentEvents.size());
+		assertThat(flurryProvider.sentEvents.keySet()).containsExactly(eventName1);
+		assertThat(flurryProvider.sentEvents.values()).containsExactly(flurryEvent);
 
 		try
 		{
@@ -162,10 +148,10 @@ public class AnalyticsKitTest
 
 		AnalyticsKit.getInstance().endTimedEvent(flurryEvent);
 
-		assertNotNull(flurryEvent.getAttribute(MockProvider.EVENT_DURATION));
+		assertThat(flurryEvent.getAttribute(MockProvider.EVENT_DURATION)).isNotNull();
 		Long duration = (Long) flurryEvent.getAttribute(MockProvider.EVENT_DURATION);
-		assertNotNull(duration);
-		assertTrue(duration >= 150);
+		assertThat(duration).isNotNull();
+		assertThat(duration).isGreaterThanOrEqualTo(150L);
 	}
 
 	@Test
@@ -186,15 +172,12 @@ public class AnalyticsKitTest
 				.setTimed(true)
 				.send();
 
-		assertTrue(flurryProvider.sentEvents.containsKey(eventName1));
-		assertTrue(flurryProvider.sentEvents.containsValue(flurryEvent));
-		assertEquals(1, flurryProvider.sentEvents.size());
-		assertTrue(customProviderOne.sentEvents.containsKey(eventName1));
-		assertTrue(customProviderOne.sentEvents.containsValue(flurryEvent));
-		assertEquals(1, customProviderOne.sentEvents.size());
-		assertTrue(customProviderTwo.sentEvents.containsKey(eventName1));
-		assertTrue(customProviderTwo.sentEvents.containsValue(flurryEvent));
-		assertEquals(1, customProviderTwo.sentEvents.size());
+		assertThat(flurryProvider.sentEvents.keySet()).containsExactly(eventName1);
+		assertThat(flurryProvider.sentEvents.values()).containsExactly(flurryEvent);
+		assertThat(customProviderOne.sentEvents.keySet()).containsExactly(eventName1);
+		assertThat(customProviderOne.sentEvents.values()).containsExactly(flurryEvent);
+		assertThat(customProviderTwo.sentEvents.keySet()).containsExactly(eventName1);
+		assertThat(customProviderTwo.sentEvents.values()).containsExactly(flurryEvent);
 
 		try
 		{
@@ -207,10 +190,10 @@ public class AnalyticsKitTest
 
 		AnalyticsKit.getInstance().endTimedEvent(flurryEvent);
 
-		assertNotNull(flurryEvent.getAttribute(MockProvider.EVENT_DURATION));
+		assertThat(flurryEvent.getAttribute(MockProvider.EVENT_DURATION)).isNotNull();
 		Long duration = (Long) flurryEvent.getAttribute(MockProvider.EVENT_DURATION);
-		assertNotNull(duration);
-		assertTrue(duration >= 150);
+		assertThat(duration).isNotNull();
+		assertThat(duration).isGreaterThanOrEqualTo(150L);
 	}
 
 	@Test
@@ -236,7 +219,7 @@ public class AnalyticsKitTest
 			didThrow = true;
 		}
 
-		assertTrue(didThrow);
+		assertThat(didThrow).isTrue();
 	}
 
 	@Test
@@ -269,6 +252,6 @@ public class AnalyticsKitTest
 			didThrow = true;
 		}
 
-		assertTrue(didThrow);
+		assertThat(didThrow).isTrue();
 	}
 }

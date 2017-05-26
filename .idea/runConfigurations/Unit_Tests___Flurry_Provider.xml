@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Unit Tests - Flurry Provider" type="JUnit" factoryName="JUnit">
+  <configuration default="false" name="Unit Tests - Flurry Provider" type="AndroidJUnit" factoryName="Android JUnit">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="com.busybusy.flurry_provider.FlurryProvider" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <module name="flurry-provier" />
+    <module name="flurry-provider" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PACKAGE_NAME" />
@@ -15,14 +15,14 @@
     <option name="TEST_OBJECT" value="directory" />
     <option name="VM_PARAMETERS" value="-ea" />
     <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/flurry-provider" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
     <option name="TEST_SEARCH_SCOPE">
       <value defaultName="singleModule" />
     </option>
     <envs />
-    <dir value="$PROJECT_DIR$/flurry-provier/src/test" />
+    <dir value="$PROJECT_DIR$/flurry-provider/src/test" />
     <patterns />
     <method />
   </configuration>

@@ -20,7 +20,7 @@ import com.crashlytics.android.answers.MockAnswers;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 /**
@@ -28,8 +28,8 @@ import org.robolectric.annotation.Config;
  *
  * @author Trevor
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk = 21, constants = com.busybusy.answers_provider.BuildConfig.class)
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 23, constants = com.busybusy.answers_provider.BuildConfig.class, manifest = Config.NONE)
 public abstract class LoggerBaseTest
 {
 	static String CUSTOM_KEY  = "CustomFieldKey";

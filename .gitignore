@@ -36,5 +36,8 @@ captures/
 
 # Idea project items
 .idea/libraries
-.idea/workspace.xml
+.idea/misc.xml
 .idea/modules.xml
+.idea/workspace.xml
+AnalyticsKit-Android.iml
+projectFilesBackup

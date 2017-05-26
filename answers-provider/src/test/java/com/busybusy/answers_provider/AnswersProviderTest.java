@@ -24,7 +24,7 @@ import com.crashlytics.android.answers.PackageScopeWrappedCalls;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.math.BigDecimal;
@@ -37,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests the {@link AnswersProvider} class
  * @author Trevor
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk = 21, constants = com.busybusy.answers_provider.BuildConfig.class)
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 23, constants = com.busybusy.answers_provider.BuildConfig.class, manifest = Config.NONE)
 public class AnswersProviderTest
 {
 	static String CUSTOM_KEY  = "CustomFieldKey";

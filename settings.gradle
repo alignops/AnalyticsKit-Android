@@ -1,1 +1,1 @@
-include ':analyticskit', ':answers-provider', ':mixpanel-provider', ':flurry-provier', ':google-analytics-provider'
+include ':analyticskit', ':answers-provider', ':mixpanel-provider', ':flurry-provider', ':google-analytics-provider', ':intercom-provider'

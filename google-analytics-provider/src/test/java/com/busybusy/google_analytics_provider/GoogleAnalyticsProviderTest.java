@@ -53,7 +53,7 @@ public class GoogleAnalyticsProviderTest
 
 	final String mockTrackingId = "mocked_tracking_id";
 	Map<String, String> testEventPropertiesMap;
-	boolean             sendCalled;
+	boolean sendCalled;
 
 	@Before
 	public void setup()
@@ -135,7 +135,7 @@ public class GoogleAnalyticsProviderTest
 	@Test
 	public void testStringifyAttributesMap_noParams()
 	{
-		HashMap<String, String> stringAttributes = provider.stringifyAttributesMap(null);
+		Map<String, String> stringAttributes = provider.stringifyAttributesMap(null);
 		assertNull(stringAttributes);
 	}
 
@@ -145,7 +145,7 @@ public class GoogleAnalyticsProviderTest
 		HashMap<String, Object> eventParams = new HashMap<>();
 		eventParams.put("favorite_color", "Blue");
 		eventParams.put("favorite_number", 42);
-		HashMap<String, String> stringAttributes = provider.stringifyAttributesMap(eventParams);
+		Map<String, String> stringAttributes = provider.stringifyAttributesMap(eventParams);
 		assertNotNull(stringAttributes);
 		assertThat(stringAttributes.containsKey("favorite_color"));
 		assertThat(stringAttributes.get("favorite_color")).isEqualTo("Blue");
@@ -281,8 +281,8 @@ public class GoogleAnalyticsProviderTest
 		assertEquals("Timed Events", testEventPropertiesMap.get("&utc"));
 		assertEquals("timing", testEventPropertiesMap.get("&t"));
 
-		String timeString = testEventPropertiesMap.get("&utt");
-		long elapsedTime = Long.valueOf(timeString);
+		String timeString  = testEventPropertiesMap.get("&utt");
+		long   elapsedTime = Long.valueOf(timeString);
 		assertThat(elapsedTime).isGreaterThanOrEqualTo(50);
 
 		assertTrue(testEventPropertiesMap.containsKey("some_param"));

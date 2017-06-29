@@ -26,10 +26,11 @@ import com.crashlytics.android.answers.StartCheckoutEvent;
 
 import java.math.BigDecimal;
 import java.util.Currency;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements the behavior of logging a StartCheckout event
+ *
  * @author John Hunt on 3/11/16.
  */
 public class StartCheckoutLogger implements LogHandler
@@ -51,6 +52,7 @@ public class StartCheckoutLogger implements LogHandler
 
 	/**
 	 * Constructs an Answers consumable event from the given {@code AnalyticsEvent}
+	 *
 	 * @param event the StartCheckout event containing data to submit to the Answers framework
 	 * @return the instantiated {@code StartCheckoutEvent} object
 	 */
@@ -59,7 +61,7 @@ public class StartCheckoutLogger implements LogHandler
 	{
 		StartCheckoutEvent StartCheckoutEvent = new StartCheckoutEvent();
 
-		HashMap<String, Object> attributeMap = event.getAttributes();
+		Map<String, Object> attributeMap = event.getAttributes();
 		if (attributeMap != null)
 		{
 			for (String key : attributeMap.keySet())

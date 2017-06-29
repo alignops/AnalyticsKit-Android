@@ -134,7 +134,7 @@ public class FlurryProvider implements AnalyticsKitProvider
 	 * @return the String map of parameters. Returns {@code null} if no parameters are attached to the event.
 	 */
 	@Nullable
-	HashMap<String, String> stringifyParameters(HashMap<String, Object> attributeMap) throws IllegalStateException
+	HashMap<String, String> stringifyParameters(Map<String, Object> attributeMap) throws IllegalStateException
 	{
 		HashMap<String, String> flurryMap = null;
 

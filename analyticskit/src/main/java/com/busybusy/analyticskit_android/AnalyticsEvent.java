@@ -19,7 +19,8 @@ package com.busybusy.analyticskit_android;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Defines information that is needed to distribute the event to the registered analytics providers.
@@ -28,8 +29,8 @@ import java.util.HashMap;
 public class AnalyticsEvent
 {
 	final String name;
-	HashMap<String, Object> attributes;
-	boolean timed;
+	Map<String, Object> attributes;
+	boolean             timed;
 	int priorityLevel = 0;
 
 	/**
@@ -67,7 +68,7 @@ public class AnalyticsEvent
 		// guard clause - make sure the dictionary is initialized
 		if (this.attributes == null)
 		{
-			this.attributes = new HashMap<>();
+			this.attributes = new LinkedHashMap<>();
 		}
 
 		this.attributes.put(attributeName, value);
@@ -103,7 +104,7 @@ public class AnalyticsEvent
 	 * Returns {@code null} if no attributes have been added to the event.
 	 */
 	@Nullable
-	public HashMap<String, Object> getAttributes()
+	public Map<String, Object> getAttributes()
 	{
 		return this.attributes;
 	}
@@ -157,4 +158,54 @@ public class AnalyticsEvent
 		return this;
 	}
 
+	@Override
+	public boolean equals(Object other)
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == null || getClass() != other.getClass())
+		{
+			return false;
+		}
+
+		AnalyticsEvent that = (AnalyticsEvent) other;
+
+		if (timed != that.timed)
+		{
+			return false;
+		}
+		if (priorityLevel != that.priorityLevel)
+		{
+			return false;
+		}
+		if (name != null ? !name.equals(that.name) : that.name != null)
+		{
+			return false;
+		}
+		return attributes != null ? attributes.equals(that.attributes) : that.attributes == null;
+
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+		result = 31 * result + (timed ? 1 : 0);
+		result = 31 * result + priorityLevel;
+		return result;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "AnalyticsEvent{" +
+				"name='" + name + '\'' +
+				", attributes=" + attributes +
+				", timed=" + timed +
+				", priorityLevel=" + priorityLevel +
+				'}';
+	}
 }

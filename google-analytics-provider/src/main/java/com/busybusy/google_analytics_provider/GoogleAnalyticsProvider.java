@@ -27,6 +27,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Implements Google Analytics as a provider to use with {@link com.busybusy.analyticskit_android.AnalyticsKit}
@@ -193,20 +195,20 @@ public class GoogleAnalyticsProvider implements AnalyticsKitProvider
 	}
 
 	/**
-	 * Converts a {@code HashMap<String, Object>} to {@code HashMap<String, String>}
+	 * Converts a {@code Map<String, Object>} to {@code Map<String, String>}
 	 *
 	 * @param attributeMap the map of attributes attached to the event
 	 * @return the String map of parameters. Returns {@code null} if no parameters are attached to the event.
 	 */
 	@Nullable
-	HashMap<String, String> stringifyAttributesMap(HashMap<String, Object> attributeMap)
+	Map<String, String> stringifyAttributesMap(Map<String, Object> attributeMap)
 	{
-		HashMap<String, String> googleAnalyticsMap = null;
+		Map<String, String> googleAnalyticsMap = null;
 
 		// convert the attributes to to <String, String> to appease the GoogleAnalytics API
 		if (attributeMap != null && attributeMap.size() > 0)
 		{
-			googleAnalyticsMap = new HashMap<>();
+			googleAnalyticsMap = new LinkedHashMap<>();
 			for (String key : attributeMap.keySet())
 			{
 				googleAnalyticsMap.put(key, attributeMap.get(key).toString());

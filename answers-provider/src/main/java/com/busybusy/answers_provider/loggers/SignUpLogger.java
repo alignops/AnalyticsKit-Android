@@ -24,10 +24,11 @@ import com.busybusy.answers_provider.LogHandler;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.SignUpEvent;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements the behavior of logging a SignUp event
+ *
  * @author John Hunt on 3/11/16.
  */
 public class SignUpLogger implements LogHandler
@@ -49,6 +50,7 @@ public class SignUpLogger implements LogHandler
 
 	/**
 	 * Constructs an Answers consumable event from the given {@code AnalyticsEvent}
+	 *
 	 * @param event the custom event containing data to submit to the Answers framework
 	 * @return the instantiated {@code SignUpEvent} object
 	 */
@@ -57,7 +59,7 @@ public class SignUpLogger implements LogHandler
 	{
 		SignUpEvent SignUpEvent = new SignUpEvent();
 
-		HashMap<String, Object> attributeMap = event.getAttributes();
+		Map<String, Object> attributeMap = event.getAttributes();
 		if (attributeMap != null)
 		{
 			for (String key : attributeMap.keySet())

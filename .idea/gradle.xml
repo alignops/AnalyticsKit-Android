@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/answers-provider" />
             <option value="$PROJECT_DIR$/flurry-provider" />
             <option value="$PROJECT_DIR$/google-analytics-provider" />
+            <option value="$PROJECT_DIR$/graylog-provider" />
             <option value="$PROJECT_DIR$/intercom-provider" />
             <option value="$PROJECT_DIR$/mixpanel-provider" />
           </set>

@@ -23,10 +23,11 @@ import com.busybusy.answers_provider.LogHandler;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements the behavior of logging a custom event
+ *
  * @author John Hunt on 3/11/16.
  */
 public class CustomEventLogger implements LogHandler
@@ -50,13 +51,14 @@ public class CustomEventLogger implements LogHandler
 
 	/**
 	 * Constructs an Answers consumable event from the given {@code AnalyticsEvent}
+	 *
 	 * @param event the custom event containing data to submit to the Answers framework
 	 * @return the instantiated {@code CustomEvent} object
 	 */
 	CustomEvent buildCustomAnswersEvent(@NonNull AnalyticsEvent event)
 	{
-		CustomEvent customEvent = new CustomEvent(event.name());
-		HashMap<String, Object> attributeMap = event.getAttributes();
+		CustomEvent         customEvent  = new CustomEvent(event.name());
+		Map<String, Object> attributeMap = event.getAttributes();
 
 		// convert the attributes to to <String, String> to appease the Answers API
 		if (attributeMap != null)

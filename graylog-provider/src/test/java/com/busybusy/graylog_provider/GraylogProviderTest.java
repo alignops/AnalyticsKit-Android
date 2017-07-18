@@ -16,6 +16,8 @@
 
 package com.busybusy.graylog_provider;
 
+import android.support.annotation.NonNull;
+
 import com.busybusy.analyticskit_android.AnalyticsEvent;
 import com.busybusy.analyticskit_android.AnalyticsKitProvider;
 import com.busybusy.analyticskit_android.CommonEvents;
@@ -27,7 +29,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.EmptyStackException;
-import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
@@ -37,230 +40,237 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 
 /**
+ * Tests the {@link GraylogProvider} class.
+ *
  * @author John Hunt on 6/28/17.
  */
-
 public class GraylogProviderTest
 {
-	GraylogProvider provider;
-	MockWebServer mockServer = new MockWebServer();
-	OkHttpClient  httpClient = new OkHttpClient.Builder().build();
-	GraylogResponseListener callbackListener;
+    GraylogProvider provider;
+    MockWebServer mockServer = new MockWebServer();
+    OkHttpClient  httpClient = new OkHttpClient.Builder().build();
+    GraylogResponseListener callbackListener;
 
-	String              testEventName;
-	Map<String, Object> testEventPropertiesMap;
-	boolean             logEventCalled;
-	String loggedEventName;
+    int     testEventHashCode;
+    boolean logEventCalled;
+    String  loggedEventName;
 
-	@Before
-	public void setup()
-	{
-		callbackListener = new GraylogResponseListener()
-		{
-			@Override
-			public void onGraylogResponse(GraylogResponse response)
-			{
-				testEventPropertiesMap = response.event().getAttributes();
-				loggedEventName = response.event().name();
-				logEventCalled = true;
-			}
-		};
+    private CountDownLatch lock;
 
-		mockServer.enqueue(new MockResponse().setResponseCode(202).setStatus("Accepted"));
-		try
-		{
-			mockServer.start();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		provider = new GraylogProvider(httpClient, "http://" + mockServer.getHostName() + ":" + mockServer.getPort(), "unit-test-android");
-		provider.setCallbackHandler(callbackListener);
+    @Before
+    public void setup()
+    {
+        lock = new CountDownLatch(1);
 
-		logEventCalled = false;
-		testEventPropertiesMap = null;
-		loggedEventName = null;
-	}
+        callbackListener = new GraylogResponseListener()
+        {
+            @Override
+            public void onGraylogResponse(@NonNull GraylogResponse response)
+            {
 
-	@Test
-	public void testSetAndGetPriorityFilter()
-	{
-		AnalyticsKitProvider.PriorityFilter filter = new AnalyticsKitProvider.PriorityFilter()
-		{
-			@Override
-			public boolean shouldLog(int priorityLevel)
-			{
-				return false;
-			}
-		};
+                logEventCalled = true;
+                loggedEventName = response.eventName();
+                testEventHashCode = response.eventHashCode();
+                lock.countDown();
+            }
+        };
 
-		provider.setPriorityFilter(filter);
+        mockServer.enqueue(new MockResponse().setResponseCode(202).setStatus("Accepted"));
+        try
+        {
+            mockServer.start();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        provider = new GraylogProvider(httpClient, "http://" + mockServer.getHostName() + ":" + mockServer.getPort(), "unit-test-android");
+        provider.setCallbackHandler(callbackListener);
 
-		assertThat(provider.getPriorityFilter()).isEqualTo(filter);
-	}
+        logEventCalled = false;
+        testEventHashCode = -1;
+        loggedEventName = null;
+    }
 
-	@Test
-	public void test_priorityFiltering_default()
-	{
-		AnalyticsEvent event = new AnalyticsEvent("A Test Event")
-				.setPriority(10)
-				.send();
-		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+    @Test
+    public void testSetAndGetPriorityFilter()
+    {
+        AnalyticsKitProvider.PriorityFilter filter = new AnalyticsKitProvider.PriorityFilter()
+        {
+            @Override
+            public boolean shouldLog(int priorityLevel)
+            {
+                return false;
+            }
+        };
 
-		event.setPriority(-9)
-		     .send();
-		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
-	}
+        provider.setPriorityFilter(filter);
 
-	@Test
-	public void test_priorityFiltering_custom()
-	{
-		provider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
-		{
-			@Override
-			public boolean shouldLog(int priorityLevel)
-			{
-				return priorityLevel < 10;
-			}
-		});
+        assertThat(provider.getPriorityFilter()).isEqualTo(filter);
+    }
 
-		AnalyticsEvent event = new AnalyticsEvent("A Test Event")
-				.setPriority(10)
-				.send();
+    @Test
+    public void test_priorityFiltering_default()
+    {
+        AnalyticsEvent event = new AnalyticsEvent("A Test Event")
+                .setPriority(10)
+                .send();
+        assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
 
-		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isFalse();
+        event.setPriority(-9)
+             .send();
+        assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+    }
 
-		event.setPriority(9)
-		     .send();
+    @Test
+    public void test_priorityFiltering_custom()
+    {
+        provider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
+        {
+            @Override
+            public boolean shouldLog(int priorityLevel)
+            {
+                return priorityLevel < 10;
+            }
+        });
 
-		assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
-	}
+        AnalyticsEvent event = new AnalyticsEvent("A Test Event")
+                .setPriority(10)
+                .send();
 
-	@Test
-	public void testSendEvent_unTimed_noParams()
-	{
-		AnalyticsEvent event = new AnalyticsEvent("Graylog Test Run No Params");
-		provider.sendEvent(event);
+        assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isFalse();
 
-		assertThat(logEventCalled).isTrue();
-		assertThat(testEventPropertiesMap).isNull();
-		assertThat(loggedEventName).isEqualTo("Graylog Test Run No Params");
-	}
+        event.setPriority(9)
+             .send();
 
-	@Test
-	public void testSendEvent_unTimed_withParams()
-	{
-		AnalyticsEvent event = new AnalyticsEvent("Graylog Event With Params Run")
-				.putAttribute("some_param", "yes")
-				.putAttribute("another_param", "yes again");
+        assertThat(provider.getPriorityFilter().shouldLog(event.getPriority())).isTrue();
+    }
 
-		provider.sendEvent(event);
+    @Test
+    public void testSendEvent_unTimed_noParams() throws InterruptedException
+    {
+        AnalyticsEvent event = new AnalyticsEvent("Graylog Test Run No Params");
+        provider.sendEvent(event);
 
-		assertThat(loggedEventName).isEqualTo("Graylog Event With Params Run");
-		assertThat(logEventCalled).isTrue();
-		assertThat(testEventPropertiesMap.keySet()).contains("some_param", "another_param");
-		assertThat(testEventPropertiesMap.values()).contains("yes", "yes again");
-	}
+        lock.await(50L, TimeUnit.MILLISECONDS);
 
-	@Test
-	public void testLogContentViewEvent()
-	{
-		ContentViewEvent event = new ContentViewEvent("Test page 7");
-		provider.sendEvent(event);
+        assertThat(logEventCalled).isTrue();
+        assertThat(testEventHashCode).isEqualTo(event.hashCode());
+        assertThat(loggedEventName).isEqualTo("Graylog Test Run No Params");
+    }
 
-		assertThat(loggedEventName).isEqualTo(CommonEvents.CONTENT_VIEW);
-		assertThat(logEventCalled).isTrue();
-		assertThat(testEventPropertiesMap.keySet()).contains("contentName");
-		assertThat(testEventPropertiesMap.values()).contains("Test page 7");
-	}
+    @Test
+    public void testSendEvent_unTimed_withParams() throws InterruptedException
+    {
+        AnalyticsEvent event = new AnalyticsEvent("Graylog Event With Params Run")
+                .putAttribute("some_param", "yes")
+                .putAttribute("another_param", "yes again");
 
-	@Test
-	public void testLogErrorEvent()
-	{
-		ErrorEvent event = new ErrorEvent()
-				.setMessage("something bad happened")
-				.setException(new EmptyStackException());
-		provider.sendEvent(event);
+        provider.sendEvent(event);
 
-		assertThat(loggedEventName).isEqualTo(CommonEvents.ERROR);
-		assertThat(logEventCalled).isTrue();
-		assertThat(testEventPropertiesMap.keySet()).contains("error_message", "exception_object");
-		assertThat(testEventPropertiesMap.values()).contains("something bad happened");
+        lock.await(50L, TimeUnit.MILLISECONDS);
 
-		assertThat(testEventPropertiesMap.get("exception_object")).isInstanceOf(EmptyStackException.class);
-	}
+        assertThat(loggedEventName).isEqualTo("Graylog Event With Params Run");
+        assertThat(logEventCalled).isTrue();
+        assertThat(testEventHashCode).isEqualTo(event.hashCode());
+    }
 
-	@Test
-	public void testSendEvent_timed_noParams()
-	{
-		AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event")
-				.setTimed(true);
+    @Test
+    public void testLogContentViewEvent() throws InterruptedException
+    {
+        ContentViewEvent event = new ContentViewEvent("Test page 7");
+        provider.sendEvent(event);
 
-		provider.sendEvent(event);
-		assertFalse(logEventCalled);
-	}
+        lock.await(50L, TimeUnit.MILLISECONDS);
 
-	@Test
-	public void testSendEvent_timed_withParams()
-	{
-		AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event With Parameters")
-				.setTimed(true)
-				.putAttribute("some_param", "yes")
-				.putAttribute("another_param", "yes again");
+        assertThat(loggedEventName).isEqualTo(CommonEvents.CONTENT_VIEW);
+        assertThat(logEventCalled).isTrue();
+        assertThat(testEventHashCode).isEqualTo(event.hashCode());
+    }
 
-		provider.sendEvent(event);
-		assertFalse(logEventCalled);
-	}
+    @Test
+    public void testLogErrorEvent() throws InterruptedException
+    {
+        ErrorEvent event = new ErrorEvent()
+                .setMessage("something bad happened")
+                .setException(new EmptyStackException());
+        provider.sendEvent(event);
 
-	@Test
-	public void testEndTimedEvent_Valid()
-	{
-		AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event With Parameters")
-				.setTimed(true)
-				.putAttribute("some_param", "yes")
-				.putAttribute("another_param", "yes again");
+        lock.await(50L, TimeUnit.MILLISECONDS);
 
-		provider.sendEvent(event);
-		assertFalse(logEventCalled);
+        assertThat(loggedEventName).isEqualTo(CommonEvents.ERROR);
+        assertThat(logEventCalled).isTrue();
+        assertThat(testEventHashCode).isEqualTo(event.hashCode());
+    }
 
-		try
-		{
-			Thread.sleep(50);
-		}
-		catch (InterruptedException e)
-		{
-			// don't do anything, this is just a test that needs some delay
-		}
+    @Test
+    public void testSendEvent_timed_noParams()
+    {
+        AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event")
+                .setTimed(true);
 
-		provider.endTimedEvent(event);
+        provider.sendEvent(event);
+        assertFalse(logEventCalled);
+    }
+
+    @Test
+    public void testSendEvent_timed_withParams()
+    {
+        AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event With Parameters")
+                .setTimed(true)
+                .putAttribute("some_param", "yes")
+                .putAttribute("another_param", "yes again");
+
+        provider.sendEvent(event);
+        assertFalse(logEventCalled);
+    }
+
+    @Test
+    public void testEndTimedEvent_Valid() throws InterruptedException
+    {
+        AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event With Parameters")
+                .setTimed(true)
+                .putAttribute("some_param", "yes")
+                .putAttribute("another_param", "yes again");
+
+        provider.sendEvent(event);
+        assertFalse(logEventCalled);
+
+        try
+        {
+            Thread.sleep(50);
+        }
+        catch (InterruptedException e)
+        {
+            // don't do anything, this is just a test that needs some delay
+        }
+
+        provider.endTimedEvent(event);
+
+        lock.await(50L, TimeUnit.MILLISECONDS);
 
 
-		assertThat(loggedEventName).isEqualTo("Graylog Timed Event With Parameters");
-		assertThat(logEventCalled).isTrue();
-		assertThat(testEventPropertiesMap.keySet()).contains("some_param", "another_param", "event_duration");
-		assertThat(testEventPropertiesMap.values()).contains("yes", "yes again");
+        assertThat(loggedEventName).isEqualTo("Graylog Timed Event With Parameters");
+        assertThat(logEventCalled).isTrue();
+        assertThat(testEventHashCode).isEqualTo(event.hashCode());
+    }
 
-		String durationString = (String) testEventPropertiesMap.get("event_duration");
-		System.out.println("Duration = " + durationString);
-	}
+    @Test
+    public void test_endTimedEvent_WillThrow()
+    {
+        boolean didThrow = false;
+        AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event With Parameters")
+                .setTimed(true);
 
-	@Test
-	public void test_endTimedEvent_WillThrow()
-	{
-		boolean didThrow = false;
-		AnalyticsEvent event = new AnalyticsEvent("Graylog Timed Event With Parameters")
-				.setTimed(true);
+        try
+        {
+            provider.endTimedEvent(event); // attempting to end a timed event that was not started should throw an exception
+        }
+        catch (IllegalStateException e)
+        {
+            didThrow = true;
+        }
 
-		try
-		{
-			provider.endTimedEvent(event); // attempting to end a timed event that was not started should throw an exception
-		}
-		catch (IllegalStateException e)
-		{
-			didThrow = true;
-		}
-
-		assertThat(didThrow).isTrue();
-	}
+        assertThat(didThrow).isTrue();
+    }
 }

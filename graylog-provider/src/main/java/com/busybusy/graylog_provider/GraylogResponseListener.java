@@ -16,6 +16,8 @@
 
 package com.busybusy.graylog_provider;
 
+import android.support.annotation.NonNull;
+
 /**
  * Defines the contract for callbacks fired by the {@link GraylogProvider} instance.
  *
@@ -24,10 +26,10 @@ package com.busybusy.graylog_provider;
 
 public interface GraylogResponseListener
 {
-	/**
-	 * This method gets called after an {@link com.busybusy.analyticskit_android.AnalyticsEvent} is sent to a Graylog server.
-	 *
-	 * @param response the Response object describing a result of an HTTP call to a Graylog server and the event that was sent
-	 */
-	void onGraylogResponse(final GraylogResponse response);
+    /**
+     * This method gets called after an {@link com.busybusy.analyticskit_android.AnalyticsEvent} is sent to a Graylog server.
+     *
+     * @param response the Response object describing a result of an HTTP call to a Graylog server and the event that was sent
+     */
+    void onGraylogResponse(@NonNull final GraylogResponse response);
 }

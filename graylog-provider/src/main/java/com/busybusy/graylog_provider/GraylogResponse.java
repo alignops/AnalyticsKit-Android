@@ -16,61 +16,90 @@
 
 package com.busybusy.graylog_provider;
 
+import android.support.annotation.NonNull;
+
 import com.busybusy.analyticskit_android.AnalyticsEvent;
 
 /**
- * POJO containing the HTTP response code, HTTP response message, and the event
+ * POJO containing the HTTP response code, HTTP response message, and the serialized event JSON data.
  *
  * @author John Hunt on 6/28/17.
  */
 
 public class GraylogResponse
 {
-	final int            code;
-	final String         message;
-	final AnalyticsEvent event;
+    final int    code;
+    final String message;
+    final String eventName;
+    final int    eventHashCode;
+    final String jsonPayload;
 
-	/**
-	 * Initializes a new {@link GraylogResponse} object.
-	 *
-	 * @param code    the HTTP response code
-	 * @param message the HTTP response message
-	 * @param event   the {@link AnalyticsEvent} that was sent via HTTP to your Graylog input
-	 */
-	public GraylogResponse(int code, String message, AnalyticsEvent event)
-	{
-		this.code = code;
-		this.message = message;
-		this.event = event;
-	}
+    /**
+     * Initializes a new {@link GraylogResponse} object.
+     *
+     * @param code          the HTTP response code
+     * @param message       the HTTP response message
+     * @param eventName     the result of calling {@link AnalyticsEvent#name()}
+     * @param eventHashCode the result of calling {@link AnalyticsEvent#hashCode()}
+     * @param jsonPayload   the JSON payload that was sent via HTTP to your Graylog input
+     */
+    public GraylogResponse(int code, String message, String eventName, int eventHashCode, String jsonPayload)
+    {
+        this.code = code;
+        this.message = message;
+        this.eventName = eventName;
+        this.eventHashCode = eventHashCode;
+        this.jsonPayload = jsonPayload;
+    }
 
-	/**
-	 * Retrieves the HTTP response code.
-	 *
-	 * @return The HTTP response code. Returns {@code 420} if there was some problem communicating with the Graylog server.
-	 */
-	public int code()
-	{
-		return code;
-	}
+    /**
+     * Retrieves the HTTP response code.
+     *
+     * @return The HTTP response code. Returns {@code 420} if there was some problem communicating with the Graylog server.
+     */
+    public int code()
+    {
+        return code;
+    }
 
-	/**
-	 * Retreives the HTTP response message
-	 *
-	 * @return the message.
-	 */
-	public String message()
-	{
-		return message;
-	}
+    /**
+     * Retreives the HTTP response message.
+     *
+     * @return the message.
+     */
+    public String message()
+    {
+        return message;
+    }
 
-	/**
-	 * Retrieves the {@link AnalyticsEvent} that was sent to the Graylog server.
-	 *
-	 * @return the event
-	 */
-	public AnalyticsEvent event()
-	{
-		return event;
-	}
+    /**
+     * Retrieves the JSON payload that was sent to the Graylog server.
+     *
+     * @return the JSON String
+     */
+    public String jsonPayload()
+    {
+        return jsonPayload;
+    }
+
+    /**
+     * Retrieves the name of the event associated with this response.
+     *
+     * @return the event name
+     */
+    @NonNull
+    public String eventName()
+    {
+        return this.eventName;
+    }
+
+    /**
+     * Retrieves the hash code of the event associated with this response.
+     *
+     * @return the hash code
+     */
+    public int eventHashCode()
+    {
+        return this.eventHashCode;
+    }
 }

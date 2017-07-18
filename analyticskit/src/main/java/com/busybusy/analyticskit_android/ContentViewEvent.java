@@ -20,14 +20,16 @@ import android.support.annotation.NonNull;
 
 /**
  * Defines information that is needed to distribute a "Content View" event to the registered analytics providers.
+ *
  * @author John Hunt on 3/16/16.
  */
 public class ContentViewEvent extends AnalyticsEvent
 {
-	public final static String CONTENT_NAME = "contentName";
+	public static final String CONTENT_NAME = "contentName";
 
 	/**
 	 * Instantiates a new {@code ContentViewEvent} object.
+	 *
 	 * @param contentName The name/title of the content that is viewed
 	 */
 	public ContentViewEvent(@NonNull String contentName)

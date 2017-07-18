@@ -21,7 +21,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
- * Tests the {@link AnalyticsEvent} class
+ * Tests the {@link AnalyticsEvent} class.
  *
  * @author John Hunt on 3/5/16.
  */

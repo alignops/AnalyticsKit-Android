@@ -29,6 +29,8 @@ ext {
 	versionCode = 10
 	versionName = "0.6.0"
 
+	analytics_kit = ':analyticskit'
+
 	/** Unit Testing Dependency Versions **/
 	junit_version = "4.12"
 }

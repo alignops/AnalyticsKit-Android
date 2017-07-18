@@ -22,18 +22,22 @@ import java.util.HashMap;
 
 /**
  * Provides an implementation of the {@link AnalyticsKitProvider} interface that facilitates testing.
+ *
  * @author John Hunt on 3/8/16.
  */
 public class MockProvider implements AnalyticsKitProvider
 {
 	HashMap<String, AnalyticsEvent> sentEvents;
-	HashMap<String, Long> eventTimes;
+	HashMap<String, Long>           eventTimes;
 	int priorityLevel = 0;
 	PriorityFilter priorityFilter;
 
 	public static final String EVENT_DURATION = "event_duration";
 
 
+	/**
+	 * Initializes a new MockProvider instance.
+	 */
 	public MockProvider()
 	{
 		this.sentEvents = new HashMap<>();
@@ -82,7 +86,7 @@ public class MockProvider implements AnalyticsKitProvider
 	@Override
 	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent)
 	{
-		long endTime = System.currentTimeMillis();
+		long endTime   = System.currentTimeMillis();
 		Long startTime = this.eventTimes.remove(timedEvent.name());
 
 		if (startTime != null)

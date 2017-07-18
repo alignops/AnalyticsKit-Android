@@ -21,13 +21,14 @@ import android.support.annotation.Nullable;
 
 /**
  * Defines information that is needed to distribute an "Error" event to the registered analytics providers.
+ *
  * @author John Hunt on 4/6/16.
  */
 public class ErrorEvent extends AnalyticsEvent
 {
-	public final String ERROR_MESSAGE = "error_message";
+	public final String ERROR_MESSAGE    = "error_message";
 	public final String EXCEPTION_OBJECT = "exception_object";
-	public final String ERROR_OBJECT = "error_object";
+	public final String ERROR_OBJECT     = "error_object";
 
 	/**
 	 * Initializes a new {@code ErrorEvent} object.
@@ -39,6 +40,7 @@ public class ErrorEvent extends AnalyticsEvent
 
 	/**
 	 * Initializes a new {@code ErrorEvent} object.
+	 *
 	 * @param eventName the name of the {@code ErrorEvent}
 	 */
 	public ErrorEvent(@NonNull String eventName)
@@ -47,7 +49,8 @@ public class ErrorEvent extends AnalyticsEvent
 	}
 
 	/**
-	 * Sets an error message on the {@code ErrorEvent}
+	 * Sets an error message on the {@code ErrorEvent}.
+	 *
 	 * @param errorMessage the message to set
 	 * @return the {@code ErrorEvent} instance (for builder-style convenience)
 	 */
@@ -58,7 +61,7 @@ public class ErrorEvent extends AnalyticsEvent
 	}
 
 	/**
-	 * Access the error message
+	 * Access the error message.
 	 *
 	 * @return the error message set on this event. Returns {@code null} if the message was not set.
 	 */
@@ -70,7 +73,8 @@ public class ErrorEvent extends AnalyticsEvent
 	}
 
 	/**
-	 * Sets an {@code Exception} object to associate with this event
+	 * Sets an {@code Exception} object to associate with this event.
+	 *
 	 * @param exception the Exception object to store
 	 * @return the {@code ErrorEvent} instance (for builder-style convenience)
 	 */
@@ -81,7 +85,7 @@ public class ErrorEvent extends AnalyticsEvent
 	}
 
 	/**
-	 * Access the {@link Exception} object
+	 * Access the {@link Exception} object.
 	 *
 	 * @return the {@code Exception} set on this event. Returns {@code null} if the exception was not set.
 	 */
@@ -93,7 +97,8 @@ public class ErrorEvent extends AnalyticsEvent
 	}
 
 	/**
-	 * Sets an {@code Error} object to associate with this event
+	 * Sets an {@code Error} object to associate with this event.
+	 *
 	 * @param error the Error object to store
 	 * @return the {@code ErrorEvent} instance (for builder-style convenience)
 	 */
@@ -104,7 +109,7 @@ public class ErrorEvent extends AnalyticsEvent
 	}
 
 	/**
-	 * Access the {@link Error} object
+	 * Access the {@link Error} object.
 	 *
 	 * @return the {@code Error} set on this event. Returns {@code null} if the error was not set.
 	 */

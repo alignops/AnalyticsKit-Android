@@ -23,7 +23,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
- * Tests the {@link AnalyticsKit} class
+ * Tests the {@link AnalyticsKit} class.
  *
  * @author John Hunt on 3/7/16.
  */

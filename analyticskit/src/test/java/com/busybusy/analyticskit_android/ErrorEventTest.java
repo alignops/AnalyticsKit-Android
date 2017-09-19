@@ -21,7 +21,8 @@ import org.junit.Test;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
- * Tests the {@link ErrorEvent} class
+ * Tests the {@link ErrorEvent} class.
+ *
  * @author John Hunt on 4/6/16.
  */
 public class ErrorEventTest

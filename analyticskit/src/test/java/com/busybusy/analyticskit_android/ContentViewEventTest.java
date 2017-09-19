@@ -21,7 +21,8 @@ import org.junit.Test;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
- * Tests the {@link ContentViewEvent} class
+ * Tests the {@link ContentViewEvent} class.
+ *
  * @author John Hunt on 3/16/16.
  */
 public class ContentViewEventTest

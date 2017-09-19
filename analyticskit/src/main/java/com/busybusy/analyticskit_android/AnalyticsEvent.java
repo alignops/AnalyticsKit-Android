@@ -19,21 +19,27 @@ package com.busybusy.analyticskit_android;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.HashMap;
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Defines information that is needed to distribute the event to the registered analytics providers.
+ *
  * @author John Hunt on 3/5/16.
  */
-public class AnalyticsEvent
+public class AnalyticsEvent implements Serializable
 {
+	private static final long serialVersionUID = 8237206047809063471L;
+
 	final String name;
-	HashMap<String, Object> attributes;
-	boolean timed;
+	Map<String, Object> attributes;
+	boolean             timed;
 	int priorityLevel = 0;
 
 	/**
-	 * Instantiates a new {@code AnalyticsEvent} object
+	 * Instantiates a new {@code AnalyticsEvent} object.
+	 *
 	 * @param name the name of the event
 	 */
 	public AnalyticsEvent(@NonNull String name)
@@ -44,7 +50,7 @@ public class AnalyticsEvent
 	}
 
 	/**
-	 * Access the event name
+	 * Access the event name.
 	 *
 	 * @return the name of the custom event
 	 */
@@ -55,7 +61,7 @@ public class AnalyticsEvent
 	}
 
 	/**
-	 * Adds an attribute to the event
+	 * Adds an attribute to the event.
 	 *
 	 * @param attributeName the name of the attribute (should be unique)
 	 * @param value         the {@link Object} to associate with the name given
@@ -67,7 +73,7 @@ public class AnalyticsEvent
 		// guard clause - make sure the dictionary is initialized
 		if (this.attributes == null)
 		{
-			this.attributes = new HashMap<>();
+			this.attributes = new LinkedHashMap<>();
 		}
 
 		this.attributes.put(attributeName, value);
@@ -76,6 +82,7 @@ public class AnalyticsEvent
 
 	/**
 	 * Gets the priority of this event.
+	 *
 	 * @return the priority of the event. Returns {@code 0} when {@link #setPriority(int)} has not been called.
 	 */
 	public int getPriority()
@@ -87,6 +94,7 @@ public class AnalyticsEvent
 	 * Sets the priority of the event. The event defaults to {@code 0} when this method is not called.
 	 * <p/>
 	 * <b>Note:</b> It is up to the developer to define what priority scheme to use (if any).
+	 *
 	 * @param priorityLevel the priority the event should use
 	 * @return the {@link AnalyticsEvent} instance (for builder-style convenience)
 	 */
@@ -97,19 +105,20 @@ public class AnalyticsEvent
 	}
 
 	/**
-	 * Access the attributes of this event
+	 * Access the attributes of this event.
 	 *
 	 * @return A non-empty map of attributes set on this event.
 	 * Returns {@code null} if no attributes have been added to the event.
 	 */
 	@Nullable
-	public HashMap<String, Object> getAttributes()
+	public Map<String, Object> getAttributes()
 	{
 		return this.attributes;
 	}
 
 	/**
-	 * Access a single attribute of this event
+	 * Access a single attribute of this event.
+	 *
 	 * @param name the name the of the attribute to retrieve
 	 * @return the value associated with the given attribute name.
 	 * Returns {@code null} if the attribute has not been set.
@@ -121,7 +130,8 @@ public class AnalyticsEvent
 	}
 
 	/**
-	 * Indicates if this event is a timed event
+	 * Indicates if this event is a timed event.
+	 *
 	 * @return {@code true} if the event has been set to be a timed event. Returns {@code false} otherwise.
 	 */
 	public boolean isTimed()
@@ -130,7 +140,8 @@ public class AnalyticsEvent
 	}
 
 	/**
-	 * Sets whether this event should capture timing
+	 * Sets whether this event should capture timing.
+	 *
 	 * @param timed {@code true} to set the event to track the time
 	 * @return the {@link AnalyticsEvent} instance
 	 */
@@ -157,4 +168,54 @@ public class AnalyticsEvent
 		return this;
 	}
 
+	@Override
+	public boolean equals(Object other)
+	{
+		if (this == other)
+		{
+			return true;
+		}
+		if (other == null || getClass() != other.getClass())
+		{
+			return false;
+		}
+
+		AnalyticsEvent that = (AnalyticsEvent) other;
+
+		if (timed != that.timed)
+		{
+			return false;
+		}
+		if (priorityLevel != that.priorityLevel)
+		{
+			return false;
+		}
+		if (name != null ? !name.equals(that.name) : that.name != null)
+		{
+			return false;
+		}
+		return attributes != null ? attributes.equals(that.attributes) : that.attributes == null;
+
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+		result = 31 * result + (timed ? 1 : 0);
+		result = 31 * result + priorityLevel;
+		return result;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "AnalyticsEvent{" +
+				"name='" + name + '\'' +
+				", attributes=" + attributes +
+				", timed=" + timed +
+				", priorityLevel=" + priorityLevel +
+				'}';
+	}
 }

@@ -29,7 +29,7 @@ import java.util.HashSet;
 public class AnalyticsKit
 {
 	private static AnalyticsKit singletonInstance = null;
-	HashSet<AnalyticsKitProvider> providers;
+	HashSet<AnalyticsKitProvider>   providers;
 	HashMap<String, AnalyticsEvent> timedEvents;
 
 	private AnalyticsKit()
@@ -38,7 +38,8 @@ public class AnalyticsKit
 	}
 
 	/**
-	 * Returns the AnalyticsKit singleton
+	 * Returns the AnalyticsKit singleton.
+	 *
 	 * @return the singleton instance
 	 */
 	public static AnalyticsKit getInstance()
@@ -60,7 +61,8 @@ public class AnalyticsKit
 	}
 
 	/**
-	 * Registers an {@code AnalyticsKitProvider} instance to receive future events
+	 * Registers an {@code AnalyticsKitProvider} instance to receive future events.
+	 *
 	 * @param provider the {@code AnalyticsKitProvider} to notify on future calls to {@link AnalyticsKit#logEvent(AnalyticsEvent)}.
 	 * @return the {@code AnalyticsKit} instance so multiple calls to {@code registerProvider(AnalyticsKitProvider)} can be chained.
 	 */
@@ -72,6 +74,7 @@ public class AnalyticsKit
 
 	/**
 	 * Sends the given event to all registered analytics providers (OR just to select providers if the event has been set to restrict the providers).
+	 *
 	 * @param event the event to capture with analytics tools
 	 */
 	public void logEvent(AnalyticsEvent event) throws IllegalStateException
@@ -108,7 +111,8 @@ public class AnalyticsKit
 	}
 
 	/**
-	 * Marks the end of a timed event
+	 * Marks the end of a timed event.
+	 *
 	 * @param eventName the unique name of the event that has finished
 	 */
 	public void endTimedEvent(@NonNull String eventName) throws IllegalStateException
@@ -150,7 +154,8 @@ public class AnalyticsKit
 	}
 
 	/**
-	 * Marks the end of a timed event
+	 * Marks the end of a timed event.
+	 *
 	 * @param event the event that has finished
 	 */
 	public void endTimedEvent(@NonNull AnalyticsEvent event)

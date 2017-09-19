@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Busy, LLC
+ * Copyright 2017 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,27 +14,22 @@
  *  limitations under the License.
  */
 
-package com.busybusy.analyticskit_android;
+package com.busybusy.graylog_provider;
 
 import android.support.annotation.NonNull;
 
 /**
- * Defines information that is needed to distribute a "Content View" event to the registered analytics providers.
+ * Defines the contract for callbacks fired by the {@link GraylogProvider} instance.
  *
- * @author John Hunt on 3/16/16.
+ * @author John Hunt on 6/28/17.
  */
-public class ContentViewEvent extends AnalyticsEvent
-{
-	public static final String CONTENT_NAME = "contentName";
 
-	/**
-	 * Instantiates a new {@code ContentViewEvent} object.
-	 *
-	 * @param contentName The name/title of the content that is viewed
-	 */
-	public ContentViewEvent(@NonNull String contentName)
-	{
-		super(CommonEvents.CONTENT_VIEW);
-		this.putAttribute(CONTENT_NAME, contentName);
-	}
+public interface GraylogResponseListener
+{
+    /**
+     * This method gets called after an {@link com.busybusy.analyticskit_android.AnalyticsEvent} is sent to a Graylog server.
+     *
+     * @param response the Response object describing a result of an HTTP call to a Graylog server and the event that was sent
+     */
+    void onGraylogResponse(@NonNull final GraylogResponse response);
 }

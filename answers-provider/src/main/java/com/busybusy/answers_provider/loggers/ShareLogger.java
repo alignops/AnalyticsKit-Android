@@ -24,7 +24,7 @@ import com.busybusy.answers_provider.LogHandler;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ShareEvent;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements the behavior of logging a Share event
@@ -59,7 +59,7 @@ public class ShareLogger implements LogHandler
 	{
 		ShareEvent ShareEvent = new ShareEvent();
 
-		HashMap<String, Object> attributeMap = event.getAttributes();
+		Map<String, Object> attributeMap = event.getAttributes();
 		if (attributeMap != null)
 		{
 			for (String key : attributeMap.keySet())

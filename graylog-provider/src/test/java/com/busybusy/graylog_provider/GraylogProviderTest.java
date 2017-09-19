@@ -236,19 +236,8 @@ public class GraylogProviderTest
         provider.sendEvent(event);
         assertFalse(logEventCalled);
 
-        try
-        {
-            Thread.sleep(50);
-        }
-        catch (InterruptedException e)
-        {
-            // don't do anything, this is just a test that needs some delay
-        }
-
         provider.endTimedEvent(event);
-
         lock.await(50L, TimeUnit.MILLISECONDS);
-
 
         assertThat(loggedEventName).isEqualTo("Graylog Timed Event With Parameters");
         assertThat(logEventCalled).isTrue();

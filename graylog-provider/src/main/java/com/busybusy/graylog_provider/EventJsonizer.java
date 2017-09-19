@@ -127,11 +127,7 @@ public class EventJsonizer
                     //noinspection unchecked
                     sb.append(jsonAttribute).append("\": ").append(getJsonFromMapRecursive((Map<String, Object>) attributeValue));
                 }
-                else if (attributeValue instanceof Integer ||
-                        attributeValue instanceof Double ||
-                        attributeValue instanceof Long ||
-                        attributeValue instanceof BigInteger ||
-                        attributeValue instanceof BigDecimal)
+                else if (isNumber(attributeValue))
                 {
                     sb.append(jsonAttribute).append("\": ").append(attributeValue);
                 }
@@ -194,11 +190,7 @@ public class EventJsonizer
                 {
                     json.append("\"").append(innerAttribute).append("\": \"").append(getSafeSizeString((String) innerAttributeValue)).append("\", ");
                 }
-                else if (innerAttributeValue instanceof Integer ||
-                        innerAttributeValue instanceof Double ||
-                        innerAttributeValue instanceof Long ||
-                        innerAttributeValue instanceof BigInteger ||
-                        innerAttributeValue instanceof BigDecimal)
+                else if (isNumber(innerAttributeValue))
                 {
                     json.append("\"").append(innerAttribute).append("\": ").append(innerAttributeValue).append(", ");
                 }
@@ -242,11 +234,7 @@ public class EventJsonizer
                 {
                     json.append("\"").append(getSafeSizeString((String) element)).append("\", ");
                 }
-                else if (element instanceof Integer ||
-                        element instanceof Double ||
-                        element instanceof Long ||
-                        element instanceof BigInteger ||
-                        element instanceof BigDecimal)
+                else if (isNumber(element))
                 {
                     json.append(element).append(", ");
                 }
@@ -286,5 +274,14 @@ public class EventJsonizer
             }
             return safeSizeValue;
         }
+    }
+
+    private boolean isNumber(Object attributeValue)
+    {
+        return attributeValue instanceof Integer ||
+                attributeValue instanceof Double ||
+                attributeValue instanceof Long ||
+                attributeValue instanceof BigInteger ||
+                attributeValue instanceof BigDecimal;
     }
 }

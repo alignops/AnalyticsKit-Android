@@ -102,6 +102,26 @@ public class EventJsonizerTest
     }
 
     @Test
+    public void getJsonBody_WithBooleans()
+    {
+        double timestamp = (System.currentTimeMillis() - 5000) / 1000d;
+
+        AnalyticsEvent event = new AnalyticsEvent("test_event")
+                .putAttribute("level", 5)
+                .putAttribute("full_message", "This is a test of the JSON conversion")
+                .putAttribute("timestamp", timestamp)
+                .putAttribute("test_attribute_1", 100)
+                .putAttribute("test_attribute_2", "200")
+                .putAttribute("can_pass_booleans", true);
+
+        String json = jsonizer.getJsonBody(event);
+        assertThat(json).isEqualTo("{\"version\": \"" + VERSION + "\", \"host\": \"" + HOST + "\", \"short_message\": \"" +
+                                           event.name() + "\", \"full_message\": \"This is a test of the JSON conversion\", " +
+                                           "\"timestamp\": " + timestamp + ", \"level\": 5, \"_test_attribute_1\": 100, " +
+                                           "\"_test_attribute_2\": \"200\", \"_can_pass_booleans\": true}");
+    }
+
+    @Test
     public void getJsonFromMapRecursive_emptyMap()
     {
         Map<String, Object> map  = new HashMap<>();
@@ -113,13 +133,14 @@ public class EventJsonizerTest
     @Test
     public void getJsonFromMapRecursive_flatMapStructure()
     {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("one", "abc");
         map.put("two", 123);
         map.put("three", 321.123d);
+        map.put("four", true);
 
         String json = jsonizer.getJsonFromMapRecursive(map);
-        assertThat(json).isEqualTo("{\"one\": \"abc\", \"two\": 123, \"three\": 321.123}");
+        assertThat(json).isEqualTo("{\"one\": \"abc\", \"two\": 123, \"three\": 321.123, \"four\": true}");
     }
 
     @Test
@@ -156,6 +177,7 @@ public class EventJsonizerTest
         List<Object> list              = new LinkedList<>();
         List<Object> innerListOne      = new LinkedList<>();
         List<Object> innerListTwo      = new LinkedList<>();
+        List<Object> innerListThree    = new LinkedList<>();
         List<Object> levelThreeListOne = new LinkedList<>();
         List<Object> levelThreeListTwo = new LinkedList<>();
 
@@ -163,11 +185,13 @@ public class EventJsonizerTest
         levelThreeListTwo.add(32);
         innerListOne.add(levelThreeListOne);
         innerListTwo.add(levelThreeListTwo);
+        innerListThree.add(true);
         list.add(innerListOne);
         list.add(innerListTwo);
+        list.add(innerListThree);
 
         String json = jsonizer.getJsonFromListRecursive(list);
-        assertThat(json).isEqualTo("[[[31]], [[32]]]");
+        assertThat(json).isEqualTo("[[[31]], [[32]], [true]]");
 
     }
 

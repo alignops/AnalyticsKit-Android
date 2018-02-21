@@ -127,7 +127,7 @@ public class EventJsonizer
                     //noinspection unchecked
                     sb.append(jsonAttribute).append("\": ").append(getJsonFromMapRecursive((Map<String, Object>) attributeValue));
                 }
-                else if (isNumber(attributeValue))
+                else if (isNumber(attributeValue) || attributeValue instanceof Boolean)
                 {
                     sb.append(jsonAttribute).append("\": ").append(attributeValue);
                 }
@@ -190,7 +190,7 @@ public class EventJsonizer
                 {
                     json.append("\"").append(innerAttribute).append("\": \"").append(getSafeSizeString((String) innerAttributeValue)).append("\", ");
                 }
-                else if (isNumber(innerAttributeValue))
+                else if (isNumber(innerAttributeValue) || innerAttributeValue instanceof Boolean)
                 {
                     json.append("\"").append(innerAttribute).append("\": ").append(innerAttributeValue).append(", ");
                 }
@@ -234,7 +234,7 @@ public class EventJsonizer
                 {
                     json.append("\"").append(getSafeSizeString((String) element)).append("\", ");
                 }
-                else if (isNumber(element))
+                else if (isNumber(element) || element instanceof Boolean)
                 {
                     json.append(element).append(", ");
                 }

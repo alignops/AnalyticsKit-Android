@@ -52,7 +52,7 @@ dependencies {
 	testImplementation 'com.crashlytics.sdk.android:answers:1.4.2@aar'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'org.assertj:assertj-core:3.8.0'
-	testImplementation 'org.robolectric:robolectric:3.2.2'
+	testImplementation 'org.robolectric:robolectric:3.5.1'
 }
 
 task sourcesJar(type: Jar) {

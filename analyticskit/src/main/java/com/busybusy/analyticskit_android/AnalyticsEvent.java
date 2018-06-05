@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Busy, LLC
+ * Copyright 2018 Busy, LLC
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -98,6 +98,7 @@ public class AnalyticsEvent implements Serializable
 	 * @param priorityLevel the priority the event should use
 	 * @return the {@link AnalyticsEvent} instance (for builder-style convenience)
 	 */
+	@NonNull
 	public AnalyticsEvent setPriority(int priorityLevel)
 	{
 		this.priorityLevel = priorityLevel;
@@ -145,6 +146,7 @@ public class AnalyticsEvent implements Serializable
 	 * @param timed {@code true} to set the event to track the time
 	 * @return the {@link AnalyticsEvent} instance
 	 */
+	@NonNull
 	public AnalyticsEvent setTimed(boolean timed)
 	{
 		this.timed = timed;
@@ -169,7 +171,7 @@ public class AnalyticsEvent implements Serializable
 	}
 
 	@Override
-	public boolean equals(Object other)
+	public boolean equals(@Nullable Object other)
 	{
 		if (this == other)
 		{

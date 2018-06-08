@@ -1,40 +1,23 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Unit Tests - Analytics Kit" type="AndroidJUnit" factoryName="Android JUnit" singleton="true">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-      <pattern>
-        <option name="PATTERN" value="com.busybusy.analyticskit_android.AnalyticsEvent" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-      <pattern>
-        <option name="PATTERN" value="com.busybusy.analyticskit_android.AnalyticsKit" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-      <pattern>
-        <option name="PATTERN" value="com.busybusy.analyticskit_android.ContentViewEvent" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-      <pattern>
-        <option name="PATTERN" value="com.busybusy.analyticskit_android.ErrorEvent" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
+  <configuration default="false" name="Unit Tests - Analytics Kit" type="AndroidJUnit" factoryName="Android JUnit">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <module name="analyticskit" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PACKAGE_NAME" value="com.busybusy.library.analyticskit_android" />
+    <option name="PACKAGE_NAME" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="directory" />
-    <option name="VM_PARAMETERS" value="-ea" />
+    <option name="VM_PARAMETERS" value="" />
     <option name="PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/analyticskit" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
     <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="wholeProject" />
+      <value defaultName="singleModule" />
     </option>
     <envs />
-    <dir value="$PROJECT_DIR$/analyticskit/src" />
+    <dir value="$PROJECT_DIR$/analyticskit/src/test/java" />
     <patterns />
     <method />
   </configuration>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Busy, LLC
+ * Copyright 2018 Busy, LLC
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ public class AnalyticsKit
 	 *
 	 * @return the singleton instance
 	 */
+	@NonNull
 	public static AnalyticsKit getInstance()
 	{
 		if (singletonInstance == null)
@@ -66,6 +67,7 @@ public class AnalyticsKit
 	 * @param provider the {@code AnalyticsKitProvider} to notify on future calls to {@link AnalyticsKit#logEvent(AnalyticsEvent)}.
 	 * @return the {@code AnalyticsKit} instance so multiple calls to {@code registerProvider(AnalyticsKitProvider)} can be chained.
 	 */
+	@NonNull
 	public AnalyticsKit registerProvider(@NonNull AnalyticsKitProvider provider)
 	{
 		providers.add(provider);
@@ -77,7 +79,7 @@ public class AnalyticsKit
 	 *
 	 * @param event the event to capture with analytics tools
 	 */
-	public void logEvent(AnalyticsEvent event) throws IllegalStateException
+	public void logEvent(@NonNull AnalyticsEvent event) throws IllegalStateException
 	{
 		if (event.isTimed())
 		{

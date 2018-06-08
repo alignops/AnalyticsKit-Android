@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Trevor
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 23, constants = com.busybusy.answers_provider.BuildConfig.class, manifest = Config.NONE)
+@Config(sdk = 27, constants = com.busybusy.answers_provider.BuildConfig.class, manifest = Config.NONE)
 public class AnswersProviderTest
 {
 	static String CUSTOM_KEY  = "CustomFieldKey";

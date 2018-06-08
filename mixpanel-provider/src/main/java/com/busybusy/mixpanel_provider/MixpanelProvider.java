@@ -64,6 +64,7 @@ public class MixpanelProvider implements AnalyticsKitProvider
 	 * @param priorityFilter the filter to use
 	 * @return the {@code MixpanelProvider} instance (for builder-style convenience)
 	 */
+	@NonNull
 	public MixpanelProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
 	{
 		this.priorityFilter = priorityFilter;

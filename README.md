@@ -15,7 +15,7 @@ allprojects {
 In your module's build.gradle file, add the dependency:
 ```groovy
 dependencies {
-		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.8.1'
+		compile 'com.github.busybusy.AnalyticsKit-Android:analyticskit:0.8.2'
         ...
 	}
 ```
@@ -24,7 +24,7 @@ You can include the implemented providers you want by adding them to the same de
 ```groovy
 dependencies {
 		...
-        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.8.1'
+        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.8.2'
 	}
 ```
 

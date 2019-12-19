@@ -47,31 +47,33 @@ android {
 
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
-	implementation 'com.android.support:support-annotations:27.1.1'
-	compileOnly 'io.intercom.android:intercom-sdk:5.0.1'
+	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
+	compileOnly 'io.intercom.android:intercom-sdk:5.5.1'
 
-	testImplementation 'io.intercom.android:intercom-sdk:5.0.1'
+	testImplementation 'io.intercom.android:intercom-sdk:5.5.1'
 	testImplementation 'junit:junit:4.12'
-	testImplementation 'org.assertj:assertj-core:3.8.0'
-	testImplementation "org.mockito:mockito-core:1.10.19"
+	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
+	//noinspection GradleDependency Held back from the project's version due to incompatibility between Powermock and Mockito2
+	testImplementation "org.mockito:mockito-core:1.10.19" // TODO 2019-12-19: figure out how to make Powermock and Mockito2 play nicely together
 
 	testImplementation "org.powermock:powermock-api-mockito:1.6.6"
-	testImplementation "org.powermock:powermock-module-junit4:1.6.6"
+	//noinspection GradleDependency Held back from the latest version due to incompatibility between Powermock and Mockito2
+	testImplementation "org.powermock:powermock-module-junit4:1.6.6" // TODO 2019-12-19: figure out how to make Powermock and Mockito2 play nicely together
 }
 
 task sourcesJar(type: Jar) {
+	archiveClassifier.set("sources")
 	from android.sourceSets.main.java.srcDirs
-	classifier = 'sources'
 }
 
 task javadoc(type: Javadoc) {
 	failOnError false
 	source = android.sourceSets.main.java.sourceFiles
-	classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+	setClasspath(getClasspath() + project.files(android.getBootClasspath().join(File.pathSeparator)))
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
+	archiveClassifier.set("javadoc")
 	from javadoc.destinationDir
 }
 

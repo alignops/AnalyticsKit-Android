@@ -22,9 +22,9 @@ buildscript {
 		maven { url 'https://maven.fabric.io/public' }
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.1.2'
+		classpath 'com.android.tools.build:gradle:3.5.3'
 		classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-		classpath 'com.google.gms:google-services:4.0.1'
+		classpath 'com.google.gms:google-services:4.3.3'
 		classpath 'io.fabric.tools:gradle:1.+' // The Fabric Gradle plugin uses an open ended version to react quickly to Android tooling updates
 	}
 }
@@ -40,12 +40,17 @@ allprojects {
 
 ext {
 	/** Android Library/Application Config values **/
-	compileSdkVersion = 27
+	compileSdkVersion = 29
 	minSdkVersion = 16
-	targetSdkVersion = 27
-	buildToolsVersion = "27.0.3"
-	versionCode = 11
-	versionName = "0.6.1"
+	targetSdkVersion = 29
+	buildToolsVersion = "28.0.3"
+	versionCode = 12
+	versionName = "0.7.0"
+
+	// dependency versions
+	supportAnnotationsVersion = "28.0.0"
+	assertjVersion = "3.14.0"
+	mockitoVersion = "2.12.0"
 
 	analytics_kit = ':analyticskit'
 
@@ -55,9 +60,4 @@ ext {
 
 task clean(type: Delete) {
 	delete rootProject.buildDir
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '4.4'
-	distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }

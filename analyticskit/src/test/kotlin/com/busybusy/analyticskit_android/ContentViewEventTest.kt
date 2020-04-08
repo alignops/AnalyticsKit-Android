@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Busy, LLC
+ * Copyright 2016, 2020 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,26 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.busybusy.analyticskit_android
 
-package com.busybusy.analyticskit_android;
-
-import org.junit.Test;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
 /**
- * Tests the {@link ContentViewEvent} class.
+ * Tests the [ContentViewEvent] class.
  *
  * @author John Hunt on 3/16/16.
  */
-public class ContentViewEventTest
-{
-	@Test
-	public void testConstructor()
-	{
-		AnalyticsEvent event = new ContentViewEvent("JUnit Test");
-
-		assertThat(event.name()).isEqualTo(CommonEvents.CONTENT_VIEW);
-		assertThat(event.getAttribute(ContentViewEvent.CONTENT_NAME)).isEqualTo("JUnit Test");
-	}
+class ContentViewEventTest {
+    @Test
+    fun testConstructor() {
+        val event: AnalyticsEvent = ContentViewEvent("JUnit Test")
+        assertThat(event.name()).isEqualTo(CommonEvents.CONTENT_VIEW)
+        assertThat(event.getAttribute(ContentViewEvent.CONTENT_NAME)).isEqualTo("JUnit Test")
+    }
 }

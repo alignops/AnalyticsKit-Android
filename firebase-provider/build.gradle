@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 busybusy, Inc.
+ * Copyright 2018, 2020 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'kotlin-android'
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -43,17 +44,23 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
+
+	sourceSets {
+		test.java.srcDirs += 'src/test/kotlin'
+	}
 }
 
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
 	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
-	compileOnly 'com.google.firebase:firebase-analytics:17.2.1'
+	compileOnly 'com.google.firebase:firebase-analytics:17.3.0'
 
-	testImplementation 'com.google.firebase:firebase-analytics:17.2.1'
+	testImplementation 'com.google.firebase:firebase-analytics:17.3.0'
 	testImplementation 'junit:junit:4.12'
+	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
-	testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+	testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
 	testImplementation 'org.robolectric:robolectric:3.5.1'
 }
 

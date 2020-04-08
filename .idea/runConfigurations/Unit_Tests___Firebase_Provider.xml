@@ -1,24 +1,16 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Unit Tests - Firebase Provider" type="AndroidJUnit" factoryName="Android JUnit">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <module name="firebase-provider" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PACKAGE_NAME" value="" />
+    <option name="PACKAGE_NAME" value="com.busybusy.firebase_provider" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
-    <option name="TEST_OBJECT" value="directory" />
-    <option name="VM_PARAMETERS" value="" />
+    <option name="TEST_OBJECT" value="package" />
+    <option name="VM_PARAMETERS" />
     <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/firebase-provider" />
-    <option name="ENV_VARIABLES" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="singleModule" />
-    </option>
-    <envs />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/firebase-provider" />
     <dir value="$PROJECT_DIR$/firebase-provider/src/test" />
-    <patterns />
-    <method />
+    <method v="2">
+      <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+    </method>
   </configuration>
 </component>

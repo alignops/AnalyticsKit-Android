@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Unit Tests - Analytics Kit" type="AndroidJUnit" factoryName="Android JUnit">
     <module name="analyticskit" />
+    <option name="PACKAGE_NAME" value="com.busybusy.analyticskit_android" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
-    <option name="TEST_OBJECT" value="directory" />
+    <option name="TEST_OBJECT" value="package" />
     <option name="VM_PARAMETERS" />
     <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/analyticskit" />
     <dir value="$PROJECT_DIR$/analyticskit/src/test/kotlin" />
     <method v="2">
       <option name="Android.Gradle.BeforeRunTask" enabled="true" />

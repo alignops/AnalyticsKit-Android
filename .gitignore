@@ -37,5 +37,7 @@ captures/
 # Idea project items
 .idea/
 .idea/gradle.xml
+# Allow sharing of test run configurations through VCS
+!.idea/runConfigurations
 AnalyticsKit-Android.iml
 projectFilesBackup

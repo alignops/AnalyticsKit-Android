@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Busy, LLC
+ * Copyright 2018, 2020 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'kotlin-android'
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -40,6 +41,10 @@ android {
 		}
 	}
 
+	sourceSets {
+		test.java.srcDirs += 'src/test/kotlin'
+	}
+
 	testOptions {
 		unitTests.returnDefaultValues = true
 	}
@@ -50,14 +55,14 @@ dependencies {
 	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
 	implementation 'com.flurry.android:analytics:12.1.0'
 
-	testImplementation 'junit:junit:4.12'
+	testImplementation "junit:junit:$rootProject.ext.junit_version"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
-	//noinspection GradleDependency Held back from the project's version due to incompatibility between Powermock and Mockito2
-	testImplementation "org.mockito:mockito-core:1.10.19" // TODO 2019-12-19: figure out how to make Powermock and Mockito2 play nicely together
+	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
+	testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.ext.mockitoKotlinVersion"
 
-	testImplementation "org.powermock:powermock-api-mockito:1.6.6"
-	//noinspection GradleDependency Held back from the latest version due to incompatibility between Powermock and Mockito2
-	testImplementation "org.powermock:powermock-module-junit4:1.6.6" // TODO 2019-12-19: figure out how to make Powermock and Mockito2 play nicely together
+	testImplementation "org.powermock:powermock-api-mockito2:2.0.2"
+	testImplementation "org.powermock:powermock-module-junit4:2.0.2"
 }
 
 task sourcesJar(type: Jar) {

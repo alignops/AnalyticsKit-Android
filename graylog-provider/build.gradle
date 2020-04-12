@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 busybusy, Inc.
+ * Copyright 2018, 2020 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -42,6 +43,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 }
 
 dependencies {
@@ -50,11 +55,12 @@ dependencies {
 
     implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:$rootProject.ext.junit_version"
     testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
     testImplementation 'org.robolectric:robolectric:3.5.1'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.6.0'
-    testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
 }
 
 task sourcesJar(type: Jar) {

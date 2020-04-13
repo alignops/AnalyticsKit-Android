@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Busy, LLC
+ * Copyright 2018, 2020 busybusy, Inc
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'kotlin-android'
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -40,6 +41,10 @@ android {
 		}
 	}
 
+	sourceSets {
+		test.java.srcDirs += 'src/test/kotlin'
+	}
+
 	testOptions {
 		unitTests.returnDefaultValues = true
 	}
@@ -52,9 +57,11 @@ dependencies {
 	compileOnly 'com.google.android.gms:play-services-gcm:17.0.0'
 
 	testImplementation 'com.mixpanel.android:mixpanel-android:5.4.0'
-	testImplementation 'junit:junit:4.12'
+	testImplementation "junit:junit:$rootProject.ext.junit_version"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
-	testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
+	testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.ext.mockitoKotlinVersion"
 }
 
 task sourcesJar(type: Jar) {

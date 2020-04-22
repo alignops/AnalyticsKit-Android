@@ -42,32 +42,36 @@ android {
 	}
 }
 
+crashlytics { // needed due to 'Crashlytics couln't find the manifest' on AGP 3.3.2+
+	manifestPath = "$buildDir/intermediates/library_manifest/debug/AndroidManifest.xml"
+}
+
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
-	implementation 'com.android.support:support-annotations:27.1.1'
-	implementation('com.crashlytics.sdk.android:answers:1.4.2@aar') { // The actual Answers SDK
+	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
+	implementation('com.crashlytics.sdk.android:answers:1.4.7@aar') { // The actual Answers SDK
 		transitive = true
 	}
 
-	testImplementation 'com.crashlytics.sdk.android:answers:1.4.2@aar'
+	testImplementation 'com.crashlytics.sdk.android:answers:1.4.7@aar'
 	testImplementation 'junit:junit:4.12'
-	testImplementation 'org.assertj:assertj-core:3.8.0'
+	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation 'org.robolectric:robolectric:3.5.1'
 }
 
 task sourcesJar(type: Jar) {
+	archiveClassifier.set("sources")
 	from android.sourceSets.main.java.srcDirs
-	classifier = 'sources'
 }
 
 task javadoc(type: Javadoc) {
 	failOnError  false
 	source = android.sourceSets.main.java.sourceFiles
-	classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+	setClasspath(getClasspath() + project.files(android.getBootClasspath().join(File.pathSeparator)))
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
+	archiveClassifier.set("javadoc")
 	from javadoc.destinationDir
 }
 

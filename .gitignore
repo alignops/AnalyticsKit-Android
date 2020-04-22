@@ -35,9 +35,6 @@ proguard/
 captures/
 
 # Idea project items
-.idea/libraries
-.idea/misc.xml
-.idea/modules.xml
-.idea/workspace.xml
+.idea/
 AnalyticsKit-Android.iml
 projectFilesBackup

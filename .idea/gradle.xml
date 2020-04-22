@@ -3,22 +3,13 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT" />
+        </compositeConfiguration>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/analyticskit" />
-            <option value="$PROJECT_DIR$/answers-provider" />
-            <option value="$PROJECT_DIR$/firebase-provider" />
-            <option value="$PROJECT_DIR$/flurry-provider" />
-            <option value="$PROJECT_DIR$/google-analytics-provider" />
-            <option value="$PROJECT_DIR$/graylog-provider" />
-            <option value="$PROJECT_DIR$/intercom-provider" />
-            <option value="$PROJECT_DIR$/mixpanel-provider" />
-          </set>
-        </option>
         <option name="resolveModulePerSourceSet" value="false" />
+        <option name="testRunner" value="PLATFORM" />
       </GradleProjectSettings>
     </option>
   </component>

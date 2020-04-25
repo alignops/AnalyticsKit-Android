@@ -36,6 +36,5 @@ captures/
 
 # Idea project items
 .idea/
-.idea/gradle.xml
 AnalyticsKit-Android.iml
 projectFilesBackup

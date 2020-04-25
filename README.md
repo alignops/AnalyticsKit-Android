@@ -24,7 +24,7 @@ You can include the implemented providers you want by adding them to the same de
 ```groovy
 dependencies {
 		...
-        compile 'com.github.busybusy.AnalyticsKit-Android:answers-provider:0.8.2'
+        compile 'com.github.busybusy.AnalyticsKit-Android:mixpanel-provider:0.8.2'
 	}
 ```
 
@@ -34,7 +34,7 @@ Then initialize AnalyticsKit-Android to work with those providers.
 
 ```java
 AnalyticsKit.getInstance()
-    .registerProvider(new AnswersProvider(Answers.getInstance()));
+    .registerProvider(new MixpanelProvider(MixpanelAPI.getInstance(this, MIXPANEL_TOKEN)));
 ```
 
 Send events where appropriate in your application code.
@@ -68,9 +68,9 @@ By default, providers will log all events regardless of priority. If desired, yo
 configure providers with a ```PriorityFilter``` so that only events that pass the 
 ```PriorityFilter```'s shouldLog() filter method will be logged by that provider. 
 In the following example, only AnalyticsEvent objects with priority less than 10 will be 
-logged by the Answers provider:
+logged by the Mixpanel provider:
 ```java
-answersProvider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
+mixpanelProvider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
 {
     @Override
     public boolean shouldLog(int priorityLevel)

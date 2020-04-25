@@ -22,10 +22,10 @@ buildscript {
 		maven { url 'https://maven.fabric.io/public' }
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.3'
+		classpath 'com.android.tools.build:gradle:3.6.2'
 		classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
 		classpath 'com.google.gms:google-services:4.3.3'
-		classpath 'io.fabric.tools:gradle:1.+' // The Fabric Gradle plugin uses an open ended version to react quickly to Android tooling updates
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.71"
 	}
 }
 
@@ -51,6 +51,7 @@ ext {
 	supportAnnotationsVersion = "28.0.0"
 	assertjVersion = "3.14.0"
 	mockitoVersion = "2.12.0"
+	kotlinVersion = "1.3.71"
 
 	analytics_kit = ':analyticskit'
 

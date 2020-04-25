@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Busy, LLC
+ * Copyright 2016 - 2020 Busy, LLC
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'kotlin-android'
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -39,12 +40,19 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
+
+	sourceSets {
+		test.java.srcDirs += 'src/test/kotlin'
+	}
 }
 
 dependencies {
 	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
+
 	testImplementation 'junit:junit:4.12'
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
 }
 
 task sourcesJar(type: Jar) {

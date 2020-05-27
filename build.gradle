@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Busy, LLC
+ * Copyright 2018, 2020 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,10 +48,11 @@ ext {
 	versionName = "0.7.0"
 
 	// dependency versions
-	supportAnnotationsVersion = "28.0.0"
 	assertjVersion = "3.14.0"
-	mockitoVersion = "2.12.0"
 	kotlinVersion = "1.3.71"
+	mockitoVersion = "2.12.0"
+	mockitoKotlinVersion = "2.2.0"
+	supportAnnotationsVersion = "28.0.0"
 
 	analytics_kit = ':analyticskit'
 

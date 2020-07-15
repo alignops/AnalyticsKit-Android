@@ -61,6 +61,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
     testImplementation 'org.robolectric:robolectric:3.5.1'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.6.0'
+    testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
 }
 
 task sourcesJar(type: Jar) {

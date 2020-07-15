@@ -31,7 +31,6 @@ import java.text.DecimalFormat
  * @see <a href="https://developers.kissmetrics.com/reference#android">KissMetrics Android SDK documentation</a>
  *
  * @constructor Initializes a new [KissMetricsProvider] object.
- * *Please be aware:* asdf
  *
  * @property kissMetrics your already-initialized [KISSmetricsAPI] instance. Please call
  * KISSmetricsAPI.sharedAPI(API_KEY, APPLICATION_CONTEXT) prior to setting up your [KissMetricsProvider].

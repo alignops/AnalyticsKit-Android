@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 busybusy, Inc.
+ * Copyright 2018, 2020-2021 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ android {
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
 	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
-	implementation 'com.flurry.android:analytics:12.1.0'
+	implementation 'com.flurry.android:analytics:12.13.0'
 
 	testImplementation "junit:junit:$rootProject.ext.junit_version"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"

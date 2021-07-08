@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 busybusy, Inc.
+ * Copyright 2018, 2021 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -154,12 +154,11 @@ public class FirebaseProvider implements AnalyticsKitProvider
 		Map<String, Object> attributes      = event.getAttributes();
 		if (attributes != null && !attributes.isEmpty())
 		{
-			Intent intent = new Intent();
+			parameterBundle = new Bundle();
 			for (String key : attributes.keySet())
 			{
-				intent.putExtra(key, getCheckAndCast(attributes, key));
+				parameterBundle.putSerializable(key, getCheckAndCast(attributes, key));
 			}
-			parameterBundle = intent.getExtras();
 		}
 
 		firebaseAnalytics.logEvent(event.name(), parameterBundle);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 busybusy, Inc.
+ * Copyright 2017 - 2021 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ android {
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
 	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
-	compileOnly 'io.intercom.android:intercom-sdk:6.1.0'
+	compileOnly 'io.intercom.android:intercom-sdk-base:10.0.1'
 
-	testImplementation 'io.intercom.android:intercom-sdk:6.1.0'
+	testImplementation 'io.intercom.android:intercom-sdk-base:10.0.1'
 	testImplementation "junit:junit:$rootProject.ext.junit_version"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"

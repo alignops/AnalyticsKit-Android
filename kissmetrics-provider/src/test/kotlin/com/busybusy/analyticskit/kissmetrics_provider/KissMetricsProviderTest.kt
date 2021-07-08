@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 busybusy, Inc.
+ * Copyright 2020-2021 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ class KissMetricsProviderTest {
     @Test
     fun `untimed event with empty attributes records only event name`() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Test Run")
         provider.sendEvent(event)
@@ -134,7 +134,7 @@ class KissMetricsProviderTest {
     @Test
     fun `untimed event with attributes but no RecordCondition`() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Event With Params Run")
                 .putAttribute("some_param", "yes")
@@ -151,7 +151,7 @@ class KissMetricsProviderTest {
     @Test
     fun `untimed event where only attribute is RecordCondition`() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Event With Params Run")
                 .recordCondition(RECORD_ONCE_PER_INSTALL)
@@ -165,7 +165,7 @@ class KissMetricsProviderTest {
     @Test
     fun `untimed event with both attributes and RecordCondition`() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Event With Params Run")
                 .putAttribute("some_param", "yes")
@@ -184,7 +184,7 @@ class KissMetricsProviderTest {
     @Test
     fun `log error event`() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = ErrorEvent()
                 .setMessage("something bad happened")
@@ -205,7 +205,7 @@ class KissMetricsProviderTest {
     @Test
     fun `send timed event with no attributes`() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Timed Event")
                 .setTimed(true)
@@ -217,7 +217,7 @@ class KissMetricsProviderTest {
     @Test
     fun `send timed event with attributes`() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Timed Event With Parameters")
                 .setTimed(true)
@@ -231,7 +231,7 @@ class KissMetricsProviderTest {
     @Test
     fun testEndTimedEvent_Valid() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Timed Event With Parameters")
                 .setTimed(true)
@@ -262,7 +262,7 @@ class KissMetricsProviderTest {
     @Test
     fun test_endTimedEvent_WillThrow() {
         PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenReturn(kissMetrics)
+        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         var didThrow = false
         val event = AnalyticsEvent("KissMetrics Timed Event With Parameters")

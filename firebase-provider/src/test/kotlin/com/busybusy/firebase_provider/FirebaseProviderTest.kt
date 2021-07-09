@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 busybusy, Inc.
+ * Copyright 2018, 2020-2021 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import java.util.*
  * @author John Hunt on 3/21/16.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [27], constants = BuildConfig::class, manifest = Config.NONE)
+@Config(sdk = [27], manifest=Config.NONE)
 class FirebaseProviderTest {
     private val firebaseAnalytics: FirebaseAnalytics = mock()
     private val provider: FirebaseProvider = FirebaseProvider(firebaseAnalytics)

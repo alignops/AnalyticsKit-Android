@@ -52,7 +52,7 @@ android {
 
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
-	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
+	api "androidx.annotation:annotation:1.2.0"
 	implementation 'com.flurry.android:analytics:12.13.0'
 
 	testImplementation "junit:junit:$rootProject.ext.junit_version"

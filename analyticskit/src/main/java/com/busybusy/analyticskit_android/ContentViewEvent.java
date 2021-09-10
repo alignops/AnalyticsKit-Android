@@ -16,7 +16,7 @@
 
 package com.busybusy.analyticskit_android;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Defines information that is needed to distribute a "Content View" event to the registered analytics providers.

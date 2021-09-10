@@ -16,7 +16,7 @@
 
 package com.busybusy.graylog_provider;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.busybusy.analyticskit_android.AnalyticsEvent;
 import com.busybusy.analyticskit_android.AnalyticsKitProvider;

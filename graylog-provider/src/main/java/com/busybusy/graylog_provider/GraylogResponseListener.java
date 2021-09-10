@@ -16,7 +16,7 @@
 
 package com.busybusy.graylog_provider;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Defines the contract for callbacks fired by the {@link GraylogProvider} instance.

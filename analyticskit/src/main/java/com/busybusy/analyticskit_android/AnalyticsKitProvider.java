@@ -16,7 +16,7 @@
 
 package com.busybusy.analyticskit_android;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Defines the interface for provider plugins to be used with AnalyticsKit-Android.

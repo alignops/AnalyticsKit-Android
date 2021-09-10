@@ -16,12 +16,12 @@
 
 package com.busybusy.analyticskit_android;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Defines information that is needed to distribute the event to the registered analytics providers.

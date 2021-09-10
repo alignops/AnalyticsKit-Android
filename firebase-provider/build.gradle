@@ -52,7 +52,7 @@ android {
 
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
-	implementation "com.android.support:support-annotations:$rootProject.ext.supportAnnotationsVersion"
+	api "androidx.annotation:annotation:1.2.0"
 	compileOnly 'com.google.firebase:firebase-analytics:19.0.0'
 
 	testImplementation 'com.google.firebase:firebase-analytics:19.0.0'

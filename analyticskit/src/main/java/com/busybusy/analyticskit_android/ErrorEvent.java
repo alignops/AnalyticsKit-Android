@@ -16,8 +16,8 @@
 
 package com.busybusy.analyticskit_android;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Defines information that is needed to distribute an "Error" event to the registered analytics providers.

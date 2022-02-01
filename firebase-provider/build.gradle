@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020-2021 busybusy, Inc.
+ * Copyright 2018, 2020-2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'kotlin-android'
+plugins {
+	id 'com.android.library'
+	id 'kotlin-android'
+}
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -63,6 +64,27 @@ dependencies {
 	testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
 	testImplementation 'org.mockito:mockito-core:3.8.0'
 	testImplementation 'org.robolectric:robolectric:4.6.1'
+}
+
+afterEvaluate {
+	publishing {
+		publications {
+			releaseFirebase(MavenPublication) { // Creates a Maven publication called "releaseFirebase".
+				from components.release // Applies the component for the release build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'firebase-provider'
+				version = '0.9.2'
+			}
+			debugFirebase(MavenPublication) { // Creates a Maven publication called “debugFirebase”.
+				from components.debug // Applies the component for the debug build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'firebase-provider-debug'
+				version = '0.9.2'
+			}
+		}
+	}
 }
 
 task sourcesJar(type: Jar) {

@@ -26,8 +26,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "0.8.0"
     }
 
     buildTypes {
@@ -80,14 +78,14 @@ afterEvaluate {
 
                 groupId = 'com.github.busybusy.AnalyticsKit-Android'
                 artifactId = 'kissmetrics-provider'
-                version = '0.9.2'
+                version = "$VERSION_NAME"
             }
             debugKissMetrics(MavenPublication) { // Creates a Maven publication called “debugKissMetrics”.
                 from components.debug // Applies the component for the debug build variant.
 
                 groupId = 'com.github.busybusy.AnalyticsKit-Android'
                 artifactId = 'kissmetrics-provider-debug'
-                version = '0.9.2'
+                version = "$VERSION_NAME"
             }
         }
     }

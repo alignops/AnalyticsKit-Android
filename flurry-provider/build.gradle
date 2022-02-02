@@ -26,8 +26,6 @@ android {
 	defaultConfig {
 		minSdkVersion rootProject.ext.minSdkVersion
 		targetSdkVersion rootProject.ext.targetSdkVersion
-		versionCode 1
-		versionName "0.1.0"
 	}
 	buildTypes {
 		release {
@@ -74,14 +72,14 @@ afterEvaluate {
 
 				groupId = 'com.github.busybusy.AnalyticsKit-Android'
 				artifactId = 'flurry-provider'
-				version = '0.9.2'
+				version = "$VERSION_NAME"
 			}
 			debugFlurry(MavenPublication) { // Creates a Maven publication called “debugFlurry”.
 				from components.debug // Applies the component for the debug build variant.
 
 				groupId = 'com.github.busybusy.AnalyticsKit-Android'
 				artifactId = 'flurry-provider-debug'
-				version = '0.9.2'
+				version = "$VERSION_NAME"
 			}
 		}
 	}

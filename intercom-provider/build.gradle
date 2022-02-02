@@ -26,8 +26,6 @@ android {
 	defaultConfig {
 		minSdkVersion rootProject.ext.minSdkVersion
 		targetSdkVersion rootProject.ext.targetSdkVersion
-		versionCode 1
-		versionName "0.1.0"
 	}
 	buildTypes {
 		release {
@@ -75,14 +73,14 @@ afterEvaluate {
 
 				groupId = 'com.github.busybusy.AnalyticsKit-Android'
 				artifactId = 'intercom-provider'
-				version = '0.9.2'
+				version = "$VERSION_NAME"
 			}
 			debugIntercom(MavenPublication) { // Creates a Maven publication called “debugIntercom”.
 				from components.debug // Applies the component for the debug build variant.
 
 				groupId = 'com.github.busybusy.AnalyticsKit-Android'
 				artifactId = 'intercom-provider-debug'
-				version = '0.9.2'
+				version = "$VERSION_NAME"
 			}
 		}
 	}

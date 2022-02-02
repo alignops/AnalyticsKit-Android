@@ -50,7 +50,7 @@ ext {
 	targetSdkVersion = 30
 	buildToolsVersion = "30.0.3"
 	versionCode = 12
-	versionName = "0.7.0"
+	versionName = "$VERSION_NAME"
 
 	// dependency versions
 	assertjVersion = "3.14.0"

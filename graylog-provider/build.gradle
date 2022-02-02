@@ -26,8 +26,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -74,14 +72,14 @@ afterEvaluate {
 
                 groupId = 'com.github.busybusy.AnalyticsKit-Android'
                 artifactId = 'graylog-provider'
-                version = '0.9.2'
+                version = "$VERSION_NAME"
             }
             debugGraylog(MavenPublication) { // Creates a Maven publication called “debugGraylog”.
                 from components.debug // Applies the component for the debug build variant.
 
                 groupId = 'com.github.busybusy.AnalyticsKit-Android'
                 artifactId = 'graylog-provider-debug'
-                version = '0.9.2'
+                version = "$VERSION_NAME"
             }
         }
     }

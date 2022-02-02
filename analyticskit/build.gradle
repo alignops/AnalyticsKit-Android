@@ -26,8 +26,6 @@ android {
 	defaultConfig {
 		minSdkVersion rootProject.ext.minSdkVersion
 		targetSdkVersion rootProject.ext.targetSdkVersion
-		versionCode = 1
-		versionName = rootProject.version ? rootProject.version : "unspecified"
 	}
 	buildTypes {
 		release {
@@ -64,14 +62,14 @@ afterEvaluate {
 
 				groupId = 'com.github.busybusy.AnalyticsKit-Android'
 				artifactId = 'analyticskit'
-				version = '0.9.2'
+				version = "$VERSION_NAME"
 			}
 			debugAnalyticsKit(MavenPublication) { // Creates a Maven publication called “debugAnalyticsKit”.
 				from components.debug // Applies the component for the debug build variant.
 
 				groupId = 'com.github.busybusy.AnalyticsKit-Android'
 				artifactId = 'analyticskit-debug'
-				version = '0.9.2'
+				version = "$VERSION_NAME"
 			}
 		}
 	}

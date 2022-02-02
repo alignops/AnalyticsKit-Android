@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2018, 2020 busybusy, Inc.
+ * Copyright 2016 - 2018, 2020 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'kotlin-android'
+plugins {
+	id 'com.android.library'
+	id 'kotlin-android'
+}
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -25,8 +26,6 @@ android {
 	defaultConfig {
 		minSdkVersion rootProject.ext.minSdkVersion
 		targetSdkVersion rootProject.ext.targetSdkVersion
-		versionCode 2
-		versionName "0.2.0"
 	}
 	buildTypes {
 		release {
@@ -57,6 +56,27 @@ dependencies {
 	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.ext.mockitoKotlinVersion"
+}
+
+afterEvaluate {
+	publishing {
+		publications {
+			releaseGoogle(MavenPublication) { // Creates a Maven publication called "releaseGoogle".
+				from components.release // Applies the component for the release build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'google-analytics-provider'
+				version = "$VERSION_NAME"
+			}
+			debugGoogle(MavenPublication) { // Creates a Maven publication called “debugGoogle”.
+				from components.debug // Applies the component for the debug build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'google-analytics-provider-debug'
+				version = "$VERSION_NAME"
+			}
+		}
+	}
 }
 
 task sourcesJar(type: Jar) {

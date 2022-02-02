@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2020 Busy, LLC
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'kotlin-android'
+plugins {
+	id 'com.android.library'
+	id 'kotlin-android'
+}
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -25,8 +26,6 @@ android {
 	defaultConfig {
 		minSdkVersion rootProject.ext.minSdkVersion
 		targetSdkVersion rootProject.ext.targetSdkVersion
-		versionCode = 1
-		versionName = rootProject.version ? rootProject.version : "unspecified"
 	}
 	buildTypes {
 		release {
@@ -53,6 +52,27 @@ dependencies {
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
+}
+
+afterEvaluate {
+	publishing {
+		publications {
+			releaseAnalyticsKit(MavenPublication) { // Creates a Maven publication called "releaseAnalyticsKit".
+				from components.release // Applies the component for the release build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'analyticskit'
+				version = "$VERSION_NAME"
+			}
+			debugAnalyticsKit(MavenPublication) { // Creates a Maven publication called “debugAnalyticsKit”.
+				from components.debug // Applies the component for the debug build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'analyticskit-debug'
+				version = "$VERSION_NAME"
+			}
+		}
+	}
 }
 
 task sourcesJar(type: Jar) {

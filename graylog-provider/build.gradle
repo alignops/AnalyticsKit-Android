@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020-2021 busybusy, Inc.
+ * Copyright 2018, 2020-2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -25,8 +26,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -63,6 +62,27 @@ dependencies {
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.6.0'
     testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     testImplementation "org.mockito:mockito-core:3.8.0"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            releaseGraylog(MavenPublication) { // Creates a Maven publication called "releaseGraylog".
+                from components.release // Applies the component for the release build variant.
+
+                groupId = 'com.github.busybusy.AnalyticsKit-Android'
+                artifactId = 'graylog-provider'
+                version = "$VERSION_NAME"
+            }
+            debugGraylog(MavenPublication) { // Creates a Maven publication called “debugGraylog”.
+                from components.debug // Applies the component for the debug build variant.
+
+                groupId = 'com.github.busybusy.AnalyticsKit-Android'
+                artifactId = 'graylog-provider-debug'
+                version = "$VERSION_NAME"
+            }
+        }
+    }
 }
 
 task sourcesJar(type: Jar) {

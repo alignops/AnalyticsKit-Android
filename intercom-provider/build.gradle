@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2021 busybusy, Inc.
+ * Copyright 2017 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'kotlin-android'
+plugins {
+	id 'com.android.library'
+	id 'kotlin-android'
+}
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -25,8 +26,6 @@ android {
 	defaultConfig {
 		minSdkVersion rootProject.ext.minSdkVersion
 		targetSdkVersion rootProject.ext.targetSdkVersion
-		versionCode 1
-		versionName "0.1.0"
 	}
 	buildTypes {
 		release {
@@ -64,6 +63,27 @@ dependencies {
 
 	testImplementation "org.powermock:powermock-api-mockito2:2.0.2"
 	testImplementation "org.powermock:powermock-module-junit4:2.0.2"
+}
+
+afterEvaluate {
+	publishing {
+		publications {
+			releaseIntercom(MavenPublication) { // Creates a Maven publication called "releaseIntercom".
+				from components.release // Applies the component for the release build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'intercom-provider'
+				version = "$VERSION_NAME"
+			}
+			debugIntercom(MavenPublication) { // Creates a Maven publication called “debugIntercom”.
+				from components.debug // Applies the component for the debug build variant.
+
+				groupId = 'com.github.busybusy.AnalyticsKit-Android'
+				artifactId = 'intercom-provider-debug'
+				version = "$VERSION_NAME"
+			}
+		}
+	}
 }
 
 task sourcesJar(type: Jar) {

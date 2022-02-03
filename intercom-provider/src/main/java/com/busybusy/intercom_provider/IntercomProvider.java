@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 busybusy, Inc.
+ * Copyright 2017, 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import com.busybusy.analyticskit_android.AnalyticsKitProvider;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import io.intercom.android.sdk.Intercom;
 
@@ -35,13 +37,13 @@ import io.intercom.android.sdk.Intercom;
 
 public class IntercomProvider implements AnalyticsKitProvider
 {
-
 	protected Intercom                        intercom;
 	protected HashMap<String, AnalyticsEvent> timedEvents;
 	protected HashMap<String, Long>           eventTimes;
 	protected PriorityFilter                  priorityFilter;
+	protected boolean                         quietMode;
 
-	final int MAX_METADATA_ATTRIBUTES = 5;
+	final int MAX_METADATA_ATTRIBUTES = 10;
 
 	final String DURATION = "event_duration";
 
@@ -64,7 +66,7 @@ public class IntercomProvider implements AnalyticsKitProvider
 	}
 
 	/**
-	 * Initializes a new {@code IntercomProvider} object
+	 * Initializes a new {@code IntercomProvider} object.
 	 *
 	 * @param intercom       your already-initialized {@link Intercom} instance.
 	 *                       Please call {@link Intercom#initialize(Application, String, String)} prior to setting up your {@link IntercomProvider}.
@@ -72,8 +74,22 @@ public class IntercomProvider implements AnalyticsKitProvider
 	 */
 	public IntercomProvider(@NonNull Intercom intercom, @NonNull PriorityFilter priorityFilter)
 	{
+		this(intercom, priorityFilter, false);
+	}
+
+	/**
+	 * Initializes a new {@code IntercomProvider} object
+	 * @param intercom your already-initialized {@link Intercom} instance.
+	 *                 Please call {@link Intercom#initialize(Application, String, String)} prior to setting up your {@link IntercomProvider}.
+	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
+	 * @param quietMode {@code true} to silently take the first ten items of metadata in the event's attributes per Intercom limits.
+	 *                   {@code false} to throw Exceptions when events contain more than the allowed limit of metadata items.
+	 */
+	public IntercomProvider(@NonNull Intercom intercom, @NonNull PriorityFilter priorityFilter, boolean quietMode)
+	{
 		this.intercom = intercom;
 		this.priorityFilter = priorityFilter;
+		this.quietMode = quietMode;
 	}
 
 	/**
@@ -156,13 +172,33 @@ public class IntercomProvider implements AnalyticsKitProvider
 
 	private void logIntercomEvent(@NonNull AnalyticsEvent event) throws IllegalStateException
 	{
-		// guard clause
+		Map<String, Object> sanitizedAttributes;
 		if (event.getAttributes() != null && event.getAttributes().keySet().size() > MAX_METADATA_ATTRIBUTES)
 		{
-			throw new IllegalStateException("Intercom does not support more than " + MAX_METADATA_ATTRIBUTES +
-					                                " metadata fields. See https://docs.intercom.com/the-intercom-platform/track-events-in-intercom.");
+			if (this.quietMode)
+			{
+				sanitizedAttributes = new LinkedHashMap<>();
+				int count = 0;
+				for (String key : event.getAttributes().keySet())
+				{
+					if (count < MAX_METADATA_ATTRIBUTES)
+					{
+						sanitizedAttributes.put(key, event.getAttribute(key));
+						count++;
+					}
+				}
+			}
+			else
+			{
+				throw new IllegalStateException("Intercom does not support more than " + MAX_METADATA_ATTRIBUTES +
+						                                " metadata fields. See https://www.intercom.com/help/en/articles/175-set-up-event-tracking-in-intercom.");
+			}
+		}
+		else
+		{
+			sanitizedAttributes = event.getAttributes();
 		}
 
-		Intercom.client().logEvent(event.name(), event.getAttributes());
+		Intercom.client().logEvent(event.name(), sanitizedAttributes);
 	}
 }

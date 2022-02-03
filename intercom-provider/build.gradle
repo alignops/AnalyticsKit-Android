@@ -52,9 +52,9 @@ android {
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
 	api "androidx.annotation:annotation:1.2.0"
-	compileOnly 'io.intercom.android:intercom-sdk-base:10.0.1'
+	compileOnly 'io.intercom.android:intercom-sdk-base:10.6.1'
 
-	testImplementation 'io.intercom.android:intercom-sdk-base:10.0.1'
+	testImplementation 'io.intercom.android:intercom-sdk-base:10.6.1'
 	testImplementation "junit:junit:$rootProject.ext.junit_version"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"

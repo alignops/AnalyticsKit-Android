@@ -126,6 +126,60 @@ class IntercomProviderTest {
 
     @PrepareForTest(Intercom::class)
     @Test
+    fun testQuietMode() {
+        val quietProvider = IntercomProvider(mockedIntercom, { true }, true)
+        val event = AnalyticsEvent("Intercom Event With 11 Attributes")
+                .putAttribute("one", "one")
+                .putAttribute("two", "two")
+                .putAttribute("three", "three")
+                .putAttribute("four", "four")
+                .putAttribute("five", "five")
+                .putAttribute("six", "six")
+                .putAttribute("seven", "seven")
+                .putAttribute("eight", "eight")
+                .putAttribute("nine", "nine")
+                .putAttribute("ten", "ten")
+                .putAttribute("eleven", "eleven")
+
+        assertThat(logEventCalled).isEqualTo(false)
+        quietProvider.sendEvent(event)
+        assertThat(logEventCalled).isEqualTo(true)
+        assertThat(testEventName).isEqualTo("Intercom Event With 11 Attributes")
+        assertThat(testEventPropertiesMap?.keys).hasSize(MAX_METADATA_ATTRIBUTES)
+        assertThat(testEventPropertiesMap?.values).hasSize(MAX_METADATA_ATTRIBUTES)
+    }
+
+    @PrepareForTest(Intercom::class)
+    @Test
+    fun testExceptionThrownWhenNotInQuietMode() {
+        val event = AnalyticsEvent("Intercom Event With 11 Attributes")
+                .putAttribute("one", "one")
+                .putAttribute("two", "two")
+                .putAttribute("three", "three")
+                .putAttribute("four", "four")
+                .putAttribute("five", "five")
+                .putAttribute("six", "six")
+                .putAttribute("seven", "seven")
+                .putAttribute("eight", "eight")
+                .putAttribute("nine", "nine")
+                .putAttribute("ten", "ten")
+                .putAttribute("eleven", "eleven")
+
+        assertThat(logEventCalled).isEqualTo(false)
+        var exception: IllegalStateException? = null
+        try {
+            provider.sendEvent(event)
+        } catch (e: IllegalStateException) {
+            exception = e
+        }
+
+        // Verify Intercom framework is not called
+        assertThat(logEventCalled).isEqualTo(false)
+        assertThat(exception).isNotNull
+    }
+
+    @PrepareForTest(Intercom::class)
+    @Test
     fun testLogContentViewEvent() {
         val event = ContentViewEvent("Test page 7")
         provider.sendEvent(event)
@@ -190,8 +244,8 @@ class IntercomProviderTest {
 
         // Verify Intercom framework is called
         assertThat(logEventCalled).isEqualTo(true)
-        assertThat(testEventPropertiesMap!!.keys).containsExactlyInAnyOrder(provider.DURATION, "some_param", "another_param")
-        assertThat(testEventPropertiesMap!!.values).containsExactlyInAnyOrder(timeString, "yes", "yes again")
+        assertThat(testEventPropertiesMap?.keys).containsExactlyInAnyOrder(provider.DURATION, "some_param", "another_param")
+        assertThat(testEventPropertiesMap?.values).containsExactlyInAnyOrder(timeString, "yes", "yes again")
     }
 
     @PrepareForTest(Intercom::class)
@@ -208,3 +262,5 @@ class IntercomProviderTest {
         assertThat(didThrow).isEqualTo(true)
     }
 }
+
+private const val MAX_METADATA_ATTRIBUTES = 10

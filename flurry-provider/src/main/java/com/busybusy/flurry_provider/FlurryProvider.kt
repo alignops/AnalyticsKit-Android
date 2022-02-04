@@ -19,7 +19,6 @@ import com.busybusy.analyticskit_android.AnalyticsKitProvider.PriorityFilter
 import com.busybusy.analyticskit_android.AnalyticsKitProvider
 import com.busybusy.analyticskit_android.AnalyticsEvent
 import com.flurry.android.FlurryAgent
-import java.lang.IllegalStateException
 
 /**
  * Implements Flurry as a provider to use with [com.busybusy.analyticskit_android.AnalyticsKit]
@@ -39,8 +38,6 @@ import java.lang.IllegalStateException
 class FlurryProvider(
     private var priorityFilter: PriorityFilter = PriorityFilter { true },
 ) : AnalyticsKitProvider {
-
-    val ATTRIBUTE_LIMIT = 10
 
     /**
      * Returns the filter used to restrict events by priority.
@@ -83,21 +80,19 @@ class FlurryProvider(
 
     /**
      * Converts a `Map<String, Any>` to `Map<String, String>`
-     * @param attributeMap the map of attributes attached to the event
+     * @param attributes the map of attributes attached to the event
      * @return the String map of parameters. Returns `null` if no parameters are attached to the event.
      */
     @Throws(IllegalStateException::class)
-    fun stringifyParameters(attributeMap: Map<String, Any>?): Map<String, String>? {
-        var flurryMap: MutableMap<String, String>? = null
-
-        // convert the attributes to to <String, String> to appease the Flurry API
-        if (attributeMap != null && attributeMap.isNotEmpty()) {
-            check(attributeMap.size <= ATTRIBUTE_LIMIT) { "Flurry events are limited to $ATTRIBUTE_LIMIT attributes" }
-            flurryMap = mutableMapOf()
-            for (key in attributeMap.keys) {
-                flurryMap[key] = attributeMap[key].toString()
-            }
+    fun stringifyParameters(attributes: Map<String, Any>?): Map<String, String>? {
+        check((attributes?.size ?: 0) <= ATTRIBUTE_LIMIT) {
+            "Flurry events are limited to $ATTRIBUTE_LIMIT attributes"
         }
-        return flurryMap
+
+        return attributes?.map { (key, value) -> key to value.toString() }
+            ?.takeIf { it.isNotEmpty() }
+            ?.toMap()
     }
 }
+
+internal const val ATTRIBUTE_LIMIT = 10

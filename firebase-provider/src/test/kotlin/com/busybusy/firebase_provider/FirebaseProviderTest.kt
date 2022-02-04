@@ -72,8 +72,8 @@ class FirebaseProviderTest {
     @Test
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
-        provider.setPriorityFilter(filter)
-        assertThat(provider.getPriorityFilter()).isEqualTo(filter)
+        val filteringProvider = FirebaseProvider(firebaseAnalytics, filter)
+        assertThat(filteringProvider.priorityFilter).isEqualTo(filter)
     }
 
     @Test
@@ -81,22 +81,24 @@ class FirebaseProviderTest {
         val event = AnalyticsEvent("A Firebase Event")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
         event.setPriority(-9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test
     fun test_priorityFiltering_custom() {
-        provider.setPriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filteringProvider = FirebaseProvider(firebaseAnalytics) {
+                priorityLevel -> priorityLevel < 10
+        }
         val event = AnalyticsEvent("Priority 10 Event")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test

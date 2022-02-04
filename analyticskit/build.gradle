@@ -50,7 +50,7 @@ dependencies {
 
 	testImplementation 'junit:junit:4.12'
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
-	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
 }
 

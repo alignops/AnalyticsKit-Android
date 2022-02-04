@@ -56,7 +56,7 @@ dependencies {
 
     testImplementation "junit:junit:$rootProject.ext.junit_version"
     testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
     testImplementation 'org.robolectric:robolectric:4.6.1'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.6.0'

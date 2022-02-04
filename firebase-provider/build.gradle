@@ -56,7 +56,7 @@ dependencies {
 
 	testImplementation 'com.google.firebase:firebase-analytics:19.0.0'
 	testImplementation 'junit:junit:4.12'
-	testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlinVersion"
+	testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'

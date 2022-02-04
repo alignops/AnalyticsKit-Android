@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2021 busybusy, Inc.
+ * Copyright 2018 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,160 +13,97 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.busybusy.firebase_provider
 
-package com.busybusy.firebase_provider;
-
-import android.content.Intent;
-import android.os.Bundle;
-import androidx.annotation.NonNull;
-
-import com.busybusy.analyticskit_android.AnalyticsEvent;
-import com.busybusy.analyticskit_android.AnalyticsKitProvider;
-import com.google.firebase.analytics.FirebaseAnalytics;
-
-import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.busybusy.analyticskit_android.AnalyticsKitProvider.PriorityFilter
+import com.busybusy.analyticskit_android.AnalyticsKitProvider
+import com.busybusy.analyticskit_android.AnalyticsEvent
+import android.os.Bundle
+import java.io.Serializable
+import java.lang.IllegalStateException
+import java.text.DecimalFormat
 
 /**
  * Provider that facilitates reporting events to Firebase Analytics.
- * We recommend using the {@link FirebaseAnalytics.Param} names for attributes as much as possible due to the restriction on the number of
+ * We recommend using the [FirebaseAnalytics.Param] names for attributes as much as possible due to the restriction on the number of
  * custom parameters in Firebase.
  *
- * @see <a href="https://firebase.google.com/docs/analytics/android/events">Log Events</a>
- * @see <a href="https://support.google.com/firebase/answer/7397304?hl=en&ref_topic=6317489">Custom-parameter reporting</a>
+ * @see [Log Events](https://firebase.google.com/docs/analytics/android/events)
+ * @see [Custom-parameter reporting](https://support.google.com/firebase/answer/7397304?hl=en&ref_topic=6317489)
+ *
+ * @property firebaseAnalytics the initialized [FirebaseAnalytics] instance associated with the application
+ * @property priorityFilter the [PriorityFilter] to use when evaluating if an event should be sent to this provider's platform.
+ *                          By default, this provider will log all events regardless of priority.
  */
-public class FirebaseProvider implements AnalyticsKitProvider
-{
-	protected       Map<String, AnalyticsEvent> timedEvents;
-	protected       Map<String, Long>           eventTimes;
-	protected       PriorityFilter              priorityFilter;
-	protected final FirebaseAnalytics           firebaseAnalytics;
+class FirebaseProvider(
+    private val firebaseAnalytics: FirebaseAnalytics,
+    private var priorityFilter: PriorityFilter = PriorityFilter { true },
+) : AnalyticsKitProvider {
 
-	/**
-	 * Initializes a new {@code FirebaseProvider} object.
-	 *
-	 * @param firebaseAnalytics the initialized {@code FirebaseAnalytics} instance associated with the application
-	 */
-	public FirebaseProvider(@NonNull FirebaseAnalytics firebaseAnalytics)
-	{
-		this(firebaseAnalytics, new PriorityFilter()
-		{
-			@Override
-			public boolean shouldLog(int priorityLevel)
-			{
-				return true; // Log all events, regardless of priority
-			}
-		});
-	}
+    private val timedEvents: MutableMap<String, AnalyticsEvent> by lazy { mutableMapOf() }
+    private val eventTimes: MutableMap<String, Long> by lazy { mutableMapOf() }
 
-	/**
-	 * Initializes a new {@code FirebaseProvider} object
-	 *
-	 * @param firebaseAnalytics the initialized {@code FirebaseAnalytics} instance associated with the application
-	 * @param priorityFilter    the {@code PriorityFilter} to use when evaluating events
-	 */
-	public FirebaseProvider(@NonNull FirebaseAnalytics firebaseAnalytics, @NonNull PriorityFilter priorityFilter)
-	{
-		this.firebaseAnalytics = firebaseAnalytics;
-		this.priorityFilter = priorityFilter;
-	}
+    /**
+     * Returns the filter used to restrict events by priority.
+     *
+     * @return the [PriorityFilter] instance the provider is using to determine if an
+     *         event of a given priority should be logged
+     */
+    override fun getPriorityFilter(): PriorityFilter = priorityFilter
 
-	/**
-	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities.
-	 *
-	 * @param priorityFilter the filter to use
-	 * @return the {@code GoogleAnalyticsProvider} instance (for builder-style convenience)
-	 */
-	public FirebaseProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
-	{
-		this.priorityFilter = priorityFilter;
-		return this;
-	}
+    /**
+     * Sends the event using provider-specific code.
+     *
+     * @param event an instantiated event
+     */
+    override fun sendEvent(event: AnalyticsEvent) {
+        if (event.isTimed) { // Hang onto the event until it is done
+            eventTimes[event.name()] = System.currentTimeMillis()
+            timedEvents[event.name()] = event
+        } else { // Send the event through the Firebase Analytics API
+            logFirebaseAnalyticsEvent(event)
+        }
+    }
 
-	@NonNull
-	@Override
-	public PriorityFilter getPriorityFilter()
-	{
-		return priorityFilter;
-	}
+    /**
+     * End the timed event.
+     *
+     * @param timedEvent the event which has finished
+     * @throws IllegalStateException
+     */
+    override fun endTimedEvent(timedEvent: AnalyticsEvent) {
+        val endTime = System.currentTimeMillis()
+        val startTime = eventTimes.remove(timedEvent.name())
+        val finishedEvent = timedEvents.remove(timedEvent.name())
+        if (startTime != null && finishedEvent != null) {
+            val durationSeconds = ((endTime - startTime) / 1000).toDouble()
+            val df = DecimalFormat("#.###")
+            finishedEvent.putAttribute(FirebaseAnalytics.Param.VALUE, df.format(durationSeconds))
+            logFirebaseAnalyticsEvent(finishedEvent)
+        } else {
+            error("Attempted ending an event that was never started (or was previously ended): ${timedEvent.name()}")
+        }
+    }
 
-	/**
-	 * @see AnalyticsKitProvider
-	 */
-	@Override
-	public void sendEvent(@NonNull AnalyticsEvent event)
-	{
-		if (event.isTimed()) // Hang onto it until it is done
-		{
-			ensureTimeTrackingMaps();
+    private fun logFirebaseAnalyticsEvent(event: AnalyticsEvent) {
+        var parameterBundle: Bundle? = null
+        val attributes = event.attributes
+        if (attributes != null && attributes.isNotEmpty()) {
+            parameterBundle = Bundle()
+            for (key in attributes.keys) {
+                parameterBundle.putSerializable(key, getCheckAndCast(attributes, key))
+            }
+        }
+        firebaseAnalytics.logEvent(event.name(), parameterBundle)
+    }
 
-			this.eventTimes.put(event.name(), System.currentTimeMillis());
-			timedEvents.put(event.name(), event);
-		}
-		else // Send the event through the Firebase Analytics API
-		{
-			logFirebaseAnalyticsEvent(event);
-		}
-	}
-
-	/**
-	 * @see AnalyticsKitProvider
-	 */
-	@Override
-	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent) throws IllegalStateException
-	{
-		ensureTimeTrackingMaps();
-
-		long           endTime       = System.currentTimeMillis();
-		Long           startTime     = this.eventTimes.remove(timedEvent.name());
-		AnalyticsEvent finishedEvent = this.timedEvents.remove(timedEvent.name());
-
-		if (startTime != null && finishedEvent != null)
-		{
-			double        durationSeconds = (endTime - startTime) / 1000;
-			DecimalFormat df              = new DecimalFormat("#.###");
-			finishedEvent.putAttribute(FirebaseAnalytics.Param.VALUE, df.format(durationSeconds));
-			logFirebaseAnalyticsEvent(finishedEvent);
-		}
-		else
-		{
-			throw new IllegalStateException("Attempted ending an event that was never started (or was previously ended): " + timedEvent.name());
-		}
-	}
-
-	private void ensureTimeTrackingMaps()
-	{
-		if (this.eventTimes == null)
-		{
-			eventTimes = new HashMap<>(); // lazy initialization
-		}
-		if (this.timedEvents == null)
-		{
-			timedEvents = new HashMap<>(); // lazy initialization
-		}
-	}
-
-	private void logFirebaseAnalyticsEvent(@NonNull AnalyticsEvent event)
-	{
-		Bundle              parameterBundle = null;
-		Map<String, Object> attributes      = event.getAttributes();
-		if (attributes != null && !attributes.isEmpty())
-		{
-			parameterBundle = new Bundle();
-			for (String key : attributes.keySet())
-			{
-				parameterBundle.putSerializable(key, getCheckAndCast(attributes, key));
-			}
-		}
-
-		firebaseAnalytics.logEvent(event.name(), parameterBundle);
-	}
-
-	private <ObjectType extends Serializable> ObjectType getCheckAndCast(@NonNull Map<String, Object> map, @NonNull String key)
-	{
-		Serializable result = (Serializable) map.get(key);
-		return (ObjectType) result;
-	}
+    @Suppress("UNCHECKED_CAST")
+    private fun <ObjectType : Serializable> getCheckAndCast(
+        map: Map<String, Any>,
+        key: String,
+    ): ObjectType {
+        val result = map[key] as Serializable
+        return result as ObjectType
+    }
 }

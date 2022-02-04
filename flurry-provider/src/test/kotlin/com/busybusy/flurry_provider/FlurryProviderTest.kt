@@ -59,8 +59,8 @@ class FlurryProviderTest {
     @Test
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
-        provider.setPriorityFilter(filter)
-        assertThat(provider.getPriorityFilter()).isEqualTo(filter)
+        val filteringProvider = FlurryProvider(priorityFilter = filter)
+        assertThat(filteringProvider.priorityFilter).isEqualTo(filter)
     }
 
     @Test
@@ -68,22 +68,23 @@ class FlurryProviderTest {
         val event = AnalyticsEvent("Forecast: Event Flurries")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
         event.setPriority(-9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test
     fun test_priorityFiltering_custom() {
-        provider.setPriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filter = PriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filteringProvider = FlurryProvider(priorityFilter = filter)
         val event = AnalyticsEvent("Forecast: Event Flurries")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test

@@ -33,35 +33,24 @@ import java.text.DecimalFormat
 /**
  * Initializes a new {@code GraylogProvider} object.
  *
- * @param client          an initialized {@link OkHttpClient} instance
- * @param graylogInputUrl the URL of the Graylog HTTP input to use. Example: {@code http://graylog.example.org:12202/gelf}
+ * @property client          an initialized {@link OkHttpClient} instance
+ * @property graylogInputUrl the URL of the Graylog HTTP input to use. Example: {@code http://graylog.example.org:12202/gelf}
  * @param graylogHostName the name of the host application that is sending events
  * @property priorityFilter  the {@code PriorityFilter} to use when evaluating events
  *
  * @author John Hunt on 6/28/17.
  */
 class GraylogProvider constructor(
-    client: OkHttpClient,
-    graylogInputUrl: String,
+    private val client: OkHttpClient,
+    private val graylogInputUrl: String,
     graylogHostName: String,
     private val priorityFilter: PriorityFilter = PriorityFilter { true },
 ) : AnalyticsKitProvider {
-    private val client: OkHttpClient
-    private val inputUrl: String
-    private val host: String
     private val GELF_SPEC_VERSION = "1.1"
-    private val jsonizer: EventJsonizer
-    private val JSON: MediaType = "application/json; charset=utf-8".toMediaType()
+    private val jsonizer: EventJsonizer = EventJsonizer(GELF_SPEC_VERSION, graylogHostName)
     private val timedEvents: MutableMap<String, AnalyticsEvent> by lazy { mutableMapOf() }
     private val eventTimes: MutableMap<String, Long> by lazy { mutableMapOf() }
     var callbackListener: GraylogResponseListener? = null
-
-    init {
-        host = graylogHostName
-        jsonizer = EventJsonizer(GELF_SPEC_VERSION, graylogHostName)
-        this.client = client
-        inputUrl = graylogInputUrl
-    }
 
     /**
      * Specifies the [GraylogResponseListener] that should listen for callbacks.
@@ -129,9 +118,10 @@ class GraylogProvider constructor(
      * @param json          the payload to send to the Graylog input
      */
     private fun logFromJson(eventName: String, eventHashCode: Int, json: String) {
-        val body: RequestBody = json.toRequestBody(JSON)
+        val jsonMediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+        val body: RequestBody = json.toRequestBody(jsonMediaType)
         val request: Request = Request.Builder()
-            .url(inputUrl)
+            .url(graylogInputUrl)
             .post(body)
             .build()
 

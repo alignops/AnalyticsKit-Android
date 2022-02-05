@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2020 busybusy, Inc.
+ * Copyright 2017 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,13 +45,16 @@ class GraylogProviderFailedCallTest {
     @Before
     fun setup() {
         lock = CountDownLatch(1)
-        callbackListener = GraylogResponseListener { response ->
-            testEventHashCode = response.eventHashCode()
-            loggedEventName = response.eventName()
-            logEventCalled = true
-            httpResponseCode = response.code()
-            httpStatusMessage = response.message()
-            lock.countDown()
+        callbackListener = object : GraylogResponseListener {
+            override fun onGraylogResponse(response: GraylogResponse) {
+                testEventHashCode = response.eventHashCode
+                loggedEventName = response.eventName
+                logEventCalled = true
+                httpResponseCode = response.code
+                httpStatusMessage = response.message
+                lock.countDown()
+            }
+
         }
         mockServer.enqueue(MockResponse().setResponseCode(420).setStatus("An error occurred communicating with the Graylog server"))
         try {

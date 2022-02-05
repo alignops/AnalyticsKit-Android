@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2018, 2020 busybusy, Inc.
+ * Copyright 2017 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,12 +33,12 @@ import java.util.*
 class EventJsonizerTest {
     val VERSION = "1.1"
     val HOST = "unit-test-android"
-    var jsonizer = EventJsonizer(VERSION, HOST)
+    var jsonizer = EventJsonizer(gelfSpecVersion = VERSION, host = HOST)
 
     @Test
     fun jsonBody_defaultFields() {
-        val emails = mutableListOf<String>("john.jacob@unittest.me", "john.jacob@unittest.us")
-        val mapField = mutableMapOf<String, Any>("first_name" to "John", "last_name" to "Jacob", "emails" to emails)
+        val emails = mutableListOf("john.jacob@unittest.me", "john.jacob@unittest.us")
+        val mapField = mutableMapOf("first_name" to "John", "last_name" to "Jacob", "emails" to emails)
         val event = AnalyticsEvent("test_event")
                 .putAttribute("test_attribute_1", 100)
                 .putAttribute("test_attribute_2", "200")
@@ -54,7 +54,7 @@ class EventJsonizerTest {
     @Test
     fun jsonBody_customFields() {
         val emails = mutableMapOf<String, Any>("personal" to "john.jacob@unittest.me", "work" to "john.jacob@unittest.us")
-        val mapField = mutableMapOf<String, Any>("first_name" to "John", "last_name" to "Jacob", "emails" to emails)
+        val mapField = mutableMapOf("first_name" to "John", "last_name" to "Jacob", "emails" to emails)
         val timestamp = (System.currentTimeMillis() - 5000) / 1000.0
         val event = AnalyticsEvent("test_event")
                 .putAttribute("level", 5)
@@ -104,7 +104,7 @@ class EventJsonizerTest {
 
     @Test
     fun jsonFromMapRecursive_recursiveMapStructure() {
-        val levelTwoMap = mutableMapOf<String, Any>("a value" to 123, "l3" to mutableMapOf<Any, Any>())
+        val levelTwoMap = mutableMapOf("a value" to 123, "l3" to mutableMapOf<Any, Any>())
         val map = mutableMapOf<String, Any>("l2" to levelTwoMap)
         val json = jsonizer.getJsonFromMapRecursive(map)
         assertThat(json).isEqualTo("{\"l2\": {\"a value\": 123, \"l3\": {}}}")
@@ -112,7 +112,7 @@ class EventJsonizerTest {
 
     @Test
     fun jsonFromMapRecursive_mapOfLists() {
-        val levelTwoMap = mutableMapOf<String, Any>("a value" to 123, "l3" to mutableMapOf<Any, Any>())
+        val levelTwoMap = mutableMapOf("a value" to 123, "l3" to mutableMapOf<Any, Any>())
         val map = mutableMapOf<String, Any>("l2" to levelTwoMap)
         val json = jsonizer.getJsonFromMapRecursive(map)
         assertThat(json).isEqualTo("{\"l2\": {\"a value\": 123, \"l3\": {}}}")

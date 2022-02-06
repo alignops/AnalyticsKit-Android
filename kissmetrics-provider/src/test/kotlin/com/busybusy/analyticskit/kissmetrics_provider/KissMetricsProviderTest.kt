@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 busybusy, Inc.
+ * Copyright 2020 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class KissMetricsProviderTest {
 
     @Test
     fun `stringifyAttributes turns Any into String`() {
-        val eventParams = mutableMapOf<String, Any>("favorite_color" to "Blue", "favorite_number" to "42", "favorite_decimal" to "98.6")
+        val eventParams = mutableMapOf<String, Any>("favorite_color" to "Blue", "favorite_number" to 42, "favorite_decimal" to 98.6)
         val stringAttributes = eventParams.stringifyAttributes()
         assertThat(stringAttributes).isNotNull
         assertThat(stringAttributes)
@@ -255,7 +255,7 @@ class KissMetricsProviderTest {
         )
 
         val elapsedTime = timeString.toDouble()
-        assertThat(elapsedTime).isGreaterThanOrEqualTo(0.050)
+        assertThat(elapsedTime).isGreaterThanOrEqualTo(0.020)
     }
 
     @PrepareForTest(KISSmetricsAPI::class)

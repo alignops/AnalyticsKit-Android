@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2022 busybusy, Inc.
+ * Copyright 2017 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,192 +13,98 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.busybusy.intercom_provider
 
-package com.busybusy.intercom_provider;
-
-import android.app.Application;
-import androidx.annotation.NonNull;
-
-import com.busybusy.analyticskit_android.AnalyticsEvent;
-import com.busybusy.analyticskit_android.AnalyticsKitProvider;
-
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import io.intercom.android.sdk.Intercom;
+import io.intercom.android.sdk.Intercom
+import com.busybusy.analyticskit_android.AnalyticsKitProvider.PriorityFilter
+import com.busybusy.analyticskit_android.AnalyticsKitProvider
+import com.busybusy.analyticskit_android.AnalyticsEvent
+import java.text.DecimalFormat
 
 /**
- * Implements Intercom as a provider to use with {@link com.busybusy.analyticskit_android.AnalyticsKit}
+ * Implements Intercom as a provider to use with [com.busybusy.analyticskit_android.AnalyticsKit]
+ *
+ * @property intercom your already-initialized [Intercom] instance.
+ *                    Please call [Intercom.initialize] prior to setting up your IntercomProvider.
+ * @property priorityFilter the `PriorityFilter` to use when evaluating events if an event of a given priority should be logged
+ * @property quietMode `true` to silently take the first ten items of metadata in the event's attributes per Intercom limits.
+ * `                    false` to throw Exceptions when events contain more than the allowed limit of metadata items.
  *
  * @author John Hunt on 5/19/17.
  */
+class IntercomProvider(
+    private val intercom: Intercom,
+    private val priorityFilter: PriorityFilter = PriorityFilter { true },
+    private val quietMode: Boolean = false,
+) : AnalyticsKitProvider {
 
-public class IntercomProvider implements AnalyticsKitProvider
-{
-	protected Intercom                        intercom;
-	protected HashMap<String, AnalyticsEvent> timedEvents;
-	protected HashMap<String, Long>           eventTimes;
-	protected PriorityFilter                  priorityFilter;
-	protected boolean                         quietMode;
+    private val timedEvents: MutableMap<String, AnalyticsEvent> by lazy { mutableMapOf() }
+    private val eventTimes: MutableMap<String, Long> by lazy { mutableMapOf() }
 
-	final int MAX_METADATA_ATTRIBUTES = 10;
+    /**
+     * Returns the filter used to restrict events by priority.
+     *
+     * @return the [PriorityFilter] instance the provider is using to determine if an
+     *         event of a given priority should be logged
+     */
+    override fun getPriorityFilter(): PriorityFilter = priorityFilter
 
-	final String DURATION = "event_duration";
+    /**
+     * Sends the event using provider-specific code
+     * @param event an instantiated event. **Note:** When sending timed events, be aware that this provider does not support concurrent timed events with the same name.
+     * @see AnalyticsKitProvider
+     */
+    override fun sendEvent(event: AnalyticsEvent) {
+        when {
+            event.isTimed -> {
+                // Hang on to the event until it is done
+                eventTimes[event.name()] = System.currentTimeMillis()
+                timedEvents[event.name()] = event
+            }
+            else -> logIntercomEvent(event) // Send the event through the Intercom SDK
+        }
+    }
 
-	/**
-	 * Initializes a new {@code IntercomProvider} object
-	 *
-	 * @param intercom your already-initialized {@link Intercom} instance.
-	 *                 Please call {@link Intercom#initialize(Application, String, String)} prior to setting up your {@link IntercomProvider}.
-	 */
-	public IntercomProvider(@NonNull Intercom intercom)
-	{
-		this(intercom, new PriorityFilter()
-		{
-			@Override
-			public boolean shouldLog(int priorityLevel)
-			{
-				return true; // Log all events, regardless of priority
-			}
-		});
-	}
+    /**
+     * End the timed event.
+     *
+     * @param timedEvent the event which has finished
+     */
+    @Throws(IllegalStateException::class)
+    override fun endTimedEvent(timedEvent: AnalyticsEvent) {
+        val endTime = System.currentTimeMillis()
+        val startTime = eventTimes.remove(timedEvent.name())
+        val finishedEvent = timedEvents.remove(timedEvent.name())
+        if (startTime != null && finishedEvent != null) {
+            val durationSeconds = (endTime - startTime) / 1000.0
+            val df = DecimalFormat("#.###")
+            finishedEvent.putAttribute(DURATION_KEY, df.format(durationSeconds))
+            logIntercomEvent(finishedEvent)
+        } else {
+            error("Attempted ending an event that was never started (or was previously ended): ${timedEvent.name()}")
+        }
+    }
 
-	/**
-	 * Initializes a new {@code IntercomProvider} object.
-	 *
-	 * @param intercom       your already-initialized {@link Intercom} instance.
-	 *                       Please call {@link Intercom#initialize(Application, String, String)} prior to setting up your {@link IntercomProvider}.
-	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
-	 */
-	public IntercomProvider(@NonNull Intercom intercom, @NonNull PriorityFilter priorityFilter)
-	{
-		this(intercom, priorityFilter, false);
-	}
+    @Throws(IllegalStateException::class)
+    private fun logIntercomEvent(event: AnalyticsEvent) {
+        val sanitizedAttributes: MutableMap<String, Any?>? =
+            if (event.attributes != null && event.attributes!!.keys.size > MAX_METADATA_ATTRIBUTES) {
+                if (quietMode) {
+                    val keepAttributeNames = event.attributes!!.keys.take(MAX_METADATA_ATTRIBUTES)
+                    event.attributes!!.filter {
+                        keepAttributeNames.contains(it.key)
+                    }.toMutableMap()
+                } else {
+                    error("Intercom does not support more than $MAX_METADATA_ATTRIBUTES" +
+                            " metadata fields. See https://www.intercom.com/help/en/articles/175-set-up-event-tracking-in-intercom.")
+                }
+            } else {
+                event.attributes
+            }
 
-	/**
-	 * Initializes a new {@code IntercomProvider} object
-	 * @param intercom your already-initialized {@link Intercom} instance.
-	 *                 Please call {@link Intercom#initialize(Application, String, String)} prior to setting up your {@link IntercomProvider}.
-	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
-	 * @param quietMode {@code true} to silently take the first ten items of metadata in the event's attributes per Intercom limits.
-	 *                   {@code false} to throw Exceptions when events contain more than the allowed limit of metadata items.
-	 */
-	public IntercomProvider(@NonNull Intercom intercom, @NonNull PriorityFilter priorityFilter, boolean quietMode)
-	{
-		this.intercom = intercom;
-		this.priorityFilter = priorityFilter;
-		this.quietMode = quietMode;
-	}
-
-	/**
-	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities
-	 *
-	 * @param priorityFilter the filter to use
-	 * @return the {@code IntercomProvider} instance (for builder-style convenience)
-	 */
-	public IntercomProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
-	{
-		this.priorityFilter = priorityFilter;
-		return this;
-	}
-
-	@NonNull
-	@Override
-	public PriorityFilter getPriorityFilter()
-	{
-		return this.priorityFilter;
-	}
-
-	/**
-	 * Sends the event using provider-specific code
-	 * @param event an instantiated event. <b>Note:</b> When sending timed events, be aware that this provider does not support concurrent timed events with the same name.
-	 * @see AnalyticsKitProvider
-	 */
-	@Override
-	public void sendEvent(@NonNull AnalyticsEvent event)
-	{
-		if (event.isTimed()) // Hang onto it until it is done
-		{
-			ensureTimeTrackingMaps();
-
-			this.eventTimes.put(event.name(), System.currentTimeMillis());
-			timedEvents.put(event.name(), event);
-		}
-		else // Send the event through the Intercom SDK
-		{
-			logIntercomEvent(event);
-		}
-	}
-
-	private void ensureTimeTrackingMaps()
-	{
-		if (this.eventTimes == null)
-		{
-			eventTimes = new HashMap<>(); // lazy initialization
-		}
-		if (this.timedEvents == null)
-		{
-			timedEvents = new HashMap<>(); // lazy initialization
-		}
-	}
-
-	/**
-	 * @see AnalyticsKitProvider
-	 */
-	@Override
-	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent) throws IllegalStateException
-	{
-		ensureTimeTrackingMaps();
-
-		long           endTime       = System.currentTimeMillis();
-		Long           startTime     = this.eventTimes.remove(timedEvent.name());
-		AnalyticsEvent finishedEvent = this.timedEvents.remove(timedEvent.name());
-
-		if (startTime != null && finishedEvent != null)
-		{
-			double        durationSeconds = (endTime - startTime) / 1000d;
-			DecimalFormat df              = new DecimalFormat("#.###");
-			finishedEvent.putAttribute(DURATION, df.format(durationSeconds));
-
-			logIntercomEvent(finishedEvent);
-		}
-		else
-		{
-			throw new IllegalStateException("Attempted ending an event that was never started (or was previously ended): " + timedEvent.name());
-		}
-	}
-
-	private void logIntercomEvent(@NonNull AnalyticsEvent event) throws IllegalStateException
-	{
-		Map<String, Object> sanitizedAttributes;
-		if (event.getAttributes() != null && event.getAttributes().keySet().size() > MAX_METADATA_ATTRIBUTES)
-		{
-			if (this.quietMode)
-			{
-				sanitizedAttributes = new LinkedHashMap<>();
-				int count = 0;
-				for (String key : event.getAttributes().keySet())
-				{
-					if (count < MAX_METADATA_ATTRIBUTES)
-					{
-						sanitizedAttributes.put(key, event.getAttribute(key));
-						count++;
-					}
-				}
-			}
-			else
-			{
-				throw new IllegalStateException("Intercom does not support more than " + MAX_METADATA_ATTRIBUTES +
-						                                " metadata fields. See https://www.intercom.com/help/en/articles/175-set-up-event-tracking-in-intercom.");
-			}
-		}
-		else
-		{
-			sanitizedAttributes = event.getAttributes();
-		}
-
-		Intercom.client().logEvent(event.name(), sanitizedAttributes);
-	}
+        Intercom.client().logEvent(event.name(), sanitizedAttributes)
+    }
 }
+
+internal const val MAX_METADATA_ATTRIBUTES = 10
+internal const val DURATION_KEY = "event_duration"

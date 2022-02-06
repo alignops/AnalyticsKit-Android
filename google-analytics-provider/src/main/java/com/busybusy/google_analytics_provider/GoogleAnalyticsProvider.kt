@@ -57,7 +57,7 @@ class GoogleAnalyticsProvider(
      * @param event an instantiated event
      */
     override fun sendEvent(event: AnalyticsEvent) {
-        if (event.isTimed) { // Hang onto it until it is done
+        if (event.isTimed()) { // Hang onto it until it is done
             eventTimes[event.name()] = System.currentTimeMillis()
             timedEvents[event.name()] = event
         } else { // Send the event through the Google Analytics API
@@ -93,7 +93,7 @@ class GoogleAnalyticsProvider(
             is ContentViewEvent -> {
                 val screenViewBuilder = ScreenViewBuilder()
                 // add any custom attributes already set on the event
-                screenViewBuilder.setAll(stringifyAttributesMap(event.getAttributes()))
+                screenViewBuilder.setAll(stringifyAttributesMap(event.attributes))
                 synchronized(tracker) { // Set the screen name and send a screen view.
                     tracker.setScreenName(
                         event.getAttribute(ContentViewEvent.CONTENT_NAME).toString()

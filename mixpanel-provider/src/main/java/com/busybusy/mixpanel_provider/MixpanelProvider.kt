@@ -48,7 +48,7 @@ class MixpanelProvider(
      * @param event an instantiated event
      */
     override fun sendEvent(event: AnalyticsEvent) = when {
-        event.isTimed -> mixpanelApi.timeEvent(event.name())
+        event.isTimed() -> mixpanelApi.timeEvent(event.name())
         else -> mixpanelApi.trackMap(event.name(), event.attributes)
     }
 

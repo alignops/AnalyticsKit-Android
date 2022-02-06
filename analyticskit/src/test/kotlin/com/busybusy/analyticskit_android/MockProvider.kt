@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2020 busybusy, Inc.
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ class MockProvider : AnalyticsKitProvider {
     var sentEvents: MutableMap<String, AnalyticsEvent> = mutableMapOf()
     var eventTimes: MutableMap<String, Long> = mutableMapOf()
     var priorityLevel = 0
-    var myPriorityFilter: PriorityFilter = PriorityFilter { priorityLevel -> priorityLevel <= this@MockProvider.priorityLevel }
+    var myPriorityFilter: PriorityFilter = PriorityFilter { priorityLevel ->
+        priorityLevel <= this@MockProvider.priorityLevel
+    }
 
     fun setPriorityUpperBound(priorityLevel: Int): MockProvider {
         this.priorityLevel = priorityLevel
@@ -37,7 +39,7 @@ class MockProvider : AnalyticsKitProvider {
 
     override fun sendEvent(event: AnalyticsEvent) {
         sentEvents[event.name()] = event
-        if (event.isTimed) {
+        if (event.isTimed()) {
             val startTime = System.currentTimeMillis()
             eventTimes[event.name()] = startTime
         }

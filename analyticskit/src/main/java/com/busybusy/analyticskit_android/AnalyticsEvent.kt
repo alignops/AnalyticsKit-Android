@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Busy, LLC
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,211 +13,133 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.busybusy.analyticskit_android
 
-package com.busybusy.analyticskit_android;
-
-import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull
+import java.io.Serializable
 
 /**
  * Defines information that is needed to distribute the event to the registered analytics providers.
  *
  * @author John Hunt on 3/5/16.
  */
-public class AnalyticsEvent implements Serializable
-{
-	private static final long serialVersionUID = 8237206047809063471L;
+open class AnalyticsEvent(
+    @NonNull val name: String,
+    var attributes: MutableMap<String, Any>? = null,
+    var timed: Boolean = false,
+    var priorityLevel: Int = 0,
+) : Serializable {
 
-	final String name;
-	Map<String, Object> attributes;
-	boolean             timed;
-	int priorityLevel = 0;
+    /**
+     * Access the event name.
+     *
+     * @return the name of the custom event
+     */
+    fun name(): String {
+        return name
+    }
 
-	/**
-	 * Instantiates a new {@code AnalyticsEvent} object.
-	 *
-	 * @param name the name of the event
-	 */
-	public AnalyticsEvent(@NonNull String name)
-	{
-		this.name = name;
-		this.attributes = null;
-		this.timed = false;
-	}
+    /**
+     * Adds an attribute to the event.
+     *
+     * @param attributeName the name of the attribute (should be unique)
+     * @param value         the [Object] to associate with the name given
+     * @return the [AnalyticsEvent] instance
+     */
+    fun putAttribute(attributeName: String, value: Any): AnalyticsEvent {
+        // guard clause - make sure the dictionary is initialized
+        if (attributes == null) {
+            attributes = LinkedHashMap()
+        }
+        attributes!![attributeName] = value
+        return this
+    }
 
-	/**
-	 * Access the event name.
-	 *
-	 * @return the name of the custom event
-	 */
-	@NonNull
-	public String name()
-	{
-		return this.name;
-	}
+    /**
+     * Gets the priority of this event.
+     *
+     * @return the priority of the event. Returns `0` when [.setPriority] has not been called.
+     */
+    fun getPriority(): Int = priorityLevel
 
-	/**
-	 * Adds an attribute to the event.
-	 *
-	 * @param attributeName the name of the attribute (should be unique)
-	 * @param value         the {@link Object} to associate with the name given
-	 * @return the {@link AnalyticsEvent} instance
-	 */
-	@NonNull
-	public AnalyticsEvent putAttribute(@NonNull String attributeName, @NonNull Object value)
-	{
-		// guard clause - make sure the dictionary is initialized
-		if (this.attributes == null)
-		{
-			this.attributes = new LinkedHashMap<>();
-		}
+    /**
+     * Sets the priority of the event. The event defaults to `0` when this method is not called.
+     *
+     *
+     * **Note:** It is up to the developer to define what priority scheme to use (if any).
+     *
+     * @param priorityLevel the priority the event should use
+     * @return the [AnalyticsEvent] instance (for builder-style convenience)
+     */
+    fun setPriority(priorityLevel: Int): AnalyticsEvent {
+        this.priorityLevel = priorityLevel
+        return this
+    }
 
-		this.attributes.put(attributeName, value);
-		return this;
-	}
+    /**
+     * Access a single attribute of this event.
+     *
+     * @param name the name the of the attribute to retrieve
+     * @return the value associated with the given attribute name.
+     * Returns `null` if the attribute has not been set.
+     */
+    fun getAttribute(name: String): Any? {
+        return if (attributes == null) null else attributes!![name]
+    }
 
-	/**
-	 * Gets the priority of this event.
-	 *
-	 * @return the priority of the event. Returns {@code 0} when {@link #setPriority(int)} has not been called.
-	 */
-	public int getPriority()
-	{
-		return priorityLevel;
-	}
+    /**
+     * Indicates if this event is a timed event.
+     *
+     * @return `true` if the event has been set to be a timed event. Returns `false` otherwise.
+     */
+    fun isTimed(): Boolean = timed
 
-	/**
-	 * Sets the priority of the event. The event defaults to {@code 0} when this method is not called.
-	 * <p/>
-	 * <b>Note:</b> It is up to the developer to define what priority scheme to use (if any).
-	 *
-	 * @param priorityLevel the priority the event should use
-	 * @return the {@link AnalyticsEvent} instance (for builder-style convenience)
-	 */
-	@NonNull
-	public AnalyticsEvent setPriority(int priorityLevel)
-	{
-		this.priorityLevel = priorityLevel;
-		return this;
-	}
+    /**
+     * Sets whether this event should capture timing.
+     *
+     * @param timed `true` to set the event to track the time
+     * @return the [AnalyticsEvent] instance
+     */
+    fun setTimed(timed: Boolean): AnalyticsEvent {
+        this.timed = timed
+        return this
+    }
 
-	/**
-	 * Access the attributes of this event.
-	 *
-	 * @return A non-empty map of attributes set on this event.
-	 * Returns {@code null} if no attributes have been added to the event.
-	 */
-	@Nullable
-	public Map<String, Object> getAttributes()
-	{
-		return this.attributes;
-	}
+    /**
+     * Sends the event out to the registered/specified providers.
+     * This is a convenience method that wraps [AnalyticsKit.logEvent]
+     */
+    fun send(): AnalyticsEvent {
+        AnalyticsKit.getInstance().logEvent(this)
+        return this
+    }
 
-	/**
-	 * Access a single attribute of this event.
-	 *
-	 * @param name the name the of the attribute to retrieve
-	 * @return the value associated with the given attribute name.
-	 * Returns {@code null} if the attribute has not been set.
-	 */
-	@Nullable
-	public Object getAttribute(@NonNull String name)
-	{
-		return this.attributes == null ? null : this.attributes.get(name);
-	}
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is AnalyticsEvent) return false
 
-	/**
-	 * Indicates if this event is a timed event.
-	 *
-	 * @return {@code true} if the event has been set to be a timed event. Returns {@code false} otherwise.
-	 */
-	public boolean isTimed()
-	{
-		return this.timed;
-	}
+        if (name != other.name) return false
+        if (attributes != other.attributes) return false
+        if (timed != other.timed) return false
+        if (priorityLevel != other.priorityLevel) return false
 
-	/**
-	 * Sets whether this event should capture timing.
-	 *
-	 * @param timed {@code true} to set the event to track the time
-	 * @return the {@link AnalyticsEvent} instance
-	 */
-	@NonNull
-	public AnalyticsEvent setTimed(boolean timed)
-	{
-		this.timed = timed;
-		return this;
-	}
+        return true
+    }
 
-	/**
-	 * Sends the event out to the registered/specified providers.
-	 * This is a convenience method that wraps {@link AnalyticsKit#logEvent(AnalyticsEvent)}
-	 */
-	@NonNull
-	public AnalyticsEvent send()
-	{
-		//noinspection ConstantConditions
-		if (this.name == null)
-		{
-			throw new IllegalStateException("event name == null");
-		}
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + (attributes?.hashCode() ?: 0)
+        result = 31 * result + timed.hashCode()
+        result = 31 * result + priorityLevel
+        return result
+    }
 
-		AnalyticsKit.getInstance().logEvent(this);
-		return this;
-	}
+    override fun toString(): String {
+        return "AnalyticsEvent(name='$name', attributes=$attributes, timed=$timed, priorityLevel=$priorityLevel)"
+    }
 
-	@Override
-	public boolean equals(@Nullable Object other)
-	{
-		if (this == other)
-		{
-			return true;
-		}
-		if (other == null || getClass() != other.getClass())
-		{
-			return false;
-		}
-
-		AnalyticsEvent that = (AnalyticsEvent) other;
-
-		if (timed != that.timed)
-		{
-			return false;
-		}
-		if (priorityLevel != that.priorityLevel)
-		{
-			return false;
-		}
-		if (name != null ? !name.equals(that.name) : that.name != null)
-		{
-			return false;
-		}
-		return attributes != null ? attributes.equals(that.attributes) : that.attributes == null;
-
-	}
-
-	@Override
-	public int hashCode()
-	{
-		int result = name != null ? name.hashCode() : 0;
-		result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
-		result = 31 * result + (timed ? 1 : 0);
-		result = 31 * result + priorityLevel;
-		return result;
-	}
-
-	@Override
-	public String toString()
-	{
-		return "AnalyticsEvent{" +
-				"name='" + name + '\'' +
-				", attributes=" + attributes +
-				", timed=" + timed +
-				", priorityLevel=" + priorityLevel +
-				'}';
-	}
+    companion object {
+        @JvmStatic
+        private val serialVersionUID: Long = 1
+    }
 }

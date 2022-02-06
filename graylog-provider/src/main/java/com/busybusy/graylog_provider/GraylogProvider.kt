@@ -89,7 +89,7 @@ class GraylogProvider constructor(
      */
     @Throws(IllegalStateException::class)
     override fun sendEvent(event: AnalyticsEvent) {
-        if (event.isTimed) { // Hang onto it until it is done
+        if (event.isTimed()) { // Hang onto it until it is done
             eventTimes[event.name()] = System.currentTimeMillis()
             timedEvents[event.name()] = event
         } else { // Send the event to the Graylog input

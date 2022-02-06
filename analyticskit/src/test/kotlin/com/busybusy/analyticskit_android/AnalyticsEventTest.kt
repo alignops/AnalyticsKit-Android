@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2020 busybusy, Inc.
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ class AnalyticsEventTest {
                 .putAttribute("the answer", 42)
                 .putAttribute("animal text", animalText)
         assertThat(event.name()).isEqualTo(name)
-        assertThat(event.getAttributes()).isNotNull
-        assertThat(event.getAttributes()!!.keys).containsOnly("the answer", "animal text")
-        assertThat(event.getAttributes()!!.values).containsOnly(42, animalText)
+        assertThat(event.attributes).isNotNull
+        assertThat(event.attributes!!.keys).containsOnly("the answer", "animal text")
+        assertThat(event.attributes!!.values).containsOnly(42, animalText)
     }
 
     @Test
@@ -42,7 +42,7 @@ class AnalyticsEventTest {
         val name = "Yeah, this should work"
         val event = AnalyticsEvent(name)
         assertThat(event.name()).isEqualTo(name)
-        assertThat(event.getAttributes()).isNull()
+        assertThat(event.attributes).isNull()
     }
 
     @Test
@@ -51,7 +51,7 @@ class AnalyticsEventTest {
         val event = AnalyticsEvent(name)
                 .setPriority(7)
         assertThat(event.name()).isEqualTo(name)
-        assertThat(event.getAttributes()).isNull()
-        assertThat(event.priority).isEqualTo(7)
+        assertThat(event.attributes).isNull()
+        assertThat(event.priorityLevel).isEqualTo(7)
     }
 }

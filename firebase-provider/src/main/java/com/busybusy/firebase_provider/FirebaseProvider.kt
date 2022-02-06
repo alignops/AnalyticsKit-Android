@@ -38,7 +38,7 @@ import java.text.DecimalFormat
  */
 class FirebaseProvider(
     private val firebaseAnalytics: FirebaseAnalytics,
-    private var priorityFilter: PriorityFilter = PriorityFilter { true },
+    private val priorityFilter: PriorityFilter = PriorityFilter { true },
 ) : AnalyticsKitProvider {
 
     private val timedEvents: MutableMap<String, AnalyticsEvent> by lazy { mutableMapOf() }
@@ -58,7 +58,7 @@ class FirebaseProvider(
      * @param event an instantiated event
      */
     override fun sendEvent(event: AnalyticsEvent) {
-        if (event.isTimed) { // Hang onto the event until it is done
+        if (event.isTimed()) { // Hang onto the event until it is done
             eventTimes[event.name()] = System.currentTimeMillis()
             timedEvents[event.name()] = event
         } else { // Send the event through the Firebase Analytics API

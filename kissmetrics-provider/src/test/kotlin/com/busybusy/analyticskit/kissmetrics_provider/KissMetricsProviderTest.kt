@@ -73,10 +73,10 @@ class KissMetricsProviderTest {
         val event = AnalyticsEvent("Forecast: Event Flurries")
                 .setPriority(10)
                 .send()
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(true)
         event.setPriority(-9)
                 .send()
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(true)
     }
 
     @Test
@@ -94,10 +94,10 @@ class KissMetricsProviderTest {
         val event = AnalyticsEvent("Forecast: Event Flurries")
                 .setPriority(10)
                 .send()
-        assertThat(testProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(false)
+        assertThat(testProvider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(testProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(testProvider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(true)
     }
 
     @Test

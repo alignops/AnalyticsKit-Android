@@ -36,7 +36,7 @@ import com.flurry.android.FlurryAgent
  * @author John Hunt on 3/21/16.
  */
 class FlurryProvider(
-    private var priorityFilter: PriorityFilter = PriorityFilter { true },
+    private val priorityFilter: PriorityFilter = PriorityFilter { true },
 ) : AnalyticsKitProvider {
 
     /**
@@ -55,7 +55,7 @@ class FlurryProvider(
     @Throws(IllegalStateException::class)
     override fun sendEvent(event: AnalyticsEvent) {
         val eventParams: Map<String, String>? = stringifyParameters(event.attributes)
-        if (event.isTimed) {
+        if (event.isTimed()) {
             // start the Flurry SDK event timer for the event
             when (eventParams) {
                 null -> FlurryAgent.logEvent(event.name(), true)

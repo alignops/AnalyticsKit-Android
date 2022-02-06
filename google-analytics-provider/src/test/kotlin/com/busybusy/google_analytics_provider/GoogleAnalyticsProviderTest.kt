@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2018, 2020 busybusy, Inc.
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class GoogleAnalyticsProviderTest {
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
         val filteringProvider = GoogleAnalyticsProvider(tracker, filter)
-        assertThat(filteringProvider.priorityFilter).isEqualTo(filter)
+        assertThat(filteringProvider.getPriorityFilter()).isEqualTo(filter)
     }
 
     @Test
@@ -69,10 +69,10 @@ class GoogleAnalyticsProviderTest {
         val event = AnalyticsEvent("Forecast: Event Flurries")
                 .setPriority(10)
                 .send()
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(true)
         event.setPriority(-9)
                 .send()
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(true)
     }
 
     @Test
@@ -82,10 +82,10 @@ class GoogleAnalyticsProviderTest {
         val event = AnalyticsEvent("Forecast: Event Flurries")
                 .setPriority(10)
                 .send()
-        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priorityLevel)).isEqualTo(true)
     }
 
     @Test

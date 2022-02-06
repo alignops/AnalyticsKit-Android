@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 busybusy, Inc.
+ * Copyright 2017 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,23 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.busybusy.graylog_provider
 
-package com.busybusy.graylog_provider;
-
-import androidx.annotation.NonNull;
+import androidx.annotation.NonNull
 
 /**
- * Defines the contract for callbacks fired by the {@link GraylogProvider} instance.
+ * Defines the contract for callbacks fired by the [GraylogProvider] instance.
  *
  * @author John Hunt on 6/28/17.
  */
-
-public interface GraylogResponseListener
-{
+interface GraylogResponseListener {
     /**
-     * This method gets called after an {@link com.busybusy.analyticskit_android.AnalyticsEvent} is sent to a Graylog server.
+     * This method gets called after an [com.busybusy.analyticskit_android.AnalyticsEvent] is sent to a Graylog server.
      *
      * @param response the Response object describing a result of an HTTP call to a Graylog server and the event that was sent
      */
-    void onGraylogResponse(@NonNull final GraylogResponse response);
+    fun onGraylogResponse(@NonNull response: GraylogResponse)
 }

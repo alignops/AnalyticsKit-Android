@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Busy, LLC
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,88 +13,51 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.busybusy.mixpanel_provider
 
-package com.busybusy.mixpanel_provider;
-
-import androidx.annotation.NonNull;
-
-import com.busybusy.analyticskit_android.AnalyticsEvent;
-import com.busybusy.analyticskit_android.AnalyticsKitProvider;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.busybusy.analyticskit_android.AnalyticsKitProvider.PriorityFilter
+import com.busybusy.analyticskit_android.AnalyticsKitProvider
+import com.busybusy.analyticskit_android.AnalyticsEvent
 
 /**
- * Implements Mixpanel as a provider to use with {@link com.busybusy.analyticskit_android.AnalyticsKit}
+ * Implements Mixpanel as a provider to use with [com.busybusy.analyticskit_android.AnalyticsKit]
+ *
+ * @property mixpanelApi the initialized [MixpanelAPI] instance associated with the application.
+ *                       Just send `MixpanelAPI.getInstance(context, MIXPANEL_TOKEN)`
+ * @property priorityFilter the [PriorityFilter] to use when evaluating if an event should be sent to this provider's platform.
+ *                          By default, this provider will log all events regardless of priority.
  *
  * @author John Hunt on 3/16/16.
  */
-public class MixpanelProvider implements AnalyticsKitProvider
-{
-	protected MixpanelAPI mixpanelApi;
-	protected PriorityFilter priorityFilter;
+class MixpanelProvider(
+    private val mixpanelApi: MixpanelAPI,
+    private val priorityFilter: PriorityFilter = PriorityFilter { true },
+) : AnalyticsKitProvider {
 
-	/**
-	 * Initializes a new {@code MixpanelProvider} object
-	 * @param mixpanelApiInstance just send {@code MixpanelAPI.getInstance(context, MIXPANEL_TOKEN)}
-	 */
-	public MixpanelProvider(@NonNull MixpanelAPI mixpanelApiInstance)
-	{
-		this(mixpanelApiInstance, new PriorityFilter()
-		{
-			@Override
-			public boolean shouldLog(int priorityLevel)
-			{
-				return true; // Log all events, regardless of priority
-			}
-		});
-	}
+    /**
+     * Returns the filter used to restrict events by priority.
+     *
+     * @return the {@link PriorityFilter} instance the provider is using to determine if an event of a given priority should be logged
+     */
+    override fun getPriorityFilter(): PriorityFilter = priorityFilter
 
-	/**
-	 * Initializes a new {@code MixpanelProvider} object
-	 * @param mixpanelApiInstance just send {@code MixpanelAPI.getInstance(context, MIXPANEL_TOKEN)}
-	 * @param priorityFilter the {@code PriorityFilter} to use when evaluating events
-	 */
-	public MixpanelProvider(@NonNull MixpanelAPI mixpanelApiInstance, @NonNull PriorityFilter priorityFilter)
-	{
-		this.mixpanelApi = mixpanelApiInstance;
-		this.priorityFilter = priorityFilter;
-	}
+    /**
+     * Sends the event using provider-specific code.
+     *
+     * @param event an instantiated event
+     */
+    override fun sendEvent(event: AnalyticsEvent) = when {
+        event.isTimed -> mixpanelApi.timeEvent(event.name())
+        else -> mixpanelApi.trackMap(event.name(), event.attributes)
+    }
 
-	/**
-	 * Specifies the {@code PriorityFilter} to use when evaluating event priorities
-	 * @param priorityFilter the filter to use
-	 * @return the {@code MixpanelProvider} instance (for builder-style convenience)
-	 */
-	@NonNull
-	public MixpanelProvider setPriorityFilter(@NonNull PriorityFilter priorityFilter)
-	{
-		this.priorityFilter = priorityFilter;
-		return this;
-	}
-
-	@NonNull
-	@Override
-	public PriorityFilter getPriorityFilter()
-	{
-		return this.priorityFilter;
-	}
-
-	@Override
-	public void sendEvent(@NonNull AnalyticsEvent event)
-	{
-		if (event.isTimed())
-		{
-			// start the Mixpanel SDK event timer for the event
-			this.mixpanelApi.timeEvent(event.name());
-		}
-		else
-		{
-			this.mixpanelApi.trackMap(event.name(), event.getAttributes());
-		}
-	}
-
-	@Override
-	public void endTimedEvent(@NonNull AnalyticsEvent timedEvent)
-	{
-		this.mixpanelApi.trackMap(timedEvent.name(), timedEvent.getAttributes());
-	}
+    /**
+     * End the timed event.
+     *
+     * @param timedEvent the event which has finished
+     */
+    override fun endTimedEvent(timedEvent: AnalyticsEvent) {
+        mixpanelApi.trackMap(timedEvent.name(), timedEvent.attributes)
+    }
 }

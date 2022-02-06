@@ -51,6 +51,7 @@ android {
 
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
+	compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
 	api "androidx.annotation:annotation:1.2.0"
 	implementation 'com.mixpanel.android:mixpanel-android:5.9.1'
 	compileOnly 'com.google.android.gms:play-services-gcm:17.0.0'

@@ -64,7 +64,11 @@ class GraylogProviderTest {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        provider = GraylogProvider(httpClient, "http://" + mockServer.hostName + ":" + mockServer.port, "unit-test-android")
+        provider = GraylogProvider(
+            client = httpClient,
+            graylogInputUrl = "http://${mockServer.hostName}:${mockServer.port}",
+            graylogHostName = "unit-test-android",
+        )
         provider.setCallbackHandler(callbackListener)
         logEventCalled = false
         testEventHashCode = -1
@@ -76,7 +80,7 @@ class GraylogProviderTest {
         val filter = PriorityFilter { false }
         val filteringProvider = GraylogProvider(
             client = httpClient,
-            graylogInputUrl = "http://" + mockServer.hostName + ":" + mockServer.port,
+            graylogInputUrl = "http://${mockServer.hostName}:${mockServer.port}",
             graylogHostName = "unit-test-android",
             priorityFilter = filter
         )
@@ -99,7 +103,7 @@ class GraylogProviderTest {
         val filter = PriorityFilter { priorityLevel -> priorityLevel < 10 }
         val filteringProvider = GraylogProvider(
             client = httpClient,
-            graylogInputUrl = "http://" + mockServer.hostName + ":" + mockServer.port,
+            graylogInputUrl = "http://${mockServer.hostName}:${mockServer.port}",
             graylogHostName = "unit-test-android",
             priorityFilter = filter
         )

@@ -70,13 +70,15 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
                 append(", \"${underscorePrefix(jsonAttribute)}")
                 when (val attributeValue = eventAttributes[attribute]) {
                     is String -> append(jsonAttribute).append("\": \"")
-                            .append(getSafeSizeString(attributeValue)).append("\"")
-                    is List<*> -> append(jsonAttribute).append("\": ").append(getJsonFromListRecursive(attributeValue))
+                        .append(getSafeSizeString(attributeValue)).append("\"")
+                    is List<*> -> append(jsonAttribute).append("\": ")
+                        .append(getJsonFromListRecursive(attributeValue))
                     is Map<*, *> -> append(jsonAttribute).append("\": ")
-                            .append(getJsonFromMapRecursive(attributeValue as Map<String, Any>))
-                    is Number, is Boolean -> append(jsonAttribute).append("\": ").append(attributeValue)
-                    is Exception, is Error -> append(jsonAttribute).append("\": \"").append(attributeValue.toString())
-                            .append("\"")
+                        .append(getJsonFromMapRecursive(attributeValue as Map<String, Any>))
+                    is Number, is Boolean -> append(jsonAttribute).append("\": ")
+                        .append(attributeValue)
+                    is Exception, is Error -> append(jsonAttribute).append("\": \"")
+                        .append(attributeValue.toString()).append("\"")
                     else -> {
                         throw UnsupportedOperationException("Unsupported type for GELF message: " + attributeValue!!.javaClass.simpleName)
                     }
@@ -87,10 +89,10 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
     }
 
     private fun putGraylogSpecFields(
-            builder: StringBuilder,
-            eventName: String,
-            attributes: Set<String>,
-            eventAttributes: Map<String, Any>
+        builder: StringBuilder,
+        eventName: String,
+        attributes: Set<String>,
+        eventAttributes: Map<String, Any>,
     ) = builder.apply {
         append("\"version\": \"$GELF_SPEC_VERSION").append("\", ")
         append("\"host\": \"$HOST").append("\", ")
@@ -103,8 +105,8 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
         // No else needed: this is an optional long message (may contain a backtrace)
 
         if (attributes.contains("timestamp")) { // user-provided timestamp
-            append("\"timestamp\": ").append(getSafeSizeString(eventAttributes["timestamp"].toString()))
-                    .append(", ")
+            append("\"timestamp\": ")
+                .append(getSafeSizeString(eventAttributes["timestamp"].toString())).append(", ")
         } else {
             append("\"timestamp\": ").append(System.currentTimeMillis() / 1000.0).append(", ")
         }
@@ -120,37 +122,33 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
      * Ensures that user-provided fields conform to the Graylog spec (prefixed by an underscore)
      */
     private fun underscorePrefix(fieldName: String): String =
-            if (fieldName.startsWith("_")) "" else "_"
+        if (fieldName.startsWith("_")) "" else "_"
 
     @Suppress("UNCHECKED_CAST")
     internal fun getJsonFromMapRecursive(attributeMap: Map<String, Any>): String = buildString {
         append("{")
         for (innerAttribute in attributeMap.keys) {
-            val innerAttributeValue = attributeMap[innerAttribute]
-            if (innerAttributeValue is Map<*, *>) // recursive case
-            {
-                // recurse
-                val innerMap = attributeMap[innerAttribute] as Map<String, Any>?
-                append("\"").append(innerAttribute).append("\": ")
-                        .append(getJsonFromMapRecursive(
-                                innerMap!!)).append(", ")
-            } else if (innerAttributeValue is List<*>) // recursive case
-            {
-                append("\"").append(innerAttribute).append("\": ")
-                        .append(getJsonFromListRecursive(
-                                innerAttributeValue)).append(", ")
-            } else {
-                if (innerAttributeValue is String) // gotta use escape quotes for JSON strings
-                {
-                    append("\"").append(innerAttribute).append("\": \"")
-                            .append(getSafeSizeString(
-                                    innerAttributeValue)).append("\", ")
-                } else if (innerAttributeValue is Number || innerAttributeValue is Boolean) {
+            when (val innerAttributeValue = attributeMap[innerAttribute]) {
+                is Map<*, *> -> { // recursive case
+                    val innerMap = attributeMap[innerAttribute] as Map<String, Any>
                     append("\"").append(innerAttribute).append("\": ")
-                            .append(innerAttributeValue).append(", ")
-                } else {
-                    throw UnsupportedOperationException("Unsupported type for GELF message: " + innerAttributeValue!!.javaClass.simpleName)
+                        .append(getJsonFromMapRecursive(innerMap)).append(", ")
                 }
+                is List<*> -> { // recursive case
+                    append("\"").append(innerAttribute).append("\": ")
+                        .append(getJsonFromListRecursive(innerAttributeValue)).append(", ")
+                }
+                is String -> { // gotta use escape quotes for JSON strings
+                    append("\"").append(innerAttribute).append("\": \"")
+                        .append(getSafeSizeString(innerAttributeValue)).append("\", ")
+                }
+                is Number, is Boolean -> {
+                    append("\"").append(innerAttribute).append("\": ")
+                        .append(innerAttributeValue).append(", ")
+                }
+                else -> throw UnsupportedOperationException(
+                    "Unsupported type for GELF message: " + innerAttributeValue!!.javaClass.simpleName
+                )
             }
         }
         if (this.toString().length > 1) {
@@ -165,21 +163,18 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
     internal fun getJsonFromListRecursive(attributeList: List<*>): String = buildString {
         append("[")
         for (element in attributeList) {
-            if (element is Map<*, *>) // recursive case
-            {
-                append(getJsonFromMapRecursive(element as Map<String, Any>)).append(", ")
-            } else if (element is List<*>) // recursive case
-            {
-                append(getJsonFromListRecursive(element)).append(", ")
-            } else {
-                if (element is String) // gotta use escape quotes for JSON strings
-                {
-                    append("\"").append(getSafeSizeString(element)).append("\", ")
-                } else if (element is Number || element is Boolean) {
-                    append(element).append(", ")
-                } else {
-                    throw UnsupportedOperationException("Unsupported type for GELF message: " + element?.javaClass?.simpleName)
+            when (element) {
+                is Map<*, *> -> { // recursive case
+                    append(getJsonFromMapRecursive(element as Map<String, Any>)).append(", ")
                 }
+                is List<*> -> { // recursive case
+                    append(getJsonFromListRecursive(element)).append(", ")
+                }
+                is String -> append("\"").append(getSafeSizeString(element)).append("\", ")
+                is Number, is Boolean -> append(element).append(", ")
+                else -> throw UnsupportedOperationException(
+                    "Unsupported type for GELF message: " + element?.javaClass?.simpleName
+                )
             }
         }
         if (this.toString().length > 1) {
@@ -191,21 +186,25 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
     }
 
     private fun getSafeSizeString(input: String): String =
-            if (input.length <= MAX_FIELD_LENGTH) {
-                input
-            } else {
-                var safeSizeValue = input.substring(0, input.length.coerceAtMost(MAX_FIELD_LENGTH))
-                //correctly process UTF-16 surrogate pairs
-                if (safeSizeValue.length > MAX_FIELD_LENGTH) {
-                    val correctedMaxWidth =
-                            if (Character.isLowSurrogate(safeSizeValue[MAX_FIELD_LENGTH])) MAX_FIELD_LENGTH - 1 else MAX_FIELD_LENGTH
-                    safeSizeValue = safeSizeValue.substring(
-                            0,
-                            safeSizeValue.length.coerceAtMost(correctedMaxWidth)
-                    )
-                }
-                safeSizeValue
+        if (input.length <= MAX_FIELD_LENGTH) {
+            input
+        } else {
+            var safeSizeValue = input.substring(0, input.length.coerceAtMost(MAX_FIELD_LENGTH))
+            //correctly process UTF-16 surrogate pairs
+            if (safeSizeValue.length > MAX_FIELD_LENGTH) {
+                val correctedMaxWidth =
+                    if (Character.isLowSurrogate(safeSizeValue[MAX_FIELD_LENGTH])) {
+                        MAX_FIELD_LENGTH - 1
+                    } else {
+                        MAX_FIELD_LENGTH
+                    }
+                safeSizeValue = safeSizeValue.substring(
+                    0,
+                    safeSizeValue.length.coerceAtMost(correctedMaxWidth)
+                )
             }
+            safeSizeValue
+        }
 }
 
 private const val MAX_FIELD_LENGTH = 32_000

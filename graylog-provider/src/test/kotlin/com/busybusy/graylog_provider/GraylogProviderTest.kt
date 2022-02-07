@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2020 busybusy, Inc.
+ * Copyright 2017 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,11 +49,14 @@ class GraylogProviderTest {
     @Before
     fun setup() {
         lock = CountDownLatch(1)
-        callbackListener = GraylogResponseListener { response ->
-            logEventCalled = true
-            loggedEventName = response.eventName()
-            testEventHashCode = response.eventHashCode()
-            lock.countDown()
+        callbackListener = object : GraylogResponseListener {
+            override fun onGraylogResponse(response: GraylogResponse) {
+                logEventCalled = true
+                loggedEventName = response.eventName
+                testEventHashCode = response.eventHashCode
+                lock.countDown()
+            }
+
         }
         mockServer.enqueue(MockResponse().setResponseCode(202).setStatus("Accepted"))
         try {
@@ -61,7 +64,11 @@ class GraylogProviderTest {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        provider = GraylogProvider(httpClient, "http://" + mockServer.hostName + ":" + mockServer.port, "unit-test-android")
+        provider = GraylogProvider(
+            client = httpClient,
+            graylogInputUrl = "http://${mockServer.hostName}:${mockServer.port}",
+            graylogHostName = "unit-test-android",
+        )
         provider.setCallbackHandler(callbackListener)
         logEventCalled = false
         testEventHashCode = -1
@@ -71,8 +78,13 @@ class GraylogProviderTest {
     @Test
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
-        provider.setPriorityFilter(filter)
-        assertThat(provider.getPriorityFilter()).isEqualTo(filter)
+        val filteringProvider = GraylogProvider(
+            client = httpClient,
+            graylogInputUrl = "http://${mockServer.hostName}:${mockServer.port}",
+            graylogHostName = "unit-test-android",
+            priorityFilter = filter
+        )
+        assertThat(filteringProvider.priorityFilter).isEqualTo(filter)
     }
 
     @Test
@@ -80,22 +92,28 @@ class GraylogProviderTest {
         val event = AnalyticsEvent("A Test Event")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
         event.setPriority(-9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test
     fun test_priorityFiltering_custom() {
-        provider.setPriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filter = PriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filteringProvider = GraylogProvider(
+            client = httpClient,
+            graylogInputUrl = "http://${mockServer.hostName}:${mockServer.port}",
+            graylogHostName = "unit-test-android",
+            priorityFilter = filter
+        )
         val event = AnalyticsEvent("A Test Event")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test

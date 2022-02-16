@@ -52,6 +52,6 @@ class AnalyticsEventTest {
                 .setPriority(7)
         assertThat(event.name()).isEqualTo(name)
         assertThat(event.attributes).isNull()
-        assertThat(event.priorityLevel).isEqualTo(7)
+        assertThat(event.priority).isEqualTo(7)
     }
 }

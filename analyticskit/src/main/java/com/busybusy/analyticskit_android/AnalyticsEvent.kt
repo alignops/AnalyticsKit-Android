@@ -27,7 +27,7 @@ open class AnalyticsEvent(
     @NonNull val name: String,
     var attributes: MutableMap<String, Any>? = null,
     var timed: Boolean = false,
-    var priorityLevel: Int = 0,
+    var priority: Int = 0,
 ) : Serializable {
 
     /**
@@ -60,7 +60,8 @@ open class AnalyticsEvent(
      *
      * @return the priority of the event. Returns `0` when [.setPriority] has not been called.
      */
-    fun getPriority(): Int = priorityLevel
+    @JvmName("getEventPriority")
+    fun getPriority(): Int = priority
 
     /**
      * Sets the priority of the event. The event defaults to `0` when this method is not called.
@@ -72,7 +73,7 @@ open class AnalyticsEvent(
      * @return the [AnalyticsEvent] instance (for builder-style convenience)
      */
     fun setPriority(priorityLevel: Int): AnalyticsEvent {
-        this.priorityLevel = priorityLevel
+        this.priority = priorityLevel
         return this
     }
 
@@ -86,6 +87,14 @@ open class AnalyticsEvent(
     fun getAttribute(name: String): Any? {
         return if (attributes == null) null else attributes!![name]
     }
+
+    /**
+     * Access the attributes of this event.
+     * @return A non-empty map of attributes set on this event.
+     * Returns `null` if no attributes have been added to the event.
+     */
+    @JvmName("getEventAttributes")
+    fun getAttributes(): Map<String, Any>? = attributes
 
     /**
      * Indicates if this event is a timed event.
@@ -121,7 +130,7 @@ open class AnalyticsEvent(
         if (name != other.name) return false
         if (attributes != other.attributes) return false
         if (timed != other.timed) return false
-        if (priorityLevel != other.priorityLevel) return false
+        if (priority != other.priority) return false
 
         return true
     }
@@ -130,12 +139,12 @@ open class AnalyticsEvent(
         var result = name.hashCode()
         result = 31 * result + (attributes?.hashCode() ?: 0)
         result = 31 * result + timed.hashCode()
-        result = 31 * result + priorityLevel
+        result = 31 * result + priority
         return result
     }
 
     override fun toString(): String {
-        return "AnalyticsEvent(name='$name', attributes=$attributes, timed=$timed, priorityLevel=$priorityLevel)"
+        return "AnalyticsEvent(name='$name', attributes=$attributes, timed=$timed, priorityLevel=$priority)"
     }
 
     companion object {

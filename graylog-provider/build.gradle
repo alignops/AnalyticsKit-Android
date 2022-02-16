@@ -50,7 +50,7 @@ android {
 
 dependencies {
     implementation project(path: rootProject.ext.analytics_kit)
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
     compileOnly 'com.squareup.okhttp3:okhttp:4.9.1'
 
     api "androidx.annotation:annotation:1.2.0"

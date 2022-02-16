@@ -5,79 +5,75 @@ Analytics framework for Android
 Add the JitPack repository to the end of your root build.gradle:
 ```groovy
 allprojects {
-		repositories {
-			...
-			maven { url "https://jitpack.io" }
-		}
-	}
+    repositories {
+        ...
+        maven { url "https://jitpack.io" }
+    }
+}
 ```
 
 In your module's build.gradle file, add the dependency:
 ```groovy
 dependencies {
-		implementation "com.github.busybusy.AnalyticsKit-Android:analyticskit:0.8.2"
-        ...
-	}
+    implementation "com.github.busybusy.AnalyticsKit-Android:analyticskit:0.10.0"
+    ...
+}
 ```
 
 You can include the implemented providers you want by adding them to the same dependency block:
 ```groovy
 dependencies {
-		...
-        implementation "com.github.busybusy.AnalyticsKit-Android:mixpanel-provider:0.8.2"
-	}
+    ...
+    implementation "com.github.busybusy.AnalyticsKit-Android:mixpanel-provider:0.10.0"
+}
 ```
 
 ## Usage
 In your Application's onCreate() method, register your provider SDKs as normal with your API keys. 
 Then initialize AnalyticsKit-Android to work with those providers.
 
-```java
+```kotlin
 AnalyticsKit.getInstance()
-    .registerProvider(new MixpanelProvider(MixpanelAPI.getInstance(this, MIXPANEL_TOKEN)));
+    .registerProvider(MixpanelProvider(MixpanelAPI.getInstance(this, MIXPANEL_TOKEN)))
 ```
 
 Send events where appropriate in your application code.
 
-```java
-new AnalyticsEvent("Your Event Name")
+```kotlin
+AnalyticsEvent("Your Event Name")
     .putAttribute("key", "value")
-    .send();
+    .send()
 ```
 
 The framework provides a ```ContentViewEvent``` to facilitate capturing content views:
-```java
-new ContentViewEvent()
+```kotlin
+ContentViewEvent()
     .putAttribute("screen_name", "Dashboard")
     .putAttribute("category", "navigation")
-    .send();
+    .send()
 ```
 
 ### Event Priorities
 By default, AnalyticsEvent objects have priority 0. However, you can
 set any integer priority on your events. It is up to you to decide on your priority scheme 
 and provider filtering.
-```java
-new AnalyticsEvent("Readme Read Event")
+```kotlin
+AnalyticsEvent("Readme Read Event")
     .putAttribute("read", true)
     .setPriority(7)
-    .send();
+    .send()
 ```
 
 By default, providers will log all events regardless of priority. If desired, you can 
 configure providers with a ```PriorityFilter``` so that only events that pass the 
-```PriorityFilter```'s shouldLog() filter method will be logged by that provider. 
+```PriorityFilter```'s shouldLog() filter function will be logged by that provider. 
 In the following example, only AnalyticsEvent objects with priority less than 10 will be 
 logged by the Mixpanel provider:
-```java
-mixpanelProvider.setPriorityFilter(new AnalyticsKitProvider.PriorityFilter()
-{
-    @Override
-    public boolean shouldLog(int priorityLevel)
-    {
-        return priorityLevel < 10;
-    }
-});
+```kotlin
+myMixpanelApi = MixpanelAPI.getInstance(this, "YOUR MIXPANEL API TOKEN");
+val filter = PriorityFilter { priorityLevel -> priorityLevel < 10 }
+val filteringProvider = MixpanelProvider(mixpanelApi = myMixpanelApi, priorityFilter = filter)
+AnalyticsKit.getInstance().registerProvider(filteringProvider)
 ```
 
 ## License

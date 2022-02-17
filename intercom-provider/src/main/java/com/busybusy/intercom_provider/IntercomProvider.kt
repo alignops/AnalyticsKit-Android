@@ -56,7 +56,7 @@ class IntercomProvider(
      */
     override fun sendEvent(event: AnalyticsEvent) {
         when {
-            event.isTimed -> {
+            event.isTimed() -> {
                 // Hang on to the event until it is done
                 eventTimes[event.name()] = System.currentTimeMillis()
                 timedEvents[event.name()] = event
@@ -87,7 +87,7 @@ class IntercomProvider(
 
     @Throws(IllegalStateException::class)
     private fun logIntercomEvent(event: AnalyticsEvent) {
-        val sanitizedAttributes: MutableMap<String, Any?>? =
+        val sanitizedAttributes: MutableMap<String, Any>? =
             if (event.attributes != null && event.attributes!!.keys.size > MAX_METADATA_ATTRIBUTES) {
                 if (quietMode) {
                     val keepAttributeNames = event.attributes!!.keys.take(MAX_METADATA_ATTRIBUTES)

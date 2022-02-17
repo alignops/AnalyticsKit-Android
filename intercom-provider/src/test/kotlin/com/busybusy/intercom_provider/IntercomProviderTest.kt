@@ -76,7 +76,7 @@ class IntercomProviderTest {
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
         val filteringProvider = IntercomProvider(intercom = mockedIntercom, priorityFilter = filter)
-        assertThat(filteringProvider.priorityFilter).isEqualTo(filter)
+        assertThat(filteringProvider.getPriorityFilter()).isEqualTo(filter)
     }
 
     @PrepareForTest(Intercom::class)
@@ -84,9 +84,9 @@ class IntercomProviderTest {
     fun test_priorityFiltering_default() {
         val event = AnalyticsEvent("Intercom event")
                 .setPriority(10)
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
         event.priority = -9
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
     @PrepareForTest(Intercom::class)
@@ -96,9 +96,9 @@ class IntercomProviderTest {
         val filteringProvider = IntercomProvider(intercom = mockedIntercom, priorityFilter = filter)
         val event = AnalyticsEvent("Intercom event")
                 .setPriority(10)
-        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
         event.priority = 9
-        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
     @PrepareForTest(Intercom::class)

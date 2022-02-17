@@ -33,8 +33,8 @@ import java.text.DecimalFormat
 /**
  * Initializes a new {@code GraylogProvider} object.
  *
- * @property client          an initialized {@link OkHttpClient} instance
- * @property graylogInputUrl the URL of the Graylog HTTP input to use. Example: {@code http://graylog.example.org:12202/gelf}
+ * @param client          an initialized {@link OkHttpClient} instance
+ * @param graylogInputUrl the URL of the Graylog HTTP input to use. Example: {@code http://graylog.example.org:12202/gelf}
  * @param graylogHostName the name of the host application that is sending events
  * @property priorityFilter  the {@code PriorityFilter} to use when evaluating events
  *
@@ -78,7 +78,7 @@ class GraylogProvider constructor(
      */
     @Throws(IllegalStateException::class)
     override fun sendEvent(event: AnalyticsEvent) {
-        if (event.isTimed) { // Hang onto it until it is done
+        if (event.isTimed()) { // Hang onto it until it is done
             eventTimes[event.name()] = System.currentTimeMillis()
             timedEvents[event.name()] = event
         } else { // Send the event to the Graylog input

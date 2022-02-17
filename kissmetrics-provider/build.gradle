@@ -55,7 +55,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.6.0'
 
     implementation project(path: rootProject.ext.analytics_kit)
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
     api "androidx.annotation:annotation:1.2.0"
     compileOnly 'com.kissmetrics.sdk:KISSmetricsSDK:2.3.1'
 

@@ -84,7 +84,7 @@ class GraylogProviderTest {
             graylogHostName = "unit-test-android",
             priorityFilter = filter
         )
-        assertThat(filteringProvider.priorityFilter).isEqualTo(filter)
+        assertThat(filteringProvider.getPriorityFilter()).isEqualTo(filter)
     }
 
     @Test
@@ -92,10 +92,10 @@ class GraylogProviderTest {
         val event = AnalyticsEvent("A Test Event")
                 .setPriority(10)
                 .send()
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
         event.setPriority(-9)
                 .send()
-        assertThat(provider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test
@@ -110,10 +110,10 @@ class GraylogProviderTest {
         val event = AnalyticsEvent("A Test Event")
                 .setPriority(10)
                 .send()
-        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(filteringProvider.priorityFilter.shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test

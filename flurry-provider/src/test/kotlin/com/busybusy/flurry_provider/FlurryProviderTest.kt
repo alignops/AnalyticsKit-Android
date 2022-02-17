@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2020 busybusy, Inc.
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.mockito.ArgumentMatchers.*
 import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
-import java.util.*
 
 /**
  * Tests the [FlurryProvider] class
@@ -59,8 +58,8 @@ class FlurryProviderTest {
     @Test
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
-        provider.setPriorityFilter(filter)
-        assertThat(provider.getPriorityFilter()).isEqualTo(filter)
+        val filteringProvider = FlurryProvider(priorityFilter = filter)
+        assertThat(filteringProvider.getPriorityFilter()).isEqualTo(filter)
     }
 
     @Test
@@ -76,14 +75,15 @@ class FlurryProviderTest {
 
     @Test
     fun test_priorityFiltering_custom() {
-        provider.setPriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filter = PriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filteringProvider = FlurryProvider(priorityFilter = filter)
         val event = AnalyticsEvent("Forecast: Event Flurries")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Test
@@ -102,8 +102,8 @@ class FlurryProviderTest {
 
     @Test
     fun testStringifyParameters_willThrow() {
-        val attributeMap = HashMap<String, Any>()
-        for (count in 0..provider.ATTRIBUTE_LIMIT + 1) {
+        val attributeMap = mutableMapOf<String, Any>()
+        for (count in 0..ATTRIBUTE_LIMIT + 1) {
             attributeMap[count.toString()] = "placeholder"
         }
         var exceptionMessage: String? = ""
@@ -112,7 +112,7 @@ class FlurryProviderTest {
         } catch (e: IllegalStateException) {
             exceptionMessage = e.message
         }
-        assertThat(exceptionMessage).isEqualTo("Flurry events are limited to " + provider.ATTRIBUTE_LIMIT + " attributes")
+        assertThat(exceptionMessage).isEqualTo("Flurry events are limited to $ATTRIBUTE_LIMIT attributes")
     }
 
     @PrepareForTest(FlurryAgent::class)

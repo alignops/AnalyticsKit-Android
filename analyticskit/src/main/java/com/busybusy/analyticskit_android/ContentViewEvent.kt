@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Busy, LLC
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,17 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-package com.busybusy.analyticskit_android;
+package com.busybusy.analyticskit_android
 
 /**
- * Defines constants used for common {@link AnalyticsEvent} objects.
- * The goal is to facilitate provider implementation of these types of events.
+ * Defines information that is needed to distribute a "Content View" event to the registered analytics providers.
+ *
+ * @param contentName The name/title of the content that is viewed
  *
  * @author John Hunt on 3/16/16.
  */
-public interface CommonEvents
-{
-	String CONTENT_VIEW = "Content View";
-	String ERROR        = "Error";
+class ContentViewEvent(contentName: String) : AnalyticsEvent(CommonEvents.CONTENT_VIEW) {
+    companion object {
+        const val CONTENT_NAME = "contentName"
+    }
+
+    init {
+        putAttribute(CONTENT_NAME, contentName)
+    }
 }

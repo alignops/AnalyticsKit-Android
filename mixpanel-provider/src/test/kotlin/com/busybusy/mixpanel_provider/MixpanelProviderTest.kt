@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2017, 2020 busybusy, Inc.
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -76,8 +76,8 @@ class MixpanelProviderTest {
     @Test
     fun testGetAndSetPriorityFilter() {
         val filter = PriorityFilter { false }
-        provider.setPriorityFilter(filter)
-        assertThat(provider.getPriorityFilter()).isEqualTo(filter)
+        val filteringProvider = MixpanelProvider(mixpanelApi = mockMixpanelAPI, priorityFilter = filter)
+        assertThat(filteringProvider.getPriorityFilter()).isEqualTo(filter)
     }
 
     @Test
@@ -93,14 +93,15 @@ class MixpanelProviderTest {
 
     @Test
     fun test_priorityFiltering_custom() {
-        provider.setPriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filter = PriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filteringProvider = MixpanelProvider(mixpanelApi = mockMixpanelAPI, priorityFilter = filter)
         val event = AnalyticsEvent("Let's test event priorities again")
                 .setPriority(10)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
         event.setPriority(9)
                 .send()
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
     @Suppress("UsePropertyAccessSyntax")

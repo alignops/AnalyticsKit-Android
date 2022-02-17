@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2020 busybusy, Inc.
+ * Copyright 2016 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,13 +30,15 @@ class ErrorEventTest {
         assertThat(event.name()).isEqualTo(CommonEvents.ERROR)
         event = ErrorEvent("Custom Error Name")
         assertThat(event.name()).isEqualTo("Custom Error Name")
+        assertThat(event.error()).isNull()
     }
 
     @Test
     fun testSetAndGetMessage() {
         val message = "Something went wrong"
         val event = ErrorEvent()
-                .setMessage(message)
+        assertThat(event.message()).isNull()
+        event.setMessage(message)
         assertThat(event.message()).isEqualTo(message)
     }
 
@@ -44,7 +46,8 @@ class ErrorEventTest {
     fun testSetAndGetException() {
         val exception: Exception = StringIndexOutOfBoundsException()
         val event = ErrorEvent()
-                .setException(exception)
+        assertThat(event.exception()).isNull()
+        event.setException(exception)
         assertThat(event.exception()).isEqualTo(exception)
     }
 
@@ -52,7 +55,8 @@ class ErrorEventTest {
     fun testSetAndGetError() {
         val error: Error = UnknownError()
         val event = ErrorEvent()
-                .setError(error)
+        assertThat(event.error()).isNull()
+        event.setError(error)
         assertThat(event.error()).isEqualTo(error)
     }
 }

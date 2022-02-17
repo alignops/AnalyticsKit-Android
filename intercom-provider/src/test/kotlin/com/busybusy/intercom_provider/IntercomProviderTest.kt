@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 busybusy, Inc.
+ * Copyright 2020 - 2022 busybusy, Inc.
  *  
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -75,8 +75,8 @@ class IntercomProviderTest {
     @Test
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
-        provider.setPriorityFilter(filter)
-        assertThat(provider.getPriorityFilter()).isEqualTo(filter)
+        val filteringProvider = IntercomProvider(intercom = mockedIntercom, priorityFilter = filter)
+        assertThat(filteringProvider.getPriorityFilter()).isEqualTo(filter)
     }
 
     @PrepareForTest(Intercom::class)
@@ -92,12 +92,13 @@ class IntercomProviderTest {
     @PrepareForTest(Intercom::class)
     @Test
     fun test_priorityFiltering_custom() {
-        provider.setPriorityFilter { priorityLevel -> priorityLevel < 10 }
+        val filter = PriorityFilter{ priorityLevel -> priorityLevel < 10 }
+        val filteringProvider = IntercomProvider(intercom = mockedIntercom, priorityFilter = filter)
         val event = AnalyticsEvent("Intercom event")
                 .setPriority(10)
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(false)
         event.priority = 9
-        assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
+        assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
     @PrepareForTest(Intercom::class)
@@ -238,13 +239,13 @@ class IntercomProviderTest {
             // don't do anything, this is just a test that needs some delay
         }
         provider.endTimedEvent(event)
-        val timeString = testEventPropertiesMap!![provider.DURATION].toString()
+        val timeString = testEventPropertiesMap!![DURATION_KEY].toString()
         val elapsed = java.lang.Double.valueOf(timeString)
         assertThat(elapsed).isGreaterThanOrEqualTo(0.05)
 
         // Verify Intercom framework is called
         assertThat(logEventCalled).isEqualTo(true)
-        assertThat(testEventPropertiesMap?.keys).containsExactlyInAnyOrder(provider.DURATION, "some_param", "another_param")
+        assertThat(testEventPropertiesMap?.keys).containsExactlyInAnyOrder(DURATION_KEY, "some_param", "another_param")
         assertThat(testEventPropertiesMap?.values).containsExactlyInAnyOrder(timeString, "yes", "yes again")
     }
 
@@ -262,5 +263,3 @@ class IntercomProviderTest {
         assertThat(didThrow).isEqualTo(true)
     }
 }
-
-private const val MAX_METADATA_ATTRIBUTES = 10

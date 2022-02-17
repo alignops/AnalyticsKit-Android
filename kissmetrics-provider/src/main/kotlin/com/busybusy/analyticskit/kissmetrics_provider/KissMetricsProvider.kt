@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 busybusy, Inc.
+ * Copyright 2020 - 2022 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,11 +36,12 @@ import java.text.DecimalFormat
  * KISSmetricsAPI.sharedAPI(API_KEY, APPLICATION_CONTEXT) prior to setting up your [KissMetricsProvider].
  * @property priorityFilter the [PriorityFilter] to use when evaluating events
  */
-class KissMetricsProvider(private val kissMetrics: KISSmetricsAPI,
-                          private val priorityFilter: PriorityFilter = PriorityFilter { true }
+class KissMetricsProvider(
+    private val kissMetrics: KISSmetricsAPI,
+    private val priorityFilter: PriorityFilter = PriorityFilter { true },
 ) : AnalyticsKitProvider {
-    private val timedEvents: MutableMap<String, AnalyticsEvent> = mutableMapOf()
-    private val eventTimes: MutableMap<String, Long> = mutableMapOf()
+    private val timedEvents: MutableMap<String, AnalyticsEvent> by lazy { mutableMapOf() }
+    private val eventTimes: MutableMap<String, Long> by lazy { mutableMapOf() }
 
     override fun getPriorityFilter(): PriorityFilter = priorityFilter
 
@@ -60,7 +61,7 @@ class KissMetricsProvider(private val kissMetrics: KISSmetricsAPI,
     }
 
     override fun sendEvent(event: AnalyticsEvent) {
-        if (event.isTimed) { // Hang onto it until it is done
+        if (event.isTimed()) { // Hang onto it until it is done
             eventTimes[event.name()] = System.currentTimeMillis()
             timedEvents[event.name()] = event
         } else {  // Send the event through the Intercom SDK
@@ -72,7 +73,8 @@ class KissMetricsProvider(private val kissMetrics: KISSmetricsAPI,
         if (event.attributes != null && event.attributes?.isNotEmpty() == true) {
             val attributes: MutableMap<String, Any> = event.attributes as MutableMap<String, Any>
             if (attributes.containsKey(RECORD_CONDITION)) {
-                val condition: RecordCondition = attributes.remove(RECORD_CONDITION) as RecordCondition
+                val condition: RecordCondition =
+                    attributes.remove(RECORD_CONDITION) as RecordCondition
                 if (attributes.isNotEmpty()) { // other attributes there we need to track
                     val stringProperties = attributes.stringifyAttributes()
                     KISSmetricsAPI.sharedAPI().record(event.name(), stringProperties, condition)
@@ -95,15 +97,11 @@ const val RECORD_CONDITION = "record_condition"
 /**
  * Converts an attributes Map to to Map<String, String> to appease the KissMetrics API.
  */
-fun Map<String, Any>.stringifyAttributes(): Map<String, String> {
-    return if (this.isNotEmpty()) {
-        val attributeMap = mutableMapOf<String, String>()
-        for (key in this.keys) {
-            attributeMap[key] = this[key].toString()
-        }
-        attributeMap
-    } else emptyMap()
+fun Map<String, Any>.stringifyAttributes(): Map<String, String> = when {
+    this.isNotEmpty() -> this.map { (key, value) -> key to value.toString() }.toMap()
+    else -> emptyMap()
 }
+
 
 fun AnalyticsEvent.recordCondition(condition: RecordCondition): AnalyticsEvent {
     this.putAttribute(RECORD_CONDITION, condition)

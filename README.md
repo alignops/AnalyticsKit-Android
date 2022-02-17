@@ -70,7 +70,7 @@ configure providers with a ```PriorityFilter``` so that only events that pass th
 In the following example, only AnalyticsEvent objects with priority less than 10 will be 
 logged by the Mixpanel provider:
 ```kotlin
-myMixpanelApi = MixpanelAPI.getInstance(this, "YOUR MIXPANEL API TOKEN");
+myMixpanelApi = MixpanelAPI.getInstance(this, "YOUR MIXPANEL API TOKEN")
 val filter = PriorityFilter { priorityLevel -> priorityLevel < 10 }
 val filteringProvider = MixpanelProvider(mixpanelApi = myMixpanelApi, priorityFilter = filter)
 AnalyticsKit.getInstance().registerProvider(filteringProvider)

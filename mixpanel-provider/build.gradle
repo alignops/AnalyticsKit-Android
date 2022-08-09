@@ -53,11 +53,11 @@ android {
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
 	api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
-	api "androidx.annotation:annotation:1.2.0"
-	implementation 'com.mixpanel.android:mixpanel-android:5.9.1'
+	api "androidx.annotation:annotation:$rootProject.ext.annotationsVersion"
+	implementation 'com.mixpanel.android:mixpanel-android:6.5.2'
 	compileOnly 'com.google.android.gms:play-services-gcm:17.0.0'
 
-	testImplementation 'com.mixpanel.android:mixpanel-android:5.9.1'
+	testImplementation 'com.mixpanel.android:mixpanel-android:6.5.2'
 	testImplementation "junit:junit:$rootProject.ext.junit_version"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"

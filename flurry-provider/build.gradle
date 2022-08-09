@@ -54,8 +54,9 @@ dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
 	api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
 	api "androidx.annotation:annotation:$rootProject.ext.annotationsVersion"
-	implementation 'com.flurry.android:analytics:12.13.0'
+	compileOnly 'com.flurry.android:analytics:13.3.0'
 
+	testImplementation 'com.flurry.android:analytics:13.3.0'
 	testImplementation "junit:junit:$rootProject.ext.junit_version"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"

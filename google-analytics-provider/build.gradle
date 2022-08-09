@@ -49,7 +49,7 @@ android {
 dependencies {
 	implementation project(path: rootProject.ext.analytics_kit)
 	api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
-	api "androidx.annotation:annotation:1.2.0"
+	api "androidx.annotation:annotation:$rootProject.ext.annotationsVersion"
 	compileOnly 'com.google.android.gms:play-services-analytics:17.0.0'
 
 	testImplementation 'com.google.android.gms:play-services-analytics:17.0.0'

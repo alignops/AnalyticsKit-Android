@@ -16,17 +16,16 @@
 
 buildscript {
 	ext {
-		kotlin_version = '1.5.10'
+		kotlin_version = '1.7.0'
 	}
 	repositories {
 		google()
-		jcenter()
-		maven { url 'https://maven.fabric.io/public' }
+		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.2.2'
-		classpath 'com.google.gms:google-services:4.3.8'
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
+		classpath 'com.android.tools.build:gradle:7.2.2'
+		classpath 'com.google.gms:google-services:4.3.13'
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
 	}
 }
 
@@ -37,9 +36,8 @@ plugins {
 allprojects {
 	repositories {
 		google()
-		jcenter()
+		mavenCentral()
 		maven { url "https://jitpack.io" }
-		maven { url 'https://maven.fabric.io/public' }
 	}
 }
 
@@ -53,15 +51,16 @@ ext {
 	versionName = "$VERSION_NAME"
 
 	// dependency versions
+	annotationsVersion = "1.4.0"
 	assertjVersion = "3.14.0"
-	kotlinVersion = "1.5.10"
+	kotlinVersion = "1.7.0"
 	mockitoVersion = "2.23.0"
 	mockitoKotlinVersion = "2.2.0"
 
 	analytics_kit = ':analyticskit'
 
 	/** Unit Testing Dependency Versions **/
-	junit_version = "4.12"
+	junit_version = "4.13.2"
 }
 
 task clean(type: Delete) {

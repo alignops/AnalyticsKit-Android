@@ -52,9 +52,9 @@ android {
 dependencies {
     implementation project(path: rootProject.ext.analytics_kit)
     api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
-    compileOnly 'com.squareup.okhttp3:okhttp:4.9.1'
+    compileOnly 'com.squareup.okhttp3:okhttp:4.9.3'
 
-    api "androidx.annotation:annotation:1.2.0"
+    api "androidx.annotation:annotation:$rootProject.ext.annotationsVersion"
 
     testImplementation "junit:junit:$rootProject.ext.junit_version"
     testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"

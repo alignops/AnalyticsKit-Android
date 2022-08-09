@@ -52,14 +52,17 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
 
     implementation project(path: rootProject.ext.analytics_kit)
     api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
-    api "androidx.annotation:annotation:1.2.0"
-    compileOnly 'com.kissmetrics.sdk:KISSmetricsSDK:2.3.1'
+    api "androidx.annotation:annotation:$rootProject.ext.annotationsVersion"
+//    compileOnly 'com.kissmetrics.sdk:KISSmetricsSDK:2.3.1' // Not working
+    // workaround until KISSmetrics migrates their SDK off jcenter(); version 2.3.1
+    compileOnly 'com.github.jahunt1:KISSmetrics-Android-SDK:gradle-wrapper-SNAPSHOT'
 
-    testImplementation 'com.kissmetrics.sdk:KISSmetricsSDK:2.3.1'
+    // workaround until KISSmetrics migrates their SDK off jcenter(); version 2.3.1
+    testImplementation 'com.github.jahunt1:KISSmetrics-Android-SDK:gradle-wrapper-SNAPSHOT'
     testImplementation "junit:junit:$rootProject.ext.junit_version"
     testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"

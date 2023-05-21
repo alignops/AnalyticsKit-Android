@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 busybusy, Inc.
+ * Copyright 2020-2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ plugins {
 }
 
 android {
+    namespace 'com.busybusy.analyticskit.kissmetrics_provider'
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
@@ -41,6 +42,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility = 17
+        targetCompatibility = 17
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
@@ -52,7 +58,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
 
     implementation project(path: rootProject.ext.analytics_kit)
     api "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
@@ -68,10 +74,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.ext.mockitoKotlinVersion"
-    testImplementation 'org.mockito:mockito-core:3.8.0'
-
-    testImplementation "org.powermock:powermock-api-mockito2:2.0.2"
-    testImplementation "org.powermock:powermock-module-junit4:2.0.2"
+    testImplementation "org.mockito:mockito-inline:$rootProject.ext.mockitoVersion"
 }
 
 afterEvaluate {

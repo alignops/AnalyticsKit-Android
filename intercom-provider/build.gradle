@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2022 busybusy, Inc.
+ * Copyright 2017 - 2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ plugins {
 }
 
 android {
+	namespace 'com.busybusy.intercom_provider'
 	compileSdkVersion rootProject.ext.compileSdkVersion
 	buildToolsVersion rootProject.ext.buildToolsVersion
 
@@ -38,6 +39,11 @@ android {
 			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
+	}
+
+	compileOptions {
+		sourceCompatibility = 17
+		targetCompatibility = 17
 	}
 
 	sourceSets {
@@ -62,9 +68,7 @@ dependencies {
 	testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
 	testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.ext.mockitoKotlinVersion"
-
-	testImplementation "org.powermock:powermock-api-mockito2:2.0.2"
-	testImplementation "org.powermock:powermock-module-junit4:2.0.2"
+	testImplementation "org.mockito:mockito-inline:$rootProject.ext.mockitoVersion"
 }
 
 afterEvaluate {

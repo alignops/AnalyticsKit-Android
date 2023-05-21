@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 - 2022 busybusy, Inc.
+ * Copyright 2020 - 2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class KissMetricsProvider(
         if (event.isTimed()) { // Hang onto it until it is done
             eventTimes[event.name()] = System.currentTimeMillis()
             timedEvents[event.name()] = event
-        } else {  // Send the event through the Intercom SDK
+        } else {  // Send the event through the KissMetrics SDK
             logKissMetricsEvent(event)
         }
     }

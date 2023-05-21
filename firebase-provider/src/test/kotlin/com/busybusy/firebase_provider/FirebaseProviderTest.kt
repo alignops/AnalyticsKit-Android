@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020-2021 busybusy, Inc.
+ * Copyright 2018, 2020-2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import java.util.*
  * @author John Hunt on 3/21/16.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [27], manifest=Config.NONE)
+@Config(sdk = [28], manifest=Config.NONE)
 class FirebaseProviderTest {
     private val firebaseAnalytics: FirebaseAnalytics = mock()
     private val provider: FirebaseProvider = FirebaseProvider(firebaseAnalytics)
@@ -118,10 +118,8 @@ class FirebaseProviderTest {
         provider.sendEvent(event)
         assertThat(sendCalled).isEqualTo(true)
         assertThat(testBundle).isNotNull
-        assertThat(testBundle!!.containsKey("some_param")).isEqualTo(true)
-        assertThat(testBundle!!["some_param"]).isEqualTo("yes")
-        assertThat(testBundle!!.containsKey("another_param")).isEqualTo(true)
-        assertThat(testBundle!!["another_param"]).isEqualTo("yes again")
+        assertThat(testBundle!!.getString("some_param")).isEqualTo("yes")
+        assertThat(testBundle!!.getString("another_param")).isEqualTo("yes again")
     }
 
     @Test
@@ -138,12 +136,12 @@ class FirebaseProviderTest {
         assertThat(sendCalled).isEqualTo(true)
         assertThat(testEventName).isEqualTo("Firebase Analytics Event With Typed Params Run")
         assertThat(testBundle).isNotNull
-        assertThat(testBundle!!["int_param"]).isEqualTo(1)
-        assertThat(testBundle!!["long_param"]).isEqualTo(32L)
-        assertThat(testBundle!!["string_param"]).isEqualTo("a string")
-        assertThat(testBundle!!["double_param"]).isEqualTo(3.1415926)
-        assertThat(testBundle!!["float_param"]).isEqualTo(0.0f)
-        assertThat(testBundle!!["int_array_param"]).isEqualTo(intArray)
+        assertThat(testBundle!!.getInt("int_param")).isEqualTo(1)
+        assertThat(testBundle!!.getLong("long_param")).isEqualTo(32L)
+        assertThat(testBundle!!.getString("string_param")).isEqualTo("a string")
+        assertThat(testBundle!!.getDouble("double_param")).isEqualTo(3.1415926)
+        assertThat(testBundle!!.getFloat("float_param")).isEqualTo(0.0f)
+        assertThat(testBundle!!.getIntArray("int_array_param")).isEqualTo(intArray)
     }
 
     @Test
@@ -153,7 +151,7 @@ class FirebaseProviderTest {
         assertThat(sendCalled).isEqualTo(true)
         assertThat(testEventName).isEqualTo(CommonEvents.CONTENT_VIEW)
         assertThat(testBundle).isNotNull
-        assertThat(testBundle!![ContentViewEvent.CONTENT_NAME]).isEqualTo("Test page 7")
+        assertThat(testBundle!!.getString(ContentViewEvent.CONTENT_NAME)).isEqualTo("Test page 7")
     }
 
     @Test
@@ -165,8 +163,8 @@ class FirebaseProviderTest {
         assertThat(sendCalled).isEqualTo(true)
         assertThat(testEventName).isEqualTo(CommonEvents.ERROR)
         assertThat(testBundle).isNotNull
-        assertThat(testBundle!!["error_message"]).isEqualTo("something bad happened")
-        assertThat(testBundle!!["exception_object"]).isNotNull
+        assertThat(testBundle!!.getString("error_message")).isEqualTo("something bad happened")
+        assertThat(testBundle!!["exception_object"]).isInstanceOf(EmptyStackException::class.java)
     }
 
     @Test
@@ -202,9 +200,9 @@ class FirebaseProviderTest {
         assertThat(sendCalled).isEqualTo(true)
         assertThat(testBundle).isNotNull
         assertThat(testBundle!!.size()).isEqualTo(3)
-        assertThat(testBundle!!["some_param"]).isEqualTo("yes")
-        assertThat(testBundle!!["another_param"]).isEqualTo("yes again")
-        assertThat(testBundle!![FirebaseAnalytics.Param.VALUE]).isNotNull
+        assertThat(testBundle!!.getString("some_param")).isEqualTo("yes")
+        assertThat(testBundle!!.getString("another_param")).isEqualTo("yes again")
+        assertThat(testBundle!!.getString(FirebaseAnalytics.Param.VALUE)).isNotNull
     }
 
     @Test

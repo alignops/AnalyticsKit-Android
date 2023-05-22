@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2022 busybusy, Inc.
+ * Copyright 2017 - 2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.busybusy.graylog_provider
 
 import com.busybusy.analyticskit_android.AnalyticsEvent
+import java.util.UUID
 
 /**
  * Turns an [AnalyticsEvent] into a JSON String.
@@ -78,6 +79,8 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
                     is Number, is Boolean -> append(jsonAttribute).append("\": ")
                         .append(attributeValue)
                     is Exception, is Error -> append(jsonAttribute).append("\": \"")
+                        .append(attributeValue.toString()).append("\"")
+                    is UUID -> append(jsonAttribute).append("\": \"")
                         .append(attributeValue.toString()).append("\"")
                     else -> {
                         throw UnsupportedOperationException("Unsupported type for GELF message: " + attributeValue!!.javaClass.simpleName)
@@ -146,6 +149,10 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
                     append("\"").append(innerAttribute).append("\": ")
                         .append(innerAttributeValue).append(", ")
                 }
+                is UUID -> {
+                    append("\"").append(innerAttribute).append("\": \"")
+                        .append(innerAttributeValue.toString()).append("\", ")
+                }
                 else -> throw UnsupportedOperationException(
                     "Unsupported type for GELF message: " + innerAttributeValue!!.javaClass.simpleName
                 )
@@ -172,6 +179,7 @@ class EventJsonizer internal constructor(gelfSpecVersion: String, host: String) 
                 }
                 is String -> append("\"").append(getSafeSizeString(element)).append("\", ")
                 is Number, is Boolean -> append(element).append(", ")
+                is UUID -> append("\"").append(element.toString()).append("\", ")
                 else -> throw UnsupportedOperationException(
                     "Unsupported type for GELF message: " + element?.javaClass?.simpleName
                 )

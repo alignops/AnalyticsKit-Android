@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2022 busybusy, Inc.
+ * Copyright 2017 - 2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.UUID
 
 /**
  * Tests the [EventJsonizer] class.
@@ -84,6 +85,58 @@ class EventJsonizerTest {
             |, "full_message": "This is a test of the JSON conversion", "timestamp": $timestamp, 
             |"level": 5, "_test_attribute_1": 100, "_test_attribute_2": "200", 
             |"_can_pass_booleans": true}""".trimMargin().replace("\n", ""))
+    }
+
+    @Test
+    fun jsonBody_WithUuid() {
+        val timestamp = (System.currentTimeMillis() - 5000) / 1000.0
+        val uuidString = "34d70df0-d36e-458f-b93f-d2bff7e8feac"
+        val uuid = UUID.fromString(uuidString)
+        val event = AnalyticsEvent("test_event")
+            .putAttribute("level", 5)
+            .putAttribute("full_message", "UUID conversion test")
+            .putAttribute("timestamp", timestamp)
+            .putAttribute("test_uuid_attribute", uuid)
+        val json = jsonizer.getJsonBody(event)
+        assertThat(json).isEqualTo("""{"version": "$VERSION", "host": "$HOST", "short_message": "${event.name()}"
+            |, "full_message": "UUID conversion test", "timestamp": $timestamp, "level": 5, 
+            |"_test_uuid_attribute": "$uuidString"}""".trimMargin().replace("\n", ""))
+    }
+
+    @Test
+    fun jsonBody_WithUuidInMap() {
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val uuids = mutableMapOf<String, Any>("id1" to uuid1, "id2" to uuid2)
+        val timestamp = (System.currentTimeMillis() - 5000) / 1000.0
+
+        val event = AnalyticsEvent("test_event")
+            .putAttribute("level", 5)
+            .putAttribute("full_message", "UUID conversion test")
+            .putAttribute("timestamp", timestamp)
+            .putAttribute("test_uuid_attribute", uuids)
+        val json = jsonizer.getJsonBody(event)
+        assertThat(json).isEqualTo("""{"version": "$VERSION", "host": "$HOST", "short_message": "${event.name()}"
+            |, "full_message": "UUID conversion test", "timestamp": $timestamp, "level": 5, 
+            |"_test_uuid_attribute": {"id1": "$uuid1", "id2": "$uuid2"}}""".trimMargin().replace("\n", ""))
+    }
+
+    @Test
+    fun jsonBody_WithUuidInList() {
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val uuidList = mutableListOf<Any>(uuid1, uuid2)
+        val timestamp = (System.currentTimeMillis() - 5000) / 1000.0
+
+        val event = AnalyticsEvent("test_event")
+            .putAttribute("level", 5)
+            .putAttribute("full_message", "UUID conversion test")
+            .putAttribute("timestamp", timestamp)
+            .putAttribute("test_uuid_attribute", uuidList)
+        val json = jsonizer.getJsonBody(event)
+        assertThat(json).isEqualTo("""{"version": "$VERSION", "host": "$HOST", "short_message": "${event.name()}"
+            |, "full_message": "UUID conversion test", "timestamp": $timestamp, "level": 5, 
+            |"_test_uuid_attribute": ["$uuid1", "$uuid2"]}""".trimMargin().replace("\n", ""))
     }
 
     @Test

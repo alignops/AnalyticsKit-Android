@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 - 2022 busybusy, Inc.
+ * Copyright 2020 - 2023 busybusy, Inc.
  *  
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,12 +23,10 @@ import com.busybusy.analyticskit_android.ErrorEvent
 import com.nhaarman.mockitokotlin2.*
 import io.intercom.android.sdk.Intercom
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.Mockito.mockStatic
 import java.util.*
 
 /**
@@ -36,10 +34,13 @@ import java.util.*
  *
  * @author John Hunt on 5/19/17.
  */
-@RunWith(PowerMockRunner::class)
 class IntercomProviderTest {
     private lateinit var provider: IntercomProvider
     private lateinit var mockedIntercom: Intercom
+    private val mockedStatic = mockStatic(Intercom::class.java) {
+        // Used to avoid a "not initialized" exception on calling Intercom.client()
+        mockedIntercom
+    }
     private lateinit var testEventName: String
     private var testEventPropertiesMap: Map<String, Any>? = null
     private var logEventCalled = false
@@ -49,8 +50,7 @@ class IntercomProviderTest {
     fun setup() {
         mockedIntercom = mock()
         provider = IntercomProvider(mockedIntercom)
-        PowerMockito.mockStatic(Intercom::class.java)
-        PowerMockito.`when`(Intercom.client()).thenReturn(mockedIntercom)
+
         logEventCalled = false
         testEventPropertiesMap = null
 
@@ -71,7 +71,11 @@ class IntercomProviderTest {
         }.`when`(mockedIntercom).logEvent(any(), isNull())
     }
 
-    @PrepareForTest(Intercom::class)
+    @After
+    fun tearDown() {
+        mockedStatic.close()
+    }
+
     @Test
     fun testSetAndGetPriorityFilter() {
         val filter = PriorityFilter { false }
@@ -79,7 +83,6 @@ class IntercomProviderTest {
         assertThat(filteringProvider.getPriorityFilter()).isEqualTo(filter)
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun test_priorityFiltering_default() {
         val event = AnalyticsEvent("Intercom event")
@@ -89,7 +92,6 @@ class IntercomProviderTest {
         assertThat(provider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun test_priorityFiltering_custom() {
         val filter = PriorityFilter{ priorityLevel -> priorityLevel < 10 }
@@ -101,7 +103,6 @@ class IntercomProviderTest {
         assertThat(filteringProvider.getPriorityFilter().shouldLog(event.priority)).isEqualTo(true)
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testSendEvent_unTimed_noParams() {
         whenever(Intercom.client()).thenReturn(mockedIntercom)
@@ -112,7 +113,6 @@ class IntercomProviderTest {
         assertThat(testEventPropertiesMap).isNull()
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testSendEvent_unTimed_withParams() {
         val event = AnalyticsEvent("Intercom Event With Params Run")
@@ -125,7 +125,6 @@ class IntercomProviderTest {
         assertThat(testEventPropertiesMap!!.values).containsExactlyInAnyOrder("yes", "yes again")
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testQuietMode() {
         val quietProvider = IntercomProvider(mockedIntercom, { true }, true)
@@ -150,7 +149,6 @@ class IntercomProviderTest {
         assertThat(testEventPropertiesMap?.values).hasSize(MAX_METADATA_ATTRIBUTES)
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testExceptionThrownWhenNotInQuietMode() {
         val event = AnalyticsEvent("Intercom Event With 11 Attributes")
@@ -179,7 +177,6 @@ class IntercomProviderTest {
         assertThat(exception).isNotNull
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testLogContentViewEvent() {
         val event = ContentViewEvent("Test page 7")
@@ -190,7 +187,6 @@ class IntercomProviderTest {
         assertThat(testEventPropertiesMap!!.values).containsExactly("Test page 7")
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testLogErrorEvent() {
         val myException = EmptyStackException()
@@ -204,7 +200,6 @@ class IntercomProviderTest {
         assertThat(testEventPropertiesMap!!.values).containsExactlyInAnyOrder("something bad happened", myException)
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testSendEvent_timed_noParams() {
         val event = AnalyticsEvent("Intercom Timed Event")
@@ -213,7 +208,6 @@ class IntercomProviderTest {
         assertThat(logEventCalled).isEqualTo(false)
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testSendEvent_timed_withParams() {
         val event = AnalyticsEvent("Intercom Timed Event With Parameters")
@@ -224,7 +218,6 @@ class IntercomProviderTest {
         assertThat(logEventCalled).isEqualTo(false)
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun testEndTimedEvent_Valid() {
         val event = AnalyticsEvent("Intercom Timed Event With Parameters")
@@ -249,7 +242,6 @@ class IntercomProviderTest {
         assertThat(testEventPropertiesMap?.values).containsExactlyInAnyOrder(timeString, "yes", "yes again")
     }
 
-    @PrepareForTest(Intercom::class)
     @Test
     fun test_endTimedEvent_WillThrow() {
         var didThrow = false

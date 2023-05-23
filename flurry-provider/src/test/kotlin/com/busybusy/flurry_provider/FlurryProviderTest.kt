@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2022 busybusy, Inc.
+ * Copyright 2016 - 2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,42 +18,18 @@ package com.busybusy.flurry_provider
 import com.busybusy.analyticskit_android.AnalyticsEvent
 import com.busybusy.analyticskit_android.AnalyticsKitProvider.PriorityFilter
 import com.flurry.android.FlurryAgent
-import com.nhaarman.mockitokotlin2.times
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.Mockito.mockStatic
 
 /**
  * Tests the [FlurryProvider] class
  *
  * @author John Hunt on 3/21/16.
  */
-@RunWith(PowerMockRunner::class)
 class FlurryProviderTest {
-    private lateinit var provider: FlurryProvider
-    private var testEventName: String? = null
-    private lateinit var testEventPropertiesMap: Map<String, Any>
-    private var logEventNameOnlyCalled = false
-    private var logEventNameAndParamsCalled = false
-    private var logTimedEventNameOnlyCalled = false
-    private var logTimedEventNameAndParamsCalled = false
-
-    @Before
-    fun setup() {
-        provider = FlurryProvider()
-        testEventName = null
-        testEventPropertiesMap = mutableMapOf()
-        logEventNameOnlyCalled = false
-        logEventNameAndParamsCalled = false
-        logTimedEventNameOnlyCalled = false
-        logTimedEventNameAndParamsCalled = false
-    }
+    private val provider = FlurryProvider()
 
     @Test
     fun testSetAndGetPriorityFilter() {
@@ -115,109 +91,65 @@ class FlurryProviderTest {
         assertThat(exceptionMessage).isEqualTo("Flurry events are limited to $ATTRIBUTE_LIMIT attributes")
     }
 
-    @PrepareForTest(FlurryAgent::class)
     @Test
     fun testSendEvent_unTimed_noParams() {
         val event = AnalyticsEvent("Flurry Test Run")
-        PowerMockito.mockStatic(FlurryAgent::class.java)
-        PowerMockito.`when`(FlurryAgent.logEvent(anyString()))
-                .thenAnswer { invocation ->
-                    val args = invocation.arguments
-                    testEventName = args[0] as String
-                    logEventNameOnlyCalled = true
-                    null
-                }
-        provider.sendEvent(event)
-        assertThat(testEventName).isEqualTo("Flurry Test Run")
-        assertThat(testEventPropertiesMap).isEmpty()
-        assertThat(logEventNameOnlyCalled).isEqualTo(true)
-        assertThat(logEventNameAndParamsCalled).isEqualTo(false)
-        assertThat(logTimedEventNameOnlyCalled).isEqualTo(false)
-        assertThat(logTimedEventNameAndParamsCalled).isEqualTo(false)
+        mockStatic(FlurryAgent::class.java).use {
+            provider.sendEvent(event)
+            it.verify { FlurryAgent.logEvent("Flurry Test Run") }
+        }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    @PrepareForTest(FlurryAgent::class)
     @Test
     fun testSendEvent_unTimed_withParams() {
         val event = AnalyticsEvent("Flurry Event With Params Run")
                 .putAttribute("some_param", "yes")
                 .putAttribute("another_param", "yes again")
-        PowerMockito.mockStatic(FlurryAgent::class.java)
-        PowerMockito.`when`(FlurryAgent.logEvent(anyString(), anyMap()))
-                .thenAnswer { invocation ->
-                    logEventNameAndParamsCalled = true
-                    val args = invocation.arguments
-                    testEventName = args[0] as String
-                    testEventPropertiesMap = args[1] as Map<String, Any>
-                    null
-                }
-        provider.sendEvent(event)
-        assertThat(testEventName).isEqualTo("Flurry Event With Params Run")
-        assertThat(testEventPropertiesMap).containsExactly(entry("some_param", "yes"), entry("another_param", "yes again"))
-        assertThat(logEventNameAndParamsCalled).isEqualTo(true)
-        assertThat(logEventNameOnlyCalled).isEqualTo(false)
-        assertThat(logTimedEventNameOnlyCalled).isEqualTo(false)
-        assertThat(logTimedEventNameAndParamsCalled).isEqualTo(false)
+        mockStatic(FlurryAgent::class.java).use {
+            provider.sendEvent(event)
+            it.verify {
+                FlurryAgent.logEvent(
+                    "Flurry Event With Params Run",
+                    mapOf("some_param" to "yes", "another_param" to "yes again"),
+                )
+            }
+        }
     }
 
-    @PrepareForTest(FlurryAgent::class)
     @Test
     fun testSendEvent_timed_noParams() {
         val event = AnalyticsEvent("Flurry Timed Event")
                 .setTimed(true)
-        PowerMockito.mockStatic(FlurryAgent::class.java)
-        PowerMockito.`when`(FlurryAgent.logEvent(anyString(), anyBoolean()))
-                .thenAnswer { invocation ->
-                    val args = invocation.arguments
-                    testEventName = args[0] as String
-                    logTimedEventNameOnlyCalled = true
-                    null
-                }
-        provider.sendEvent(event)
-        assertThat(testEventName).isEqualTo("Flurry Timed Event")
-        assertThat(testEventPropertiesMap).isEmpty()
-        assertThat(logTimedEventNameOnlyCalled).isEqualTo(true)
-        assertThat(logEventNameOnlyCalled).isEqualTo(false)
-        assertThat(logEventNameAndParamsCalled).isEqualTo(false)
-        assertThat(logTimedEventNameAndParamsCalled).isEqualTo(false)
+        mockStatic(FlurryAgent::class.java).use {
+            provider.sendEvent(event)
+            it.verify { FlurryAgent.logEvent("Flurry Timed Event", true) }
+        }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    @PrepareForTest(FlurryAgent::class)
     @Test
     fun testSendEvent_timed_withParams() {
         val event = AnalyticsEvent("Flurry Timed Event With Parameters")
                 .setTimed(true)
                 .putAttribute("some_param", "yes")
                 .putAttribute("another_param", "yes again")
-        PowerMockito.mockStatic(FlurryAgent::class.java)
-        PowerMockito.`when`(FlurryAgent.logEvent(anyString(), anyMap(), anyBoolean()))
-                .thenAnswer { invocation ->
-                    val args = invocation.arguments
-                    testEventName = args[0] as String
-                    logTimedEventNameAndParamsCalled = true
-                    testEventPropertiesMap = args[1] as Map<String, Any>
-                    null
-                }
-        provider.sendEvent(event)
-        assertThat(testEventName).isEqualTo("Flurry Timed Event With Parameters")
-        assertThat(testEventPropertiesMap).containsExactly(entry("some_param", "yes"), entry("another_param", "yes again"))
-        assertThat(logTimedEventNameAndParamsCalled).isEqualTo(true)
-        assertThat(logTimedEventNameOnlyCalled).isEqualTo(false)
-        assertThat(logEventNameOnlyCalled).isEqualTo(false)
-        assertThat(logEventNameAndParamsCalled).isEqualTo(false)
+        mockStatic(FlurryAgent::class.java).use {
+            provider.sendEvent(event)
+            it.verify {
+                FlurryAgent.logEvent(
+                    "Flurry Timed Event With Parameters",
+                    mapOf("some_param" to "yes", "another_param" to "yes again"),
+                    true,
+                )
+            }
+        }
     }
 
-    @PrepareForTest(FlurryAgent::class)
     @Test
     fun testEndTimedEvent() {
         val event = AnalyticsEvent("End timed event")
-        PowerMockito.mockStatic(FlurryAgent::class.java)
-        provider.endTimedEvent(event)
-
-        // Verify Flurry framework is called
-        PowerMockito.verifyStatic(FlurryAgent::class.java, times(1))
-        FlurryAgent.endTimedEvent(event.name())
+        mockStatic(FlurryAgent::class.java).use {
+            provider.endTimedEvent(event)
+            it.verify { FlurryAgent.endTimedEvent("End timed event") }
+        }
     }
 }

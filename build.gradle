@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020-2022 busybusy, Inc.
+ * Copyright 2018, 2020-2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 buildscript {
 	ext {
-		kotlin_version = '1.7.0'
+		kotlin_version = '1.8.21'
 	}
 	repositories {
 		google()
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:7.2.2'
-		classpath 'com.google.gms:google-services:4.3.13'
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
+		classpath 'com.android.tools.build:gradle:8.0.1'
+		classpath 'com.google.gms:google-services:4.3.15'
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
 	}
 }
 
@@ -43,18 +43,18 @@ allprojects {
 
 ext {
 	/** Android Library/Application Config values **/
-	compileSdkVersion = 30
+	compileSdkVersion = 33
 	minSdkVersion = 16
-	targetSdkVersion = 30
-	buildToolsVersion = "30.0.3"
+	targetSdkVersion = 33
+	buildToolsVersion = "33.0.2"
 	versionCode = 12
 	versionName = "$VERSION_NAME"
 
 	// dependency versions
-	annotationsVersion = "1.4.0"
-	assertjVersion = "3.14.0"
-	kotlinVersion = "1.7.0"
-	mockitoVersion = "2.23.0"
+	annotationsVersion = "1.6.0"
+	assertjVersion = "3.24.2"
+	kotlinVersion = "1.8.21"
+	mockitoVersion = "4.6.1"
 	mockitoKotlinVersion = "2.2.0"
 
 	analytics_kit = ':analyticskit'

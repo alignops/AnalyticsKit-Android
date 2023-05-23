@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 - 2022 busybusy, Inc.
+ * Copyright 2020 - 2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,24 +21,21 @@ import com.busybusy.analyticskit_android.AnalyticsKitProvider.PriorityFilter
 import com.busybusy.analyticskit_android.ErrorEvent
 import com.kissmetrics.sdk.KISSmetricsAPI
 import com.kissmetrics.sdk.KISSmetricsAPI.RecordCondition
-import com.kissmetrics.sdk.KISSmetricsAPI.RecordCondition.RECORD_ONCE_PER_INSTALL
 import com.kissmetrics.sdk.KISSmetricsAPI.RecordCondition.RECORD_ONCE_PER_IDENTITY
+import com.kissmetrics.sdk.KISSmetricsAPI.RecordCondition.RECORD_ONCE_PER_INSTALL
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.anyMap
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
-import java.lang.Thread.sleep
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mockStatic
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.properties.Delegates.notNull
 
 /**
@@ -46,9 +43,9 @@ import kotlin.properties.Delegates.notNull
  *
  * @author John Hunt on 2020-04-18.
  */
-@RunWith(PowerMockRunner::class)
 class KissMetricsProviderTest {
     private lateinit var kissMetrics: KISSmetricsAPI
+    private lateinit var mocked: MockedStatic<KISSmetricsAPI>
     private lateinit var provider: KissMetricsProvider
 
     private lateinit var testEventName: String
@@ -57,7 +54,6 @@ class KissMetricsProviderTest {
     private var sendCalled: Boolean by notNull()
 
 
-    @Suppress("UNCHECKED_CAST")
     @Before
     fun setup() {
         kissMetrics = mock()
@@ -66,6 +62,11 @@ class KissMetricsProviderTest {
         testEventPropertiesMap = mutableMapOf()
         testRecordCondition = null
         prepareMocks()
+    }
+
+    @After
+    fun tearDown() {
+        mocked.close()
     }
 
     @Test
@@ -105,7 +106,6 @@ class KissMetricsProviderTest {
         val eventParams = mutableMapOf<String, Any>("favorite_color" to "Blue", "favorite_number" to 42, "favorite_decimal" to 98.6)
         val stringAttributes = eventParams.stringifyAttributes()
         assertThat(stringAttributes).isNotNull
-        assertThat(stringAttributes)
 
         assertThat(stringAttributes).containsExactlyInAnyOrderEntriesOf(
                 mutableMapOf(
@@ -116,11 +116,8 @@ class KissMetricsProviderTest {
         )
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun `untimed event with empty attributes records only event name`() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Test Run")
         provider.sendEvent(event)
@@ -130,11 +127,8 @@ class KissMetricsProviderTest {
         assertThat(testRecordCondition).isNull()
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun `untimed event with attributes but no RecordCondition`() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Event With Params Run")
                 .putAttribute("some_param", "yes")
@@ -147,11 +141,8 @@ class KissMetricsProviderTest {
         assertThat(testRecordCondition).isNull()
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun `untimed event where only attribute is RecordCondition`() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Event With Params Run")
                 .recordCondition(RECORD_ONCE_PER_INSTALL)
@@ -161,11 +152,8 @@ class KissMetricsProviderTest {
         assertThat(testRecordCondition).isEqualTo(RECORD_ONCE_PER_INSTALL)
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun `untimed event with both attributes and RecordCondition`() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Event With Params Run")
                 .putAttribute("some_param", "yes")
@@ -180,11 +168,8 @@ class KissMetricsProviderTest {
         assertThat(testRecordCondition).isEqualTo(RECORD_ONCE_PER_IDENTITY)
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun `log error event`() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = ErrorEvent()
                 .setMessage("something bad happened")
@@ -201,11 +186,8 @@ class KissMetricsProviderTest {
         )
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun `send timed event with no attributes`() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Timed Event")
                 .setTimed(true)
@@ -213,11 +195,8 @@ class KissMetricsProviderTest {
         assertThat(sendCalled).isEqualTo(false)
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun `send timed event with attributes`() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Timed Event With Parameters")
                 .setTimed(true)
@@ -227,11 +206,8 @@ class KissMetricsProviderTest {
         assertThat(sendCalled).isEqualTo(false)
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun testEndTimedEvent_Valid() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         val event = AnalyticsEvent("KissMetrics Timed Event With Parameters")
                 .setTimed(true)
@@ -240,7 +216,7 @@ class KissMetricsProviderTest {
         provider.sendEvent(event)
         assertThat(sendCalled).isEqualTo(false)
         try {
-            thread { sleep(50) } // TODO use coroutines to clean this up
+            Thread.sleep(50)  // TODO use coroutines to clean this up
         } catch (e: InterruptedException) {
             // don't do anything, this is just a test that needs some delay
         }
@@ -258,11 +234,8 @@ class KissMetricsProviderTest {
         assertThat(elapsedTime).isGreaterThanOrEqualTo(0.020)
     }
 
-    @PrepareForTest(KISSmetricsAPI::class)
     @Test
     fun test_endTimedEvent_WillThrow() {
-        PowerMockito.mockStatic(KISSmetricsAPI::class.java)
-        PowerMockito.`when`(KISSmetricsAPI.sharedAPI()).thenAnswer { kissMetrics }
 
         var didThrow = false
         val event = AnalyticsEvent("KissMetrics Timed Event With Parameters")
@@ -308,5 +281,9 @@ class KissMetricsProviderTest {
             sendCalled = true
             null
         }.`when`(kissMetrics).record(anyString(), anyMap(), any())
+
+        mocked = mockStatic(KISSmetricsAPI::class.java) {
+            kissMetrics
+        }
     }
 }

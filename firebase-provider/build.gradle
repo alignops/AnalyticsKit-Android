@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020-2022 busybusy, Inc.
+ * Copyright 2018, 2020-2023 busybusy, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ plugins {
 }
 
 android {
+	namespace 'com.busybusy.firebase_provider'
 	compileSdkVersion rootProject.ext.compileSdkVersion
 	buildToolsVersion rootProject.ext.buildToolsVersion
 
@@ -44,6 +45,11 @@ android {
 		}
 	}
 
+	compileOptions {
+		sourceCompatibility = 17
+		targetCompatibility = 17
+	}
+
 	sourceSets {
 		main.java.srcDirs += 'src/main/kotlin'
 		test.java.srcDirs += 'src/test/kotlin'
@@ -61,9 +67,9 @@ dependencies {
 	testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlinVersion"
 	testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$rootProject.ext.kotlinVersion"
 	testImplementation "org.assertj:assertj-core:$rootProject.ext.assertjVersion"
-	testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
-	testImplementation 'org.mockito:mockito-core:3.8.0'
-	testImplementation 'org.robolectric:robolectric:4.6.1'
+	testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.ext.mockitoKotlinVersion"
+	testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+	testImplementation 'org.robolectric:robolectric:4.10.3'
 }
 
 afterEvaluate {

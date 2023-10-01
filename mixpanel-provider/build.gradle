@@ -21,8 +21,7 @@ plugins {
 
 android {
 	namespace 'com.busybusy.mixpanel_provider'
-	compileSdkVersion rootProject.ext.compileSdkVersion
-	buildToolsVersion rootProject.ext.buildToolsVersion
+	compileSdk rootProject.ext.compileSdkVersion
 
 	defaultConfig {
 		minSdkVersion rootProject.ext.minSdkVersion

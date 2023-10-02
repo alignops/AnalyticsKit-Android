@@ -86,13 +86,6 @@ afterEvaluate {
                 artifactId = 'kissmetrics-provider'
                 version = "$VERSION_NAME"
             }
-            debugKissMetrics(MavenPublication) { // Creates a Maven publication called “debugKissMetrics”.
-                from components.debug // Applies the component for the debug build variant.
-
-                groupId = 'com.github.busybusy.AnalyticsKit-Android'
-                artifactId = 'kissmetrics-provider-debug'
-                version = "$VERSION_NAME"
-            }
         }
     }
 }

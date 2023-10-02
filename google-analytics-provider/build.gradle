@@ -75,13 +75,6 @@ afterEvaluate {
 				artifactId = 'google-analytics-provider'
 				version = "$VERSION_NAME"
 			}
-			debugGoogle(MavenPublication) { // Creates a Maven publication called “debugGoogle”.
-				from components.debug // Applies the component for the debug build variant.
-
-				groupId = 'com.github.busybusy.AnalyticsKit-Android'
-				artifactId = 'google-analytics-provider-debug'
-				version = "$VERSION_NAME"
-			}
 		}
 	}
 }

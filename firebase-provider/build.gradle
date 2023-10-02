@@ -81,13 +81,6 @@ afterEvaluate {
 				artifactId = 'firebase-provider'
 				version = "$VERSION_NAME"
 			}
-			debugFirebase(MavenPublication) { // Creates a Maven publication called “debugFirebase”.
-				from components.debug // Applies the component for the debug build variant.
-
-				groupId = 'com.github.busybusy.AnalyticsKit-Android'
-				artifactId = 'firebase-provider-debug'
-				version = "$VERSION_NAME"
-			}
 		}
 	}
 }

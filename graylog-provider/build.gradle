@@ -80,13 +80,6 @@ afterEvaluate {
                 artifactId = 'graylog-provider'
                 version = "$VERSION_NAME"
             }
-            debugGraylog(MavenPublication) { // Creates a Maven publication called “debugGraylog”.
-                from components.debug // Applies the component for the debug build variant.
-
-                groupId = 'com.github.busybusy.AnalyticsKit-Android'
-                artifactId = 'graylog-provider-debug'
-                version = "$VERSION_NAME"
-            }
         }
     }
 }

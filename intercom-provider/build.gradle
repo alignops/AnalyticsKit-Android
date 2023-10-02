@@ -80,13 +80,6 @@ afterEvaluate {
 				artifactId = 'intercom-provider'
 				version = "$VERSION_NAME"
 			}
-			debugIntercom(MavenPublication) { // Creates a Maven publication called “debugIntercom”.
-				from components.debug // Applies the component for the debug build variant.
-
-				groupId = 'com.github.busybusy.AnalyticsKit-Android'
-				artifactId = 'intercom-provider-debug'
-				version = "$VERSION_NAME"
-			}
 		}
 	}
 }

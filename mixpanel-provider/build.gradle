@@ -80,13 +80,6 @@ afterEvaluate {
 				artifactId = 'mixpanel-provider'
 				version = "$VERSION_NAME"
 			}
-			debugMixpanel(MavenPublication) { // Creates a Maven publication called “debugMixpanel”.
-				from components.debug // Applies the component for the debug build variant.
-
-				groupId = 'com.github.busybusy.AnalyticsKit-Android'
-				artifactId = 'mixpanel-provider-debug'
-				version = "$VERSION_NAME"
-			}
 		}
 	}
 }

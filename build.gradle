@@ -16,7 +16,7 @@
 
 buildscript {
 	ext {
-		kotlin_version = '1.8.21'
+		kotlin_version = '1.9.10'
 	}
 	repositories {
 		google()
@@ -25,7 +25,7 @@ buildscript {
 	dependencies {
 		classpath 'com.android.tools.build:gradle:8.0.1'
 		classpath 'com.google.gms:google-services:4.3.15'
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10"
 	}
 }
 
@@ -53,7 +53,7 @@ ext {
 	// dependency versions
 	annotationsVersion = "1.6.0"
 	assertjVersion = "3.24.2"
-	kotlinVersion = "1.8.21"
+	kotlinVersion = "1.9.10"
 	mockitoVersion = "4.6.1"
 	mockitoKotlinVersion = "2.2.0"
 

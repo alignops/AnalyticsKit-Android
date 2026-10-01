@@ -1,0 +1,86 @@
+name: AI attribution
+
+# Execute only this trusted default-branch script. Read PR metadata without checking out PR code.
+# Report the required status on the PR head because pull_request_target runs on the base branch.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: ai-attribution-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  attribution:
+    name: Validate AI attribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const params = { ...context.repo, pull_number: context.payload.pull_request.number };
+            const sha = context.payload.pull_request.head.sha;
+            const { data: pr } = await github.rest.pulls.get(params);
+            if (pr.head.sha !== sha) {
+              core.info('A newer PR revision exists; its workflow run owns validation.');
+              return;
+            }
+            const report = (state, description) => github.rest.repos.createCommitStatus({
+              ...context.repo,
+              sha,
+              state,
+              context: 'AI attribution policy',
+              description,
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+            await report('pending', 'Checking declared AI assistance and PR attribution');
+            let errors;
+            try {
+              errors = await validate(pr);
+              const { data: current } = await github.rest.pulls.get(params);
+              if (current.head.sha !== sha || current.body !== pr.body) {
+                errors = ['The PR changed during validation; rerun the check on its latest revision.'];
+              }
+            } catch (error) {
+              errors = ['Unable to validate PR metadata: ' + error.message];
+            }
+            await report(errors.length ? 'failure' : 'success', errors.length ? 'AI attribution needs correction; see workflow logs' : 'AI attribution is valid');
+            if (errors.length) core.setFailed(errors.join('\n'));
+            else core.info('AI attribution is valid for all declared AI-assisted commits.');
+
+            async function validate(pr) {
+              const params = { ...context.repo, pull_number: context.payload.pull_request.number };
+              const commits = await github.paginate(github.rest.pulls.listCommits, { ...params, per_page: 100 });
+              // GitHub's list-commits endpoint returns at most 250 commits.
+              if (commits.length !== pr.commits) {
+                return ['Could not inspect every PR commit. Split the PR into fewer than 251 commits or rerun if it changed during validation.'];
+              }
+              const expected = /(?:^|\n)Co-authored-by: [^<>\n]+ <[^<>@\s]+@[^<>@\s]+>\nAI-Assisted: (all|majority|minor)\nAI-Tool: [a-z0-9][a-z0-9._-]*$/;
+              const errors = [];
+              let hasAICommit = false;
+              for (const item of commits) {
+                const message = item.commit.message.replace(/\r\n/g, '\n').replace(/\n+$/, '');
+                const knownAgent = /^(?:Codex|Claude(?: Code)?|Gemini(?: CLI)?|(?:GitHub )?Copilot|Cursor|AI Assistant|AI Agent)$/i;
+                const declaresAI = /^AI-(?:Assisted|Tool):/im.test(message)
+                  || message.split('\n').some(line => knownAgent.test(line.match(/^Co-authored-by:\s*(.*?)\s*<[^<>]+>\s*$/i)?.[1] ?? ''))
+                  || knownAgent.test(item.commit.author?.name ?? '');
+                if (!declaresAI) continue;
+                hasAICommit = true;
+                const levels = message.match(/^AI-Assisted:/gim) ?? [];
+                const tools = message.match(/^AI-Tool:/gim) ?? [];
+                if (!expected.test(message) || levels.length !== 1 || tools.length !== 1 || /^AI-Tool: none$/im.test(message)) {
+                  errors.push(`Commit ${item.sha.slice(0, 12)} must end with three consecutive trailers: Co-authored-by: Agent Name <email>, AI-Assisted: all|majority|minor, AI-Tool: tool-id.`);
+                }
+              }
+              const body = (pr.body ?? '').replace(/<!--[\s\S]*?-->/g, '').replace(/\r\n/g, '\n');
+              const prAttribution = body.match(/^AI-Assisted: ([^\n]+)$/m)?.[1].trim();
+              if (hasAICommit && (!prAttribution || /^(?:none|all|majority|minor)$/i.test(prAttribution) || /[<>]/.test(prAttribution))) {
+                errors.push('The PR description must contain a visible AI-Assisted: Agent Name line identifying the actual agent(s).');
+              }
+              return errors;
+            }

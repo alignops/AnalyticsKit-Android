@@ -26,10 +26,12 @@ AI-Assisted: <level>
 AI-Tool: <tool-id>
 ```
 
+- Write each key exactly as shown, including its capitalization: `Co-authored-by`, `AI-Assisted`, `AI-Tool`. Do not write `Co-Authored-By`.
 - Replace every placeholder with its actual value. Keep the angle brackets around the email, as git's coauthor format requires.
 - Name the agent and tool actually used. Never claim another tool's identity.
 - Use the tool's configured coauthor name and email. If a tool has none, use its actual name with `noreply@example.invalid`.
-- `<tool-id>` is one of: `claude`, `codex`, `copilot`, `cursor`, `gemini-cli`. Another agent uses its own lowercase identifier made of letters, digits, periods, underscores, or hyphens.
+- If your tool adds its own coauthor trailer by default, such as Claude Code's `Co-Authored-By` line, do not add it as well. This block replaces it, so the commit has one coauthor line for each agent.
+- `<tool-id>` is one of: `antigravity`, `claude`, `codex`, `copilot`, `cursor`, `gemini-cli`. Another agent uses its own lowercase identifier made of letters, digits, periods, underscores, or hyphens.
 - If several agents contributed, add a `Co-authored-by` line for each extra agent before the final three-line block. The final block names the agent that created the commit.
 
 ### Choosing the level
@@ -48,13 +50,13 @@ Do not omit, reorder, or reword the trailer keys.
 
 ### Pull requests
 
-When any commit in the pull request carries AI trailers, include this visible line in the description, listing each agent that contributed:
+When any commit in the pull request carries AI trailers, include this visible line in the description:
 
 ```text
 AI-Agents: <Agent Name>[, <Agent Name>]
 ```
 
-Leave the line out when no commit in the pull request was AI-assisted.
+List every agent named in a `Co-authored-by` trailer of the pull request's commits, including agents that other people's commits name. Leave the line out when no commit in the pull request was AI-assisted.
 
 ### Human commits and merges
 

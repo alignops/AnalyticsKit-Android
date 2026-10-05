@@ -64,6 +64,9 @@ for (const [label, message] of [
   ['other trailers in the block', 'Signed-off-by: Dev <dev@example.com>\n' + trailer()],
   ['blank line inside block', trailer().replace('\nAI-Assisted', '\n\nAI-Assisted')],
   ['Claude Code coauthor in its own paragraph', 'Change\n\nAI-Assisted: all\nAI-Tool: claude\n\nCo-Authored-By: Claude <claude@anthropic.com>'],
+  ['several blank lines before the block', 'Change\n\n\nAI-Assisted: all\nAI-Tool: claude\n\n\nCo-authored-by: Claude <claude@anthropic.com>'],
+  ['a squash of several AI commits', 'Fix (#12)\n\n* First\n\n' + trailer('all') + '\n\n* Second\n\n' + trailer('minor') + '\n\n---------\n\nCo-authored-by: Claude <claude@anthropic.com>'],
+  ['a squash of one AI commit', 'Fix (#12)\n\n* First\n\nAI-Assisted: all\nAI-Tool: claude\n\n---------\n\nCo-authored-by: Claude <claude@anthropic.com>'],
 ]) {
   test(`accepts ${label}`, async () => {
     assert.deepEqual(await check([commit(message)]), []);
@@ -85,6 +88,9 @@ for (const [label, message] of [
   ['duplicate lowercase key', 'ai-assisted: minor\n' + trailer()],
   ['uppercase none tool', trailer().replace('AI-Tool: codex', 'AI-Tool: NONE')],
   ['duplicate tool outside the block', 'AI-Tool: codex\n\n' + trailer()],
+  ['a squash with an invalid level', 'Fix (#12)\n\n* First\n\n' + trailer('all') + '\n\n* Second\n\n' + trailer('none') + '\n\n---------\n\nCo-authored-by: Claude <claude@anthropic.com>'],
+  ['a squash with a level missing its tool', 'Fix (#12)\n\n* First\n\n' + trailer('all') + '\n\n* Second\n\nAI-Assisted: minor'],
+  ['a squash with no coauthor', 'Fix (#12)\n\n* First\n\nAI-Assisted: all\nAI-Tool: claude\n\n---------'],
 ]) {
   test(`rejects ${label}`, async () => {
     assert.equal((await check([commit(message)])).length, 1);

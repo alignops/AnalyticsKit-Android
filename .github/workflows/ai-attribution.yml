@@ -36,14 +36,24 @@ jobs:
               const coauthor = /^Co-authored-by: [^<>\n]+ <[^<>@\s]+@[^<>@\s]+>$/i;
               const level = /^AI-Assisted: (?:all|majority|minor)$/i;
               const tool = /^AI-Tool: (?!none$)[a-z0-9][a-z0-9._-]*$/i;
-              const hasValidBlock = message => {
-                const paragraphs = message.split(/\n[ \t]*\n/).map(paragraph => paragraph.split('\n'));
+              const hasValidBlock = lines => {
+                const paragraphs = lines.join('\n').split(/\n(?:[ \t]*\n)+/).map(paragraph => paragraph.split('\n'));
                 const block = [];
                 while (paragraphs.length && paragraphs.at(-1).every(line => trailerLine.test(line))) block.unshift(...paragraphs.pop());
                 return block.length > 0
                   && block.some(line => coauthor.test(line))
                   && block.filter(line => level.test(line)).length === 1
                   && block.filter(line => tool.test(line)).length === 1;
+              };
+              // GitHub's default squash message joins every squashed commit's message, so a squash commit can
+              // hold one AI-Assisted/AI-Tool pair per original commit, with GitHub's coauthor lines after a
+              // "---------" line at the end. Each pair then stands for one original commit.
+              const hasValidSquash = lines => {
+                const levels = lines.filter(line => /^AI-Assisted:/i.test(line));
+                const tools = lines.filter(line => /^AI-Tool:/i.test(line));
+                return levels.length > 0 && levels.length === tools.length
+                  && levels.every(line => level.test(line)) && tools.every(line => tool.test(line))
+                  && lines.some(line => coauthor.test(line));
               };
               const knownAgent = /^(?:Codex|Claude(?: Code)?|Gemini(?: CLI)?|(?:GitHub )?Copilot|Cursor|Antigravity|AI Assistant|AI Agent)$/i;
               const notes = [];
@@ -55,10 +65,13 @@ jobs:
                   || knownAgent.test(item.author?.name ?? '');
                 if (!declaresAI) continue;
                 hasAICommit = true;
-                const levels = message.match(/^AI-Assisted:/gim) ?? [];
-                const tools = message.match(/^AI-Tool:/gim) ?? [];
-                if (!hasValidBlock(message) || levels.length !== 1 || tools.length !== 1) {
-                  notes.push(`Commit ${item.id.slice(0, 12)} does not end with one trailer block holding Co-authored-by: Agent Name <email>, AI-Assisted: all|majority|minor, and AI-Tool: tool-id.`);
+                const lines = message.split('\n').map(line => line.trimEnd());
+                const levels = lines.filter(line => /^AI-Assisted:/i.test(line)).length;
+                const isSquash = levels > 1 || lines.includes('---------');
+                const valid = isSquash ? hasValidSquash(lines)
+                  : hasValidBlock(levels === 1 ? lines : []) && lines.filter(line => /^AI-Tool:/i.test(line)).length === 1;
+                if (!valid) {
+                  notes.push(`Commit ${item.id.slice(0, 12)} does not carry valid AI trailers: Co-authored-by: Agent Name <email>, AI-Assisted: all|majority|minor, and AI-Tool: tool-id.`);
                 }
               }
               if (!hasAICommit) return notes;
